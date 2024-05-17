@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5979052BF7358D00A6951F /* ToDoCell.swift */; };
 		4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0912BF51A420043D833 /* AppDelegate.swift */; };
 		4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0932BF51A420043D833 /* SceneDelegate.swift */; };
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E5979052BF7358D00A6951F /* ToDoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoCell.swift; sourceTree = "<group>"; };
 		4EE6F08E2BF51A420043D833 /* REST_TODO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = REST_TODO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE6F0912BF51A420043D833 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EE6F0932BF51A420043D833 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -57,6 +59,7 @@
 				4EE6F0912BF51A420043D833 /* AppDelegate.swift */,
 				4EE6F0932BF51A420043D833 /* SceneDelegate.swift */,
 				4EE6F0952BF51A420043D833 /* ToDoView.swift */,
+				4E5979052BF7358D00A6951F /* ToDoCell.swift */,
 				4EE6F09A2BF51A440043D833 /* Assets.xcassets */,
 				4EE6F09C2BF51A440043D833 /* LaunchScreen.storyboard */,
 				4EE6F09F2BF51A440043D833 /* Info.plist */,
@@ -137,6 +140,7 @@
 				4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */,
 				4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */,
 				4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */,
+				4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

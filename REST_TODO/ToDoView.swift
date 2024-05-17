@@ -45,7 +45,7 @@ extension ToDoView {
         tableView.translatesAutoresizingMaskIntoConstraints = false
 
         // 셀 등록
-        tableView.register(<#T##nib: UINib?##UINib?#>, forCellReuseIdentifier: <#T##String#>)
+        tableView.register(ToDoCell.self, forCellReuseIdentifier: ToDoCell.identifier)
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -57,9 +57,7 @@ extension ToDoView {
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
         ]
 
-        NSLayoutConstraint.activate([
-            constraints,
-        ])
+        NSLayoutConstraint.activate(constraints)
     }
 }
 
@@ -71,7 +69,9 @@ extension ToDoView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell(frame: .zero)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ToDoCell.identifier, for: indexPath) as? ToDoCell else { return UITableViewCell() }
+
+        return cell
     }
 }
 
