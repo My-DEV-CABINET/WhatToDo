@@ -8,7 +8,7 @@
 import Foundation
 
 struct ToDo: Codable {
-    let data: ToDoData?
+    let data: [ToDoData]?
     let meta: ToDoMeta?
     let message: String?
 }
