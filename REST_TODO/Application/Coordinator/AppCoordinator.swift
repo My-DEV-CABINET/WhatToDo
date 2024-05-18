@@ -10,7 +10,9 @@ import UIKit
 final class AppCoordinator: Coordinator, ToDoCoordinatorDelegate {
     var childCoordinators: [Coordinator] = []
     private var navigationController: UINavigationController!
-
+    
+    private let container = DIContainer.shared
+    
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
