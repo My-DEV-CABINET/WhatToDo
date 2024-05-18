@@ -9,5 +9,9 @@ import Foundation
 
 // To Do: ViewModel 작업 예정
 final class ToDoViewModel {
-    // To Do Task...
+    let apiService: APIServiceProtocol
+
+    init(apiService: APIServiceProtocol) {
+        self.apiService = apiService
+    }
 }
