@@ -18,7 +18,12 @@ final class AppCoordinator: Coordinator, ToDoCoordinatorDelegate {
     }
 
     func start() {
+        registerService()
         self.showToDoView()
+    }
+    
+    private func registerService() {
+        container.register(type: APIServiceProtocol.self, service: APIService())
     }
 
     private func showToDoView() {

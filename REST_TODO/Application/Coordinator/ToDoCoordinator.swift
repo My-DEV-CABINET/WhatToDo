@@ -17,12 +17,15 @@ final class ToDoCoordinator: Coordinator {
 
     private var navigationController: UINavigationController!
 
+    private let container = DIContainer.shared
+    
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
 
     func start() {
         let vc = ToDoView()
+        vc.viewModel = ToDoViewModel(apiService: container.resolve(type: APIServiceProtocol.self)!)
         vc.delegate = self
         self.navigationController.viewControllers = [vc]
     }

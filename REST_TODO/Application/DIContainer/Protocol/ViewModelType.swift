@@ -2,7 +2,7 @@
 //  ViewModelType.swift
 //  RGRG
 //
-//  Created by 준우의 MacBook 16.
+//  Created by 준우의 MacBook 16 on 4/29/24.
 //
 
 import Combine
