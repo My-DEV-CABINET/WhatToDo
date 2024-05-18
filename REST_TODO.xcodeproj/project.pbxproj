@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5979052BF7358D00A6951F /* ToDoCell.swift */; };
 		4E7C5D762BF8541F00A4AE33 /* ToDoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */; };
+		4E7C5D7A2BF8554600A4AE33 /* ToDo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D792BF8554600A4AE33 /* ToDo.swift */; };
+		4E7C5D812BF8597D00A4AE33 /* APIServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D802BF8597D00A4AE33 /* APIServiceProtocol.swift */; };
 		4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0912BF51A420043D833 /* AppDelegate.swift */; };
 		4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0932BF51A420043D833 /* SceneDelegate.swift */; };
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
@@ -19,6 +21,8 @@
 /* Begin PBXFileReference section */
 		4E5979052BF7358D00A6951F /* ToDoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoCell.swift; sourceTree = "<group>"; };
 		4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoViewModel.swift; sourceTree = "<group>"; };
+		4E7C5D792BF8554600A4AE33 /* ToDo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDo.swift; sourceTree = "<group>"; };
+		4E7C5D802BF8597D00A4AE33 /* APIServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIServiceProtocol.swift; sourceTree = "<group>"; };
 		4EE6F08E2BF51A420043D833 /* REST_TODO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = REST_TODO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE6F0912BF51A420043D833 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EE6F0932BF51A420043D833 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -44,25 +48,9 @@
 			children = (
 				4EE6F0912BF51A420043D833 /* AppDelegate.swift */,
 				4EE6F0932BF51A420043D833 /* SceneDelegate.swift */,
+				4E7C5D7D2BF8575800A4AE33 /* DIContainer */,
 			);
 			path = Application;
-			sourceTree = "<group>";
-		};
-		4E5979082BF7385B00A6951F /* Presentation */ = {
-			isa = PBXGroup;
-			children = (
-				4E5979092BF7386400A6951F /* ToDoScene */,
-			);
-			path = Presentation;
-			sourceTree = "<group>";
-		};
-		4E5979092BF7386400A6951F /* ToDoScene */ = {
-			isa = PBXGroup;
-			children = (
-				4E7C5D742BF8540200A4AE33 /* ViewModel */,
-				4E59790B2BF738D900A6951F /* View */,
-			);
-			path = ToDoScene;
 			sourceTree = "<group>";
 		};
 		4E59790A2BF7387600A6951F /* Cells */ = {
@@ -76,8 +64,7 @@
 		4E59790B2BF738D900A6951F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				4EE6F0952BF51A420043D833 /* ToDoView.swift */,
-				4E59790A2BF7387600A6951F /* Cells */,
+				4E7C5D7E2BF8587000A4AE33 /* ToDoScene */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -100,6 +87,39 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		4E7C5D772BF854EF00A4AE33 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				4E7C5D792BF8554600A4AE33 /* ToDo.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		4E7C5D7D2BF8575800A4AE33 /* DIContainer */ = {
+			isa = PBXGroup;
+			children = (
+				4E7C5D7F2BF8588700A4AE33 /* Helpers */,
+			);
+			path = DIContainer;
+			sourceTree = "<group>";
+		};
+		4E7C5D7E2BF8587000A4AE33 /* ToDoScene */ = {
+			isa = PBXGroup;
+			children = (
+				4EE6F0952BF51A420043D833 /* ToDoView.swift */,
+				4E59790A2BF7387600A6951F /* Cells */,
+			);
+			path = ToDoScene;
+			sourceTree = "<group>";
+		};
+		4E7C5D7F2BF8588700A4AE33 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				4E7C5D802BF8597D00A4AE33 /* APIServiceProtocol.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		4EE6F0852BF51A420043D833 = {
 			isa = PBXGroup;
 			children = (
@@ -120,7 +140,9 @@
 			isa = PBXGroup;
 			children = (
 				4E5979072BF7383D00A6951F /* Application */,
-				4E5979082BF7385B00A6951F /* Presentation */,
+				4E7C5D742BF8540200A4AE33 /* ViewModel */,
+				4E59790B2BF738D900A6951F /* View */,
+				4E7C5D772BF854EF00A4AE33 /* Model */,
 				4E59790C2BF738F600A6951F /* Resources */,
 			);
 			path = REST_TODO;
@@ -199,6 +221,8 @@
 				4E7C5D762BF8541F00A4AE33 /* ToDoViewModel.swift in Sources */,
 				4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */,
 				4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */,
+				4E7C5D812BF8597D00A4AE33 /* APIServiceProtocol.swift in Sources */,
+				4E7C5D7A2BF8554600A4AE33 /* ToDo.swift in Sources */,
 				4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */,
 				4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */,
 			);
