@@ -16,6 +16,8 @@
 		4E7C5D8A2BF85D0D00A4AE33 /* UserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D892BF85D0D00A4AE33 /* UserAction.swift */; };
 		4E7C5D8C2BF85D5100A4AE33 /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D8B2BF85D5100A4AE33 /* ViewModelType.swift */; };
 		4E8649312BF8CC620099DFB5 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649302BF8CC620099DFB5 /* Coordinator.swift */; };
+		4E8649342BF8CCD80099DFB5 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649332BF8CCD80099DFB5 /* AppCoordinator.swift */; };
+		4E8649362BF8CE770099DFB5 /* ToDoCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649352BF8CE770099DFB5 /* ToDoCoordinator.swift */; };
 		4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0912BF51A420043D833 /* AppDelegate.swift */; };
 		4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0932BF51A420043D833 /* SceneDelegate.swift */; };
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
@@ -33,6 +35,8 @@
 		4E7C5D892BF85D0D00A4AE33 /* UserAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAction.swift; sourceTree = "<group>"; };
 		4E7C5D8B2BF85D5100A4AE33 /* ViewModelType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = "<group>"; };
 		4E8649302BF8CC620099DFB5 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
+		4E8649332BF8CCD80099DFB5 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		4E8649352BF8CE770099DFB5 /* ToDoCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoCoordinator.swift; sourceTree = "<group>"; };
 		4EE6F08E2BF51A420043D833 /* REST_TODO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = REST_TODO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE6F0912BF51A420043D833 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EE6F0932BF51A420043D833 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -58,6 +62,7 @@
 			children = (
 				4EE6F0912BF51A420043D833 /* AppDelegate.swift */,
 				4EE6F0932BF51A420043D833 /* SceneDelegate.swift */,
+				4E8649322BF8CCC90099DFB5 /* Coordinator */,
 				4E7C5D7D2BF8575800A4AE33 /* DIContainer */,
 			);
 			path = Application;
@@ -138,9 +143,18 @@
 			isa = PBXGroup;
 			children = (
 				4E7C5D802BF8597D00A4AE33 /* APIServiceProtocol.swift */,
-				4E8649302BF8CC620099DFB5 /* Coordinator.swift */,
 			);
 			path = Protocol;
+			sourceTree = "<group>";
+		};
+		4E8649322BF8CCC90099DFB5 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				4E8649302BF8CC620099DFB5 /* Coordinator.swift */,
+				4E8649332BF8CCD80099DFB5 /* AppCoordinator.swift */,
+				4E8649352BF8CE770099DFB5 /* ToDoCoordinator.swift */,
+			);
+			path = Coordinator;
 			sourceTree = "<group>";
 		};
 		4EE6F0852BF51A420043D833 = {
@@ -243,6 +257,7 @@
 			files = (
 				4E7C5D8C2BF85D5100A4AE33 /* ViewModelType.swift in Sources */,
 				4E7C5D762BF8541F00A4AE33 /* ToDoViewModel.swift in Sources */,
+				4E8649342BF8CCD80099DFB5 /* AppCoordinator.swift in Sources */,
 				4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */,
 				4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */,
 				4E7C5D812BF8597D00A4AE33 /* APIServiceProtocol.swift in Sources */,
@@ -252,6 +267,7 @@
 				4E8649312BF8CC620099DFB5 /* Coordinator.swift in Sources */,
 				4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */,
 				4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */,
+				4E8649362BF8CE770099DFB5 /* ToDoCoordinator.swift in Sources */,
 				4E7C5D852BF85CDA00A4AE33 /* NewToDoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

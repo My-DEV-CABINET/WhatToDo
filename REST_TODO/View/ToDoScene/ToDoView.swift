@@ -7,9 +7,15 @@
 
 import UIKit
 
+protocol ToDoViewDelegate {
+    func didTapToDoRow()
+}
+
 final class ToDoView: UIViewController {
     private let tableView = UITableView(frame: .zero, style: .plain) // List
     private let floattingButton = UIButton(frame: .zero) // Floatting Button
+
+    var delegate: ToDoViewDelegate?
 
     deinit {
         print("&&&& ToDoView Deinitialized")
@@ -30,7 +36,6 @@ extension ToDoView {
 extension ToDoView {
     /// 설정 모음
     private func setupUI() {
-        view.backgroundColor = .systemBackground
         addView()
         configureTableView()
     }
@@ -80,6 +85,6 @@ extension ToDoView: UITableViewDataSource {
 extension ToDoView: UITableViewDelegate {
     // TODO: - 셀이 선택됬을 때, 작업 처리
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // To Do Task...
+        delegate?.didTapToDoRow()
     }
 }
