@@ -9,7 +9,7 @@ import Combine
 import UIKit
 
 protocol ToDoViewDelegate {
-    func didTapToDoRow()
+    func goToDetailView()
 }
 
 final class ToDoView: UIViewController {
@@ -18,9 +18,9 @@ final class ToDoView: UIViewController {
     private let input: PassthroughSubject<ToDoViewModel.Input, Never> = .init()
     private var subscriptions = Set<AnyCancellable>()
 
-    private let tableView = UITableView(frame: .zero, style: .plain) // List
-    private let floattingButton = UIButton(frame: .zero) // Floatting Button
-    private let hideButton = UIButton(frame: .zero) // 완료 숨기기 버튼
+    private let tableView = UITableView(frame: .zero, style: .plain)
+    private let floatingButton = UIButton(frame: .zero)
+    private let hideButton = UIButton(frame: .zero)
 
     private var searchController: UISearchController = .init(searchResultsController: nil)
 
@@ -40,7 +40,7 @@ extension ToDoView {
         setupUI()
         bind()
 
-        let dto = ToDoResponseDTO(page: 1, filter: Filter(rawValue: Filter.createdAt.rawValue)!, orderBy: Order(rawValue: Order.desc.rawValue)!, perPage: 10)
+        let dto = ToDoResponseDTO(page: 1, filter: .createdAt, orderBy: .desc, perPage: 10)
         input.send(.requestTodos(dto: dto))
     }
 }
@@ -48,20 +48,17 @@ extension ToDoView {
 // MARK: - Setting TableView
 
 extension ToDoView {
-    /// 설정 모음
     private func setupUI() {
         addView()
         configureTableView()
-        configureFloattingButton()
+        configureFloatingButton()
         configureSearchVC()
     }
 
-    /// View 등록 일괄 관리
     private func addView() {
-        [tableView, floattingButton].forEach { view.addSubview($0) }
+        [tableView, floatingButton].forEach { view.addSubview($0) }
     }
 
-    /// TableView 설정
     private func configureTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -81,35 +78,33 @@ extension ToDoView {
         NSLayoutConstraint.activate(constraints)
     }
 
-    /// Floatting Button 설정
-    private func configureFloattingButton() {
-        floattingButton.translatesAutoresizingMaskIntoConstraints = false
+    private func configureFloatingButton() {
+        floatingButton.translatesAutoresizingMaskIntoConstraints = false
 
-        let floattingImageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
-        let floattingImage = UIImage(systemName: "plus", withConfiguration: floattingImageConfig)
-        floattingButton.setImage(floattingImage, for: .normal)
+        let floatingImageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        let floatingImage = UIImage(systemName: "plus", withConfiguration: floatingImageConfig)
+        floatingButton.setImage(floatingImage, for: .normal)
 
-        floattingButton.tintColor = .white
-        floattingButton.backgroundColor = .black
+        floatingButton.tintColor = .white
+        floatingButton.backgroundColor = .black
 
-        floattingButton.layer.cornerRadius = 25
-        floattingButton.layer.masksToBounds = true
+        floatingButton.layer.cornerRadius = 25
+        floatingButton.layer.masksToBounds = true
 
         let constraints = [
-            floattingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            floattingButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -30),
-            floattingButton.widthAnchor.constraint(equalToConstant: 50),
-            floattingButton.heightAnchor.constraint(equalToConstant: 50),
+            floatingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            floatingButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -30),
+            floatingButton.widthAnchor.constraint(equalToConstant: 50),
+            floatingButton.heightAnchor.constraint(equalToConstant: 50),
         ]
 
         NSLayoutConstraint.activate(constraints)
 
-        floattingButton.addAction(UIAction(handler: { _ in
+        floatingButton.addAction(UIAction(handler: { _ in
             print("#### \(#line)")
         }), for: .touchUpInside)
     }
 
-    /// SearchBar 설정
     private func configureSearchVC() {
         searchController.searchBar.searchTextField.layer.cornerRadius = 15
         searchController.searchBar.searchTextField.layer.masksToBounds = true
@@ -120,28 +115,22 @@ extension ToDoView {
         navigationItem.hidesSearchBarWhenScrolling = true
         searchController.obscuresBackgroundDuringPresentation = false
 
-        // 서치바 아이콘 설정
-        if let textfield = searchController.searchBar.value(forKey: "searchField") as? UITextField, let clearButton = searchController.searchBar.searchTextField.value(forKey: "_clearButton") as? UIButton {
-            // 서치바 백그라운드 컬러
-            textfield.backgroundColor = UIColor.black
-            // 플레이스홀더 글씨 색 정하기
+        if let textfield = searchController.searchBar.value(forKey: "searchField") as? UITextField,
+           let clearButton = searchController.searchBar.searchTextField.value(forKey: "_clearButton") as? UIButton
+        {
+            textfield.backgroundColor = .black
             textfield.attributedPlaceholder = NSAttributedString(
                 string: textfield.placeholder ?? "",
-                attributes: [NSAttributedString.Key.foregroundColor: UIColor.white]
+                attributes: [.foregroundColor: UIColor.white]
             )
-            // 서치바 텍스트입력시 색 정하기
-            textfield.textColor = UIColor.white
-            // 왼쪽 아이콘 이미지넣기
+            textfield.textColor = .white
             if let leftView = textfield.leftView as? UIImageView {
                 leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
-                // 이미지 틴트컬러 정하기
-                leftView.tintColor = UIColor.white
+                leftView.tintColor = .white
             }
-            // 오른쪽 x버튼 이미지넣기
             if let rightView = textfield.rightView as? UIImageView {
                 rightView.image = rightView.image?.withRenderingMode(.alwaysTemplate)
-                // 이미지 틴트 정하기
-                rightView.tintColor = UIColor.white
+                rightView.tintColor = .white
             }
             if let clearImage = clearButton.image(for: .normal) {
                 clearButton.isHidden = false
@@ -153,7 +142,6 @@ extension ToDoView {
             }
         }
 
-        // 서치바 플레이스홀더 폰트 변경
         let placeholderAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.white,
             .backgroundColor: UIColor.clear,
@@ -161,15 +149,6 @@ extension ToDoView {
         ]
         let attributedPlaceholder = NSAttributedString(string: "할 일 검색", attributes: placeholderAttributes)
         searchController.searchBar.searchTextField.attributedPlaceholder = attributedPlaceholder
-
-        let constraints = [
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            tableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-        ]
-
-        NSLayoutConstraint.activate(constraints)
     }
 }
 
@@ -196,37 +175,61 @@ extension ToDoView {
 // MARK: - UITableViewDataSource
 
 extension ToDoView: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.sortedSectionKeys.count
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.todosCount
+        let key = viewModel.sortedSectionKeys[section]
+        return viewModel.groupedTodos[key]?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ToDoCell.identifier, for: indexPath) as? ToDoCell else { return UITableViewCell() }
-        let todo = viewModel.todos?.data?[indexPath.row]
-        cell.delegate = self
-
-        if let todo = todo {
+        let key = viewModel.sortedSectionKeys[indexPath.section]
+        if let todo = viewModel.groupedTodos[key]?[indexPath.row] {
+            cell.delegate = self
             cell.configure(todo: todo)
         }
-
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = .systemGray5
+
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = viewModel.sortedSectionKeys[section]
+        label.font = UIFont.boldSystemFont(ofSize: 30)
+        label.textColor = .black
+
+        headerView.addSubview(label)
+
+        let constraints = [
+            label.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16),
+            label.centerYAnchor.constraint(equalTo: headerView.centerYAnchor),
+        ]
+
+        NSLayoutConstraint.activate(constraints)
+
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
     }
 }
 
 // MARK: - UITableViewDelegate
 
 extension ToDoView: UITableViewDelegate {
-    // TODO: - 셀이 선택됬을 때, 작업 처리
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.didTapToDoRow()
+        delegate?.goToDetailView()
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return UIView()
     }
 }
 

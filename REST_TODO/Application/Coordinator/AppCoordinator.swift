@@ -18,12 +18,12 @@ final class AppCoordinator: Coordinator, ToDoCoordinatorDelegate {
     }
 
     func start() {
-        registerService()
+        self.registerService()
         self.showToDoView()
     }
-    
+
     private func registerService() {
-        container.register(type: APIServiceProtocol.self, service: APIService())
+        self.container.register(type: APIServiceProtocol.self, service: APIService())
     }
 
     private func showToDoView() {
@@ -33,7 +33,11 @@ final class AppCoordinator: Coordinator, ToDoCoordinatorDelegate {
         self.childCoordinators.append(coordinator)
     }
 
-    func didTapToDoRow(_ coordinator: ToDoCoordinator) {
-        //
+    func goToDetailView(_ coordinator: ToDoCoordinator) {
+        let vc = DetailToDoView()
+        let navigationController = UINavigationController(rootViewController: vc)
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        navigationController.isNavigationBarHidden = false
+        self.navigationController.present(navigationController, animated: true)
     }
 }

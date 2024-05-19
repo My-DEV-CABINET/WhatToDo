@@ -15,16 +15,25 @@ final class ToDoViewModel: ViewModelType {
     private let output: PassthroughSubject<Output, Never> = .init()
     private var subcriptions = Set<AnyCancellable>()
 
-    var todos: ToDo?
+    private(set) var todos: [ToDoData]?
 
-    var todosCount: Int = 0
+    var groupedTodos: [String: [ToDoData]] {
+        let groupedDictionary = Dictionary(grouping: todos ?? []) { todo in
+            return todo.createdAt?.dateFormatterForDate() ?? ""
+        }
+        return groupedDictionary
+    }
+
+    var sortedSectionKeys: [String] {
+        return groupedTodos.keys.sorted(by: >)
+    }
 
     enum Input {
         case requestTodos(dto: ToDoResponseDTO)
     }
 
     enum Output {
-        case showTodos(todos: ToDo)
+        case showTodos(todos: [ToDoData])
     }
 
     init(apiService: APIServiceProtocol) {
@@ -49,9 +58,8 @@ final class ToDoViewModel: ViewModelType {
                 print("&&&& Completion : \(completion)")
             } receiveValue: { [weak self] todo in
                 print("#### \(todo)")
-                self?.todos = todo
-                self?.todosCount = todo.data?.count ?? 0
-                self?.output.send(.showTodos(todos: todo))
+                self?.todos = todo.data
+                self?.output.send(.showTodos(todos: todo.data ?? []))
             }
             .store(in: &subcriptions)
     }

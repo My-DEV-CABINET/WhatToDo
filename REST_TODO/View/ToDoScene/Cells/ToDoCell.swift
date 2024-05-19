@@ -75,6 +75,7 @@ extension ToDoCell {
 
         titleLabel.textColor = .systemGray
         titleLabel.font = .systemFont(ofSize: 15, weight: .medium)
+        titleLabel.numberOfLines = 2
 
         let constraints = [
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
@@ -119,7 +120,9 @@ extension ToDoCell {
 
     func configure(todo: ToDoData) {
         titleLabel.text = todo.title
-        dateLabel.text = todo.updatedAt
+        if let date = todo.updatedAt {
+            dateLabel.text = date.dateFormatterForDate()
+        }
 
         let checkImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
         let checkImage = UIImage(systemName: todo.isDone ?? false ? "checkmark.square.fill" : "square", withConfiguration: checkImageConfig)

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ToDoCoordinatorDelegate {
-    func didTapToDoRow(_ coordinator: ToDoCoordinator)
+    func goToDetailView(_ coordinator: ToDoCoordinator)
 }
 
 final class ToDoCoordinator: Coordinator {
@@ -32,7 +32,7 @@ final class ToDoCoordinator: Coordinator {
 }
 
 extension ToDoCoordinator: ToDoViewDelegate {
-    func didTapToDoRow() {
-        self.delegate?.didTapToDoRow(self)
+    func goToDetailView() {
+        self.delegate?.goToDetailView(self)
     }
 }
