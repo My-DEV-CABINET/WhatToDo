@@ -107,7 +107,12 @@ extension ToDoView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ToDoCell.identifier, for: indexPath) as? ToDoCell else { return UITableViewCell() }
         let todo = viewModel.todos?.data?[indexPath.row]
-        cell.titleLabel.text = todo?.title
+        cell.delegate = self
+
+        if let todo = todo {
+            cell.configure(todo: todo)
+        }
+
         return cell
     }
 }
@@ -122,5 +127,17 @@ extension ToDoView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
+    }
+}
+
+// MARK: - ToDoCellDelegate
+
+extension ToDoView: ToDoCellDelegate {
+    func didTapCheckBox(id: Int) {
+        print("#### Check ID : \(id)")
+    }
+
+    func didTapFavoriteBox(id: Int) {
+        print("#### Favorite ID: \(id)")
     }
 }
