@@ -22,6 +22,8 @@ final class ToDoView: UIViewController {
     private let floattingButton = UIButton(frame: .zero) // Floatting Button
     private let hideButton = UIButton(frame: .zero) // 완료 숨기기 버튼
 
+    private var searchController: UISearchController = .init(searchResultsController: nil)
+
     var delegate: ToDoViewDelegate?
 
     deinit {
@@ -51,6 +53,7 @@ extension ToDoView {
         addView()
         configureTableView()
         configureFloattingButton()
+        configureSearchVC()
     }
 
     /// View 등록 일괄 관리
@@ -78,6 +81,7 @@ extension ToDoView {
         NSLayoutConstraint.activate(constraints)
     }
 
+    /// Floatting Button 설정
     private func configureFloattingButton() {
         floattingButton.translatesAutoresizingMaskIntoConstraints = false
 
@@ -103,6 +107,69 @@ extension ToDoView {
         floattingButton.addAction(UIAction(handler: { _ in
             print("#### \(#line)")
         }), for: .touchUpInside)
+    }
+
+    /// SearchBar 설정
+    private func configureSearchVC() {
+        searchController.searchBar.searchTextField.layer.cornerRadius = 15
+        searchController.searchBar.searchTextField.layer.masksToBounds = true
+
+        searchController.searchBar.searchTextField.backgroundColor = .black
+
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = true
+        searchController.obscuresBackgroundDuringPresentation = false
+
+        // 서치바 아이콘 설정
+        if let textfield = searchController.searchBar.value(forKey: "searchField") as? UITextField, let clearButton = searchController.searchBar.searchTextField.value(forKey: "_clearButton") as? UIButton {
+            // 서치바 백그라운드 컬러
+            textfield.backgroundColor = UIColor.black
+            // 플레이스홀더 글씨 색 정하기
+            textfield.attributedPlaceholder = NSAttributedString(
+                string: textfield.placeholder ?? "",
+                attributes: [NSAttributedString.Key.foregroundColor: UIColor.white]
+            )
+            // 서치바 텍스트입력시 색 정하기
+            textfield.textColor = UIColor.white
+            // 왼쪽 아이콘 이미지넣기
+            if let leftView = textfield.leftView as? UIImageView {
+                leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
+                // 이미지 틴트컬러 정하기
+                leftView.tintColor = UIColor.white
+            }
+            // 오른쪽 x버튼 이미지넣기
+            if let rightView = textfield.rightView as? UIImageView {
+                rightView.image = rightView.image?.withRenderingMode(.alwaysTemplate)
+                // 이미지 틴트 정하기
+                rightView.tintColor = UIColor.white
+            }
+            if let clearImage = clearButton.image(for: .normal) {
+                clearButton.isHidden = false
+                let tintedClearImage = clearImage.withTintColor(.white, renderingMode: .alwaysOriginal)
+                clearButton.setImage(tintedClearImage, for: .normal)
+                clearButton.setImage(tintedClearImage, for: .highlighted)
+            } else {
+                clearButton.isHidden = true
+            }
+        }
+
+        // 서치바 플레이스홀더 폰트 변경
+        let placeholderAttributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: UIColor.white,
+            .backgroundColor: UIColor.clear,
+            .font: UIFont.systemFont(ofSize: 18, weight: .bold),
+        ]
+        let attributedPlaceholder = NSAttributedString(string: "할 일 검색", attributes: placeholderAttributes)
+        searchController.searchBar.searchTextField.attributedPlaceholder = attributedPlaceholder
+
+        let constraints = [
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            tableView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+        ]
+
+        NSLayoutConstraint.activate(constraints)
     }
 }
 
@@ -156,6 +223,10 @@ extension ToDoView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return UIView()
     }
 }
 
