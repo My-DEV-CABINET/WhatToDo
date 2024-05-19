@@ -20,6 +20,7 @@ final class ToDoView: UIViewController {
 
     private let tableView = UITableView(frame: .zero, style: .plain) // List
     private let floattingButton = UIButton(frame: .zero) // Floatting Button
+    private let hideButton = UIButton(frame: .zero) // 완료 숨기기 버튼
 
     var delegate: ToDoViewDelegate?
 
@@ -49,6 +50,7 @@ extension ToDoView {
     private func setupUI() {
         addView()
         configureTableView()
+        configureFloattingButton()
     }
 
     /// View 등록 일괄 관리
@@ -74,6 +76,33 @@ extension ToDoView {
         ]
 
         NSLayoutConstraint.activate(constraints)
+    }
+
+    private func configureFloattingButton() {
+        floattingButton.translatesAutoresizingMaskIntoConstraints = false
+
+        let floattingImageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        let floattingImage = UIImage(systemName: "plus", withConfiguration: floattingImageConfig)
+        floattingButton.setImage(floattingImage, for: .normal)
+
+        floattingButton.tintColor = .white
+        floattingButton.backgroundColor = .black
+
+        floattingButton.layer.cornerRadius = 25
+        floattingButton.layer.masksToBounds = true
+
+        let constraints = [
+            floattingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            floattingButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -30),
+            floattingButton.widthAnchor.constraint(equalToConstant: 50),
+            floattingButton.heightAnchor.constraint(equalToConstant: 50),
+        ]
+
+        NSLayoutConstraint.activate(constraints)
+
+        floattingButton.addAction(UIAction(handler: { _ in
+            print("#### \(#line)")
+        }), for: .touchUpInside)
     }
 }
 

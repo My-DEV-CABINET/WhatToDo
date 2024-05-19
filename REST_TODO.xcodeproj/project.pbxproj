@@ -31,6 +31,7 @@
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
 		4EE6F09B2BF51A440043D833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4EE6F09A2BF51A440043D833 /* Assets.xcassets */; };
 		4EE6F09E2BF51A440043D833 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 4EE6F09D2BF51A440043D833 /* Base */; };
+		4EFF4EBE2BF9B5B6006EC07C /* Extension+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFF4EBD2BF9B5B6006EC07C /* Extension+String.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 		4EE6F09A2BF51A440043D833 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4EE6F09D2BF51A440043D833 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4EE6F09F2BF51A440043D833 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4EFF4EBD2BF9B5B6006EC07C /* Extension+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+String.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +175,7 @@
 			children = (
 				4E7C5D892BF85D0D00A4AE33 /* UserAction.swift */,
 				4E8649512BF8FE790099DFB5 /* Constants.swift */,
+				4EFF4EBC2BF9B5A4006EC07C /* Extensions */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -250,6 +253,14 @@
 				4E59790C2BF738F600A6951F /* Resources */,
 			);
 			path = REST_TODO;
+			sourceTree = "<group>";
+		};
+		4EFF4EBC2BF9B5A4006EC07C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4EFF4EBD2BF9B5B6006EC07C /* Extension+String.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -378,6 +389,7 @@
 				4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */,
 				4E8649542BF9015D0099DFB5 /* NetworkAPI.swift in Sources */,
 				4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */,
+				4EFF4EBE2BF9B5B6006EC07C /* Extension+String.swift in Sources */,
 				4E8649362BF8CE770099DFB5 /* ToDoCoordinator.swift in Sources */,
 				4E86493A2BF8D9710099DFB5 /* DICProtocol.swift in Sources */,
 				4E7C5D852BF85CDA00A4AE33 /* NewToDoView.swift in Sources */,
