@@ -266,6 +266,13 @@ extension ToDoView {
                     self?.tableView.reloadData()
                 }
 
+            case .scrolling(let todos):
+                print("#### \(todos)")
+
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+
             case .tapFloattingButton(let isTapped):
 
                 if isTapped == true {
@@ -346,6 +353,27 @@ extension ToDoView: UITableViewDataSource {
 extension ToDoView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         delegate?.goToDetailView()
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+
+        if offsetY > contentHeight - scrollView.frame.height {
+            if !viewModel.fetchingMore {
+                beginBatchFetch()
+            }
+        }
+    }
+
+    func beginBatchFetch() {
+        viewModel.toggleFetchingMore()
+        viewModel.increasePageCount()
+        print("#### \(viewModel.fetchingMore)")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            self.input.send(.requestScrolling)
+            self.viewModel.toggleFetchingMore()
+        }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

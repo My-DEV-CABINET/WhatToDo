@@ -29,7 +29,7 @@ extension String {
 
         return "n/a"
     }
-    
+
     func dateFormatterForDate() -> String {
         let dateString = self
 
@@ -39,14 +39,17 @@ extension String {
 
         // 입력 문자열을 Date 객체로 변환
         if let dateDate = inputFormatter.date(from: dateString) {
-            // 출력 날짜 형식 정의
-            let outputFormatter = DateFormatter()
-            outputFormatter.dateFormat = "yyyy.MM.dd"
+            // 9시간을 뺀 새로운 날짜 계산
+            if let adjustedDate = Calendar.current.date(byAdding: .hour, value: -9, to: dateDate) {
+                // 출력 날짜 형식 정의
+                let outputFormatter = DateFormatter()
+                outputFormatter.dateFormat = "yyyy.MM.dd"
 
-            // 변환된 Date 객체를 String 객체로 변환
-            let resultString = outputFormatter.string(from: dateDate)
+                // 변환된 Date 객체를 String 객체로 변환
+                let resultString = outputFormatter.string(from: adjustedDate)
 
-            return resultString
+                return resultString
+            }
         }
 
         return "n/a"

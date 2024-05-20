@@ -20,16 +20,19 @@ final class ToDoViewModel: ViewModelType {
 
     private(set) var todos: [ToDoData]?
     private(set) var isTapped: Bool = false
+    private(set) var fetchingMore: Bool = false
 
     enum Input {
         case requestGETTodos
 
+        case requestScrolling
         case requestTapFloattingButton
     }
 
     enum Output {
         case showGETTodos(todos: [ToDoData])
 
+        case scrolling(todos: [ToDoData])
         case tapFloattingButton(isTapped: Bool)
     }
 
@@ -37,6 +40,7 @@ final class ToDoViewModel: ViewModelType {
         let groupedDictionary = Dictionary(grouping: todos ?? []) { todo in
             return todo.updatedAt?.dateFormatterForDate() ?? ""
         }
+        print("&&&& \(groupedDictionary.keys)")
         return groupedDictionary
     }
 
@@ -56,6 +60,8 @@ extension ToDoViewModel {
             case .requestGETTodos:
                 self?.requestGETTodos()
 
+            case .requestScrolling:
+                self?.requestScrolling()
             case .requestTapFloattingButton:
                 self?.toggleIsTapped()
             }
@@ -82,6 +88,25 @@ extension ToDoViewModel {
             }
             .store(in: &subcriptions)
     }
+
+    private func requestScrolling() {
+        let api = GETTodosAPI(page: page.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+
+        apiService.request(api)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error fetching todos: \(error)")
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                todos! += response.data ?? []
+                output.send(.scrolling(todos: response.data ?? []))
+            }
+            .store(in: &subcriptions)
+    }
 }
 
 // MARK: - ViewModel's Origin Method
@@ -90,5 +115,13 @@ extension ToDoViewModel {
     func toggleIsTapped() {
         isTapped.toggle()
         output.send(.tapFloattingButton(isTapped: isTapped))
+    }
+
+    func increasePageCount() {
+        page += 1
+    }
+
+    func toggleFetchingMore() {
+        fetchingMore.toggle()
     }
 }
