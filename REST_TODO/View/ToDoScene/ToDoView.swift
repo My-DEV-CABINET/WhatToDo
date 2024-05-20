@@ -286,6 +286,12 @@ extension ToDoView {
                     self?.tableView.reloadData()
                 }
 
+            case .showDELETEToDoAPI:
+
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+
             case .scrolling(let todos):
                 print("#### \(todos)")
 
@@ -377,12 +383,19 @@ extension ToDoView: UITableViewDelegate {
 
     // 셀 우측 스와이프 - 삭제
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let action = UIContextualAction(style: .destructive, title: "DELETE") { (action, view, success) in
-            print("#### 삭제!!")
+        let key = viewModel.sortedSectionKeys[indexPath.section]
+        let todo = viewModel.groupedTodos[key]?[indexPath.row]
+
+        if let id = todo?.id {
+            let action = UIContextualAction(style: .destructive, title: "DELETE") { (action, view, success) in
+                self.input.send(.requestDELETEToDoAPI(id: id))
+            }
+            action.image = UIImage(systemName: "trash")
+            action.backgroundColor = UIColor.systemRed
+            return UISwipeActionsConfiguration(actions: [action])
         }
-        action.image = UIImage(systemName: "trash")
-        action.backgroundColor = UIColor.systemRed
-        return UISwipeActionsConfiguration(actions: [action])
+
+        return .init()
     }
 
     // 셀 좌측 스와이프 - 수정

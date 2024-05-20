@@ -25,6 +25,7 @@ final class ToDoViewModel: ViewModelType {
     enum Input {
         case requestGETTodos
         case requestGETSearchToDosAPI(query: String)
+        case requestDELETEToDoAPI(id: Int)
 
         case requestScrolling
         case requestTapFloattingButton
@@ -33,6 +34,7 @@ final class ToDoViewModel: ViewModelType {
     enum Output {
         case showGETTodos(todos: [ToDoData])
         case showGETSearchToDosAPI(todos: [ToDoData])
+        case showDELETEToDoAPI
 
         case scrolling(todos: [ToDoData])
         case tapFloattingButton(isTapped: Bool)
@@ -63,6 +65,9 @@ extension ToDoViewModel {
                 self?.requestGETTodos()
             case .requestGETSearchToDosAPI(let query):
                 self?.requestGETSearchToDosAPI(query: query)
+
+            case .requestDELETEToDoAPI(let id):
+                self?.requestDELETEToDoAPI(id: id)
 
             case .requestScrolling:
                 self?.requestScrolling()
@@ -111,6 +116,31 @@ extension ToDoViewModel {
                 self?.output.send(.showGETTodos(todos: response.data ?? []))
             }
             .store(in: &subcriptions)
+    }
+
+    /// 삭제 + 데이터 갱신 API 연쇄 호출
+    /// - Parameter id: 삭제할 행의 TODO ID
+    private func requestDELETEToDoAPI(id: Int) {
+        let dto = ToDoIDDTO(id: id.description)
+        let api = DELETEToDoAPI(dto: dto)
+
+        return apiService.request(api).flatMap { _ in
+            let api = GETTodosAPI(page: self.page.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+
+            return self.apiService.request(api).eraseToAnyPublisher()
+        }
+        .sink { completion in
+            switch completion {
+            case .failure(let error):
+                print("Error fetching todos: \(error)")
+            case .finished:
+                break
+            }
+        } receiveValue: { [weak self] response in
+            self?.todos = response.data
+            self?.output.send(.showGETTodos(todos: response.data ?? []))
+        }
+        .store(in: &subcriptions)
     }
 
     private func requestScrolling() {

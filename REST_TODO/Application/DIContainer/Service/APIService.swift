@@ -25,6 +25,8 @@ final class APIService: APIServiceProtocol {
         let url = api.urlInfo.url
         let request = api.requestInfo.requests(url: url)
 
+        print("#### REQUEST: \(request)")
+
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { output in
                 guard output.response is HTTPURLResponse else {

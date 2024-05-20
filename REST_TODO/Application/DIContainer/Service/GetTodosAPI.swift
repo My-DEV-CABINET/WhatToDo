@@ -177,20 +177,21 @@ struct DELETEToDoAPI: NetworkAPIDefinition {
         // Parameters for the DELETE request
     }
 
-    typealias Response = ToDo
+    struct Response: Decodable {
+        // Response for the DELETE request
+    }
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
             host: Constants.host,
-            path: Constants.path,
-            query: ["id": dto.id]
+            path: "\(Constants.path)/\(dto.id)"
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .delete,
-            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
+            headers: [Constants.accept: Constants.headerFieldValue]
         )
     }
 }
