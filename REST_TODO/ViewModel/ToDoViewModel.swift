@@ -29,11 +29,11 @@ final class ToDoViewModel: ViewModelType {
     }
 
     enum Input {
-        case requestTodos(dto: ToDoResponseDTO)
+        case requestGETTodos
     }
 
     enum Output {
-        case showTodos(todos: [ToDoData])
+        case showGETTodos(todos: [ToDoData])
     }
 
     init(apiService: APIServiceProtocol) {
@@ -43,8 +43,8 @@ final class ToDoViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .requestTodos(let dto):
-                self?.requestTodos(dto: dto)
+            case .requestGETTodos:
+                self?.requestGETTodos()
             }
         }
         .store(in: &subcriptions)
@@ -52,15 +52,31 @@ final class ToDoViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
 
-    private func requestTodos(dto: ToDoResponseDTO) {
-        apiService.requestTodosFromServer(dto: dto)
-            .sink { [weak self] completion in
-                print("&&&& Completion : \(completion)")
-            } receiveValue: { [weak self] todo in
-                print("#### \(todo)")
-                self?.todos = todo.data
-                self?.output.send(.showTodos(todos: todo.data ?? []))
+    private func requestGETTodos() {
+        let api = GETTodosAPI(page: 1.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+
+        apiService.request(api)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error fetching todos: \(error)")
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] response in
+                self?.todos = response.data
+                self?.output.send(.showGETTodos(todos: response.data ?? []))
             }
             .store(in: &subcriptions)
     }
 }
+
+// apiService.requestTodosFromServer(dto: dto)
+//            .sink { [weak self] completion in
+//                print("&&&& Completion : \(completion)")
+//            } receiveValue: { [weak self] todo in
+//                print("#### \(todo)")
+//                self?.todos = todo.data
+//                self?.output.send(.showTodos(todos: todo.data ?? []))
+//            }
+//            .store(in: &subcriptions)

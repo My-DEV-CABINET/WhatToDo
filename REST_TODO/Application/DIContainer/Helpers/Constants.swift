@@ -8,6 +8,7 @@
 import Foundation
 
 struct Constants {
-    static let BASE_URL: String = "https://phplaravel-574671-2962113.cloudwaysapps.com"
-    static let HTTP_Header_Field = "Content-Type"
+    static let scheme: String = "https://phplaravel-574671-2962113.cloudwaysapps.com"
+    static let host: String = "phplaravel-574671-2962113.cloudwaysapps.com"
+    static let headerField = "Content-Type"
 }

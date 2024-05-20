@@ -21,41 +21,46 @@ enum NetworkError: Error, Equatable {
 }
 
 final class APIService: APIServiceProtocol {
-    func requestTodosFromServer(dto: ToDoResponseDTO) -> AnyPublisher<ToDo, any Error> {
-        do {
-            let url = try NetworkAPI.requestTodos(dto: dto).asURLRequest()
+    func request<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error> {
+        let url = api.urlInfo.url
+        let request = api.requestInfo.requests(url: url)
 
-            return URLSession.shared
-                .dataTaskPublisher(for: url)
-                .tryMap { output in
-                    guard output.response is HTTPURLResponse else {
-                        throw NetworkError.serverError(code: 0, error: "Server error")
-                    }
-                    return output.data
+        print("#### url: \(url) :: Request : \(request)")
+
+        return URLSession.shared.dataTaskPublisher(for: url)
+            .tryMap { output in
+                guard output.response is HTTPURLResponse else {
+                    throw NetworkError.serverError(code: 0, error: "Server error")
                 }
-                .decode(type: ToDo.self, decoder: JSONDecoder())
-                .mapError { error in
-                    return NetworkError.invalidJSON(String(describing: error))
-                }
-                .eraseToAnyPublisher()
-        } catch {
-            return Fail(error: NetworkError.badURL("Invalid URL!")).eraseToAnyPublisher()
-        }
-    }
-
-    func requestQueryToDosFromServer() -> AnyPublisher<ToDo, any Error> {
-        return Empty().eraseToAnyPublisher()
-    }
-
-    func insertToDoToServer() -> AnyPublisher<Bool, any Error> {
-        return Empty().eraseToAnyPublisher()
-    }
-
-    func updateToDoAtServer() -> AnyPublisher<Bool, any Error> {
-        return Empty().eraseToAnyPublisher()
-    }
-
-    func removeToDoAtServer() -> AnyPublisher<Bool, any Error> {
-        return Empty().eraseToAnyPublisher()
+                return output.data
+            }
+            .decode(type: T.Response.self, decoder: JSONDecoder())
+            .mapError { error in
+                return NetworkError.invalidJSON(String(describing: error))
+            }
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
     }
 }
+
+//    func requestTodosFromServer(dto: ToDoResponseDTO) -> AnyPublisher<ToDo, any Error> {
+//        do {
+//            let url = try NetworkAPI.requestTodos(dto: dto).asURLRequest()
+//
+//            return URLSession.shared
+//                .dataTaskPublisher(for: url)
+//                .tryMap { output in
+//                    guard output.response is HTTPURLResponse else {
+//                        throw NetworkError.serverError(code: 0, error: "Server error")
+//                    }
+//                    return output.data
+//                }
+//                .decode(type: ToDo.self, decoder: JSONDecoder())
+//                .mapError { error in
+//                    return NetworkError.invalidJSON(String(describing: error))
+//                }
+//                .eraseToAnyPublisher()
+//        } catch {
+//            return Fail(error: NetworkError.badURL("Invalid URL!")).eraseToAnyPublisher()
+//        }
+//    }

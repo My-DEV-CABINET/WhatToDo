@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ToDoResponseDTO {
+struct ToDoGETDTO {
     let query: String? = nil
     let page: Int?
     let filter: Filter?

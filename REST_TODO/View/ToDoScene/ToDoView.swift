@@ -40,8 +40,7 @@ extension ToDoView {
         setupUI()
         bind()
 
-        let dto = ToDoResponseDTO(page: 1, filter: .createdAt, orderBy: .desc, perPage: 10)
-        input.send(.requestTodos(dto: dto))
+        input.send(.requestGETTodos)
     }
 }
 
@@ -160,7 +159,7 @@ extension ToDoView {
 
         output.sink { [weak self] event in
             switch event {
-            case .showTodos(let todos):
+            case .showGETTodos(let todos):
                 print("#### \(todos)")
 
                 DispatchQueue.main.async {

@@ -9,10 +9,5 @@ import Combine
 import Foundation
 
 protocol APIServiceProtocol {
-    func requestTodosFromServer(dto: ToDoResponseDTO) -> AnyPublisher<ToDo, Error>
-    func requestQueryToDosFromServer() -> AnyPublisher<ToDo, Error>
-
-    func insertToDoToServer() -> AnyPublisher<Bool, Error>
-    func updateToDoAtServer() -> AnyPublisher<Bool, Error>
-    func removeToDoAtServer() -> AnyPublisher<Bool, Error>
+    func request<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error>
 }

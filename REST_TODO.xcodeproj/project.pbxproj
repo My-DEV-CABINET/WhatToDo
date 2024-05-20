@@ -22,9 +22,11 @@
 		4E86494E2BF8FC080099DFB5 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86494D2BF8FC080099DFB5 /* APIService.swift */; };
 		4E8649522BF8FE790099DFB5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649512BF8FE790099DFB5 /* Constants.swift */; };
 		4E8649542BF9015D0099DFB5 /* NetworkAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649532BF9015C0099DFB5 /* NetworkAPI.swift */; };
-		4E8649572BF909FC0099DFB5 /* ToDoResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649562BF909FC0099DFB5 /* ToDoResponseDTO.swift */; };
+		4E8649572BF909FC0099DFB5 /* ToDoGETDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649562BF909FC0099DFB5 /* ToDoGETDTO.swift */; };
 		4E8649592BF90A0E0099DFB5 /* ToDoPOSTDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8649582BF90A0E0099DFB5 /* ToDoPOSTDTO.swift */; };
 		4E86495B2BF911760099DFB5 /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86495A2BF911760099DFB5 /* ViewModelType.swift */; };
+		4E89298D2BFAB43500316E42 /* NetworkAPIDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E89298C2BFAB43500316E42 /* NetworkAPIDefinition.swift */; };
+		4E89298F2BFAB77100316E42 /* GetTodosAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E89298E2BFAB77100316E42 /* GetTodosAPI.swift */; };
 		4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0912BF51A420043D833 /* AppDelegate.swift */; };
 		4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0932BF51A420043D833 /* SceneDelegate.swift */; };
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
@@ -60,9 +62,11 @@
 		4E86494D2BF8FC080099DFB5 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		4E8649512BF8FE790099DFB5 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		4E8649532BF9015C0099DFB5 /* NetworkAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAPI.swift; sourceTree = "<group>"; };
-		4E8649562BF909FC0099DFB5 /* ToDoResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoResponseDTO.swift; sourceTree = "<group>"; };
+		4E8649562BF909FC0099DFB5 /* ToDoGETDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoGETDTO.swift; sourceTree = "<group>"; };
 		4E8649582BF90A0E0099DFB5 /* ToDoPOSTDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoPOSTDTO.swift; sourceTree = "<group>"; };
 		4E86495A2BF911760099DFB5 /* ViewModelType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = "<group>"; };
+		4E89298C2BFAB43500316E42 /* NetworkAPIDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAPIDefinition.swift; sourceTree = "<group>"; };
+		4E89298E2BFAB77100316E42 /* GetTodosAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTodosAPI.swift; sourceTree = "<group>"; };
 		4EE6F08E2BF51A420043D833 /* REST_TODO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = REST_TODO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE6F0912BF51A420043D833 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EE6F0932BF51A420043D833 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -209,6 +213,8 @@
 			children = (
 				4E86494D2BF8FC080099DFB5 /* APIService.swift */,
 				4E8649532BF9015C0099DFB5 /* NetworkAPI.swift */,
+				4E89298C2BFAB43500316E42 /* NetworkAPIDefinition.swift */,
+				4E89298E2BFAB77100316E42 /* GetTodosAPI.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -216,7 +222,7 @@
 		4E8649552BF909F30099DFB5 /* DTO */ = {
 			isa = PBXGroup;
 			children = (
-				4E8649562BF909FC0099DFB5 /* ToDoResponseDTO.swift */,
+				4E8649562BF909FC0099DFB5 /* ToDoGETDTO.swift */,
 				4E8649582BF90A0E0099DFB5 /* ToDoPOSTDTO.swift */,
 			);
 			path = DTO;
@@ -368,6 +374,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E89298D2BFAB43500316E42 /* NetworkAPIDefinition.swift in Sources */,
 				4E86495B2BF911760099DFB5 /* ViewModelType.swift in Sources */,
 				4E86494E2BF8FC080099DFB5 /* APIService.swift in Sources */,
 				4E7C5D762BF8541F00A4AE33 /* ToDoViewModel.swift in Sources */,
@@ -375,9 +382,10 @@
 				4E8649342BF8CCD80099DFB5 /* AppCoordinator.swift in Sources */,
 				4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */,
 				4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */,
-				4E8649572BF909FC0099DFB5 /* ToDoResponseDTO.swift in Sources */,
+				4E8649572BF909FC0099DFB5 /* ToDoGETDTO.swift in Sources */,
 				4E7C5D812BF8597D00A4AE33 /* APIServiceProtocol.swift in Sources */,
 				4E8649392BF8D9710099DFB5 /* DIContainer.swift in Sources */,
+				4E89298F2BFAB77100316E42 /* GetTodosAPI.swift in Sources */,
 				4E7C5D7A2BF8554600A4AE33 /* ToDo.swift in Sources */,
 				4E7C5D8A2BF85D0D00A4AE33 /* UserAction.swift in Sources */,
 				4E8649522BF8FE790099DFB5 /* Constants.swift in Sources */,
