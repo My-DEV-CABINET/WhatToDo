@@ -24,6 +24,7 @@ final class ToDoViewModel: ViewModelType {
 
     enum Input {
         case requestGETTodos
+        case requestGETSearchToDosAPI(query: String)
 
         case requestScrolling
         case requestTapFloattingButton
@@ -31,6 +32,7 @@ final class ToDoViewModel: ViewModelType {
 
     enum Output {
         case showGETTodos(todos: [ToDoData])
+        case showGETSearchToDosAPI(todos: [ToDoData])
 
         case scrolling(todos: [ToDoData])
         case tapFloattingButton(isTapped: Bool)
@@ -59,6 +61,8 @@ extension ToDoViewModel {
             switch event {
             case .requestGETTodos:
                 self?.requestGETTodos()
+            case .requestGETSearchToDosAPI(let query):
+                self?.requestGETSearchToDosAPI(query: query)
 
             case .requestScrolling:
                 self?.requestScrolling()
@@ -73,6 +77,25 @@ extension ToDoViewModel {
 
     private func requestGETTodos() {
         let api = GETTodosAPI(page: page.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+
+        apiService.request(api)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error fetching todos: \(error)")
+                case .finished:
+                    break
+                }
+            } receiveValue: { [weak self] response in
+                self?.todos = response.data
+                self?.output.send(.showGETTodos(todos: response.data ?? []))
+            }
+            .store(in: &subcriptions)
+    }
+
+    private func requestGETSearchToDosAPI(query: String) {
+        let dto = ToDoQueryDTO(query: query, page: page.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+        let api = GETSearchToDosAPI(dto: dto)
 
         apiService.request(api)
             .sink { completion in
@@ -119,6 +142,10 @@ extension ToDoViewModel {
 
     func increasePageCount() {
         page += 1
+    }
+
+    func resetPageCount() {
+        page = 1
     }
 
     func toggleFetchingMore() {

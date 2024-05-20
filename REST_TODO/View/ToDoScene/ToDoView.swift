@@ -266,6 +266,13 @@ extension ToDoView {
                     self?.tableView.reloadData()
                 }
 
+            case .showGETSearchToDosAPI(let todos):
+                print("#### \(todos)")
+
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
+
             case .scrolling(let todos):
                 print("#### \(todos)")
 
