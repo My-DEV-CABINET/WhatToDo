@@ -7,12 +7,14 @@
 
 import Foundation
 
+// 모든 할일 목록 가져오기
 struct GETTodosAPI: NetworkAPIDefinition {
     let page: String
     let filter: String
     let orderBy: String
     let perPage: String
 
+    // BODY Parameter
     struct Parameter: Encodable {
         // Parameters for the GET request
     }
@@ -21,8 +23,8 @@ struct GETTodosAPI: NetworkAPIDefinition {
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
-            host: "phplaravel-574671-2962113.cloudwaysapps.com",
-            path: "/api/v2/todos",
+            host: Constants.host,
+            path: Constants.path,
             query: [
                 "page": page,
                 "filter": filter,
@@ -35,78 +37,74 @@ struct GETTodosAPI: NetworkAPIDefinition {
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .get,
-            headers: ["Content-Type": "application/json"]
+            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
         )
     }
 }
 
+// 특정 할일 가져오기 - ID 기반
 struct GETTodoAPI: NetworkAPIDefinition {
-    let id: String
+    let dto: ToDoIDDTO
 
     struct Parameter: Encodable {
-        let id: String
+        // Parameters for the GET request
     }
 
     typealias Response = ToDo
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
-            host: "phplaravel-574671-2962113.cloudwaysapps.com",
-            path: "/api/v2/todos"
+            host: Constants.host,
+            path: Constants.path,
+            query: [
+                "id": dto.id,
+            ]
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .get,
-            headers: ["Content-Type": "application/json"],
-            parameters: Parameter(id: id)
+            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
         )
     }
 }
 
+// 검색 데이터 가져오기
 struct GETSearchToDosAPI: NetworkAPIDefinition {
-    let query: String
-    let page: String
-    let filter: String
-    let orderBy: String
-    let perPage: String
+    let dto: ToDoQueryDTO
 
     struct Parameter: Encodable {
-        let query: String
-        let page: String
-        let filter: String
-        let orderBy: String
-        let perPage: String
+        // Parameters for the GET request
     }
 
     typealias Response = ToDo
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
-            host: "phplaravel-574671-2962113.cloudwaysapps.com",
-            path: "/api/v2/todos/search"
+            host: Constants.host,
+            path: Constants.searchPath,
+            query: [
+                "query": dto.query,
+                "filter": dto.filter,
+                "order_by": dto.orderBy,
+                "page": dto.page,
+                "per_page": dto.perPage,
+            ]
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .get,
-            headers: ["Content-Type": "application/json"],
-            parameters: Parameter(
-                query: query,
-                page: page,
-                filter: filter,
-                orderBy: orderBy,
-                perPage: perPage
-            )
+            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
         )
     }
 }
 
+// 할일 추가
 struct POSTToDoAPI: NetworkAPIDefinition {
-    let title: String
-    let isDone: String
+    let dto: ToDoBodyDTO
 
     struct Parameter: Encodable {
         let title: String
@@ -117,27 +115,27 @@ struct POSTToDoAPI: NetworkAPIDefinition {
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
-            host: "phplaravel-574671-2962113.cloudwaysapps.com",
-            path: "/api/v2/todos"
+            host: Constants.host,
+            path: Constants.path
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .post,
-            headers: ["Content-Type": "application/json"],
+            headers: [Constants.headerFieldKey: Constants.headerFieldValue],
             parameters: Parameter(
-                title: title,
-                is_Done: isDone
+                title: dto.title,
+                is_Done: dto.isDone.description
             )
         )
     }
 }
 
+// 특정 할일 수정 - ID 기반
 struct PUTToDoAPI: NetworkAPIDefinition {
-    let id: String
-    let title: String
-    let isDone: String
+    let idDTO: ToDoIDDTO
+    let bodyDTO: ToDoBodyDTO
 
     struct Parameter: Encodable {
         let title: String
@@ -148,44 +146,46 @@ struct PUTToDoAPI: NetworkAPIDefinition {
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
-            host: "phplaravel-574671-2962113.cloudwaysapps.com/\(id)",
-            path: "/api/v2/todos"
+            host: Constants.host,
+            path: Constants.path,
+            query: ["id": idDTO.id]
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .put,
-            headers: ["Content-Type": "application/json"],
+            headers: [Constants.headerFieldKey: Constants.headerFieldValue],
             parameters: Parameter(
-                title: title,
-                is_Done: isDone
+                title: bodyDTO.title,
+                is_Done: bodyDTO.isDone.description
             )
         )
     }
 }
 
+// 기존 할일 삭제하기 - ID 기반
 struct DELETEToDoAPI: NetworkAPIDefinition {
-    let id: String
+    let dto: ToDoIDDTO
 
     struct Parameter: Encodable {
-        let id: String
+        // Parameters for the DELETE request
     }
 
     typealias Response = ToDo
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
-            host: "phplaravel-574671-2962113.cloudwaysapps.com/",
-            path: "/api/v2/todos"
+            host: Constants.host,
+            path: Constants.path,
+            query: ["id": dto.id]
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .delete,
-            headers: ["Content-Type": "application/json"],
-            parameters: Parameter(id: id)
+            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
         )
     }
 }

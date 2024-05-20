@@ -8,18 +8,34 @@
 import Combine
 import Foundation
 
-// To Do: ViewModel 작업 예정
 final class ToDoViewModel: ViewModelType {
     let apiService: APIServiceProtocol
+
+    init(apiService: APIServiceProtocol) {
+        self.apiService = apiService
+    }
 
     private let output: PassthroughSubject<Output, Never> = .init()
     private var subcriptions = Set<AnyCancellable>()
 
     private(set) var todos: [ToDoData]?
+    private(set) var isTapped: Bool = false
+
+    enum Input {
+        case requestGETTodos
+
+        case requestTapFloattingButton
+    }
+
+    enum Output {
+        case showGETTodos(todos: [ToDoData])
+
+        case tapFloattingButton(isTapped: Bool)
+    }
 
     var groupedTodos: [String: [ToDoData]] {
         let groupedDictionary = Dictionary(grouping: todos ?? []) { todo in
-            return todo.createdAt?.dateFormatterForDate() ?? ""
+            return todo.updatedAt?.dateFormatterForDate() ?? ""
         }
         return groupedDictionary
     }
@@ -28,23 +44,20 @@ final class ToDoViewModel: ViewModelType {
         return groupedTodos.keys.sorted(by: >)
     }
 
-    enum Input {
-        case requestGETTodos
-    }
+    var page: Int = 1
+}
 
-    enum Output {
-        case showGETTodos(todos: [ToDoData])
-    }
+// MARK: - API 및 Output
 
-    init(apiService: APIServiceProtocol) {
-        self.apiService = apiService
-    }
-
+extension ToDoViewModel {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
             case .requestGETTodos:
                 self?.requestGETTodos()
+
+            case .requestTapFloattingButton:
+                self?.toggleIsTapped()
             }
         }
         .store(in: &subcriptions)
@@ -53,7 +66,7 @@ final class ToDoViewModel: ViewModelType {
     }
 
     private func requestGETTodos() {
-        let api = GETTodosAPI(page: 1.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+        let api = GETTodosAPI(page: page.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
 
         apiService.request(api)
             .sink { completion in
@@ -71,12 +84,11 @@ final class ToDoViewModel: ViewModelType {
     }
 }
 
-// apiService.requestTodosFromServer(dto: dto)
-//            .sink { [weak self] completion in
-//                print("&&&& Completion : \(completion)")
-//            } receiveValue: { [weak self] todo in
-//                print("#### \(todo)")
-//                self?.todos = todo.data
-//                self?.output.send(.showTodos(todos: todo.data ?? []))
-//            }
-//            .store(in: &subcriptions)
+// MARK: - ViewModel's Origin Method
+
+extension ToDoViewModel {
+    func toggleIsTapped() {
+        isTapped.toggle()
+        output.send(.tapFloattingButton(isTapped: isTapped))
+    }
+}

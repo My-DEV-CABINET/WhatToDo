@@ -121,7 +121,7 @@ extension ToDoCell {
     func configure(todo: ToDoData) {
         titleLabel.text = todo.title
         if let date = todo.updatedAt {
-            dateLabel.text = date.dateFormatterForDate()
+            dateLabel.text = date.dateFormatterForTime()
         }
 
         let checkImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)

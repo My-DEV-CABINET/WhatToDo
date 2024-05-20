@@ -19,7 +19,10 @@ final class ToDoView: UIViewController {
     private var subscriptions = Set<AnyCancellable>()
 
     private let tableView = UITableView(frame: .zero, style: .plain)
+
+    private let buttonStackView = UIStackView(frame: .zero)
     private let floatingButton = UIButton(frame: .zero)
+    private let addButton = UIButton(frame: .zero)
     private let hideButton = UIButton(frame: .zero)
 
     private var searchController: UISearchController = .init(searchResultsController: nil)
@@ -50,12 +53,18 @@ extension ToDoView {
     private func setupUI() {
         addView()
         configureTableView()
-        configureFloatingButton()
         configureSearchVC()
+
+        configureStackView()
+        configureHideButton()
+        configureAddButton()
+        configureFloatingButton()
     }
 
     private func addView() {
-        [tableView, floatingButton].forEach { view.addSubview($0) }
+        [tableView, buttonStackView].forEach { view.addSubview($0) }
+
+        [hideButton, addButton, floatingButton].forEach { buttonStackView.addArrangedSubview($0) }
     }
 
     private func configureTableView() {
@@ -77,6 +86,76 @@ extension ToDoView {
         NSLayoutConstraint.activate(constraints)
     }
 
+    private func configureStackView() {
+        buttonStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        buttonStackView.axis = .vertical
+        buttonStackView.alignment = .fill
+        buttonStackView.distribution = .fillEqually
+        buttonStackView.spacing = 10
+
+        let constraints = [
+            buttonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+            buttonStackView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -30),
+            buttonStackView.widthAnchor.constraint(equalToConstant: 50),
+            buttonStackView.heightAnchor.constraint(equalToConstant: 170),
+        ]
+
+        NSLayoutConstraint.activate(constraints)
+    }
+
+    private func configureAddButton() {
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        let image = UIImage(systemName: "plus", withConfiguration: imageConfig)
+        addButton.setImage(image, for: .normal)
+
+        addButton.tintColor = .white
+        addButton.backgroundColor = .systemOrange
+
+        addButton.layer.cornerRadius = 25
+        addButton.layer.masksToBounds = true
+
+        addButton.alpha = 0
+
+        let constraints = [
+            addButton.widthAnchor.constraint(equalToConstant: 50),
+        ]
+
+        NSLayoutConstraint.activate(constraints)
+
+        addButton.addAction(UIAction(handler: { _ in
+            print("#### \(#line)")
+        }), for: .touchUpInside)
+    }
+
+    private func configureHideButton() {
+        hideButton.translatesAutoresizingMaskIntoConstraints = false
+
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
+        let image = UIImage(systemName: "eye.slash", withConfiguration: imageConfig)
+        hideButton.setImage(image, for: .normal)
+
+        hideButton.tintColor = .white
+        hideButton.backgroundColor = .systemPink
+
+        hideButton.layer.cornerRadius = 25
+        hideButton.layer.masksToBounds = true
+
+        hideButton.alpha = 0
+
+        let constraints = [
+            hideButton.widthAnchor.constraint(equalToConstant: 50),
+        ]
+
+        NSLayoutConstraint.activate(constraints)
+
+        hideButton.addAction(UIAction(handler: { _ in
+            print("#### \(#line)")
+        }), for: .touchUpInside)
+    }
+
     private func configureFloatingButton() {
         floatingButton.translatesAutoresizingMaskIntoConstraints = false
 
@@ -91,16 +170,17 @@ extension ToDoView {
         floatingButton.layer.masksToBounds = true
 
         let constraints = [
-            floatingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            floatingButton.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: -30),
             floatingButton.widthAnchor.constraint(equalToConstant: 50),
-            floatingButton.heightAnchor.constraint(equalToConstant: 50),
         ]
 
         NSLayoutConstraint.activate(constraints)
 
-        floatingButton.addAction(UIAction(handler: { _ in
+        floatingButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let self = self else { return }
             print("#### \(#line)")
+            viewModel.toggleIsTapped()
+            rotateMorseButton(viewModel.isTapped)
+
         }), for: .touchUpInside)
     }
 
@@ -151,10 +231,30 @@ extension ToDoView {
     }
 }
 
+// MARK: - 버튼 회전 Method
+
+private extension ToDoView {
+    func rotateMorseButton(_ isTapped: Bool) {
+        let animation = CABasicAnimation(keyPath: "transform.rotation.z")
+
+        let fromValue = isTapped ? 0 : CGFloat.pi / 4
+        let toValue = isTapped ? CGFloat.pi / 4 : 0
+        animation.fromValue = fromValue
+        animation.toValue = toValue
+
+        animation.duration = 0.3
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = false
+
+        floatingButton.layer.add(animation, forKey: nil)
+    }
+}
+
 // MARK: - ViewModel Binding
 
 extension ToDoView {
     private func bind() {
+        lazy var buttons: [UIButton] = [self.addButton, self.hideButton]
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
 
         output.sink { [weak self] event in
@@ -164,6 +264,27 @@ extension ToDoView {
 
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
+                }
+
+            case .tapFloattingButton(let isTapped):
+
+                if isTapped == true {
+                    buttons.enumerated().forEach { [weak self] (index, button) in
+                        button.layer.transform = CATransform3DMakeScale(0.3, 0.3, 1)
+                        UIView.animate(withDuration: 0.3, delay: 0.1 * Double(index), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.3, options: [.curveEaseInOut], animations: {
+                            button.layer.transform = CATransform3DIdentity
+                            button.alpha = 1
+                        }, completion: nil)
+                        self?.view.layoutIfNeeded()
+                    }
+                } else {
+                    for (index, button) in buttons.reversed().enumerated() {
+                        UIView.animate(withDuration: 0.3, delay: 0.1 * Double(index), usingSpringWithDamping: 0.8, initialSpringVelocity: 0.3, options: [.curveEaseInOut], animations: {
+                            button.layer.transform = CATransform3DMakeScale(0.3, 0.3, 1)
+                            button.alpha = 0
+                        }, completion: nil)
+                        self?.view.layoutIfNeeded()
+                    }
                 }
             }
         }

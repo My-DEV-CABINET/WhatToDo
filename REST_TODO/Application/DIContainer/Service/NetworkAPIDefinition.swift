@@ -29,7 +29,7 @@ extension NetworkAPI {
         let path: String
         let query: [String: String]?
 
-        public init(scheme: String = "https",
+        public init(scheme: String = Constants.scheme,
                     host: String,
                     port: Int? = nil,
                     path: String,

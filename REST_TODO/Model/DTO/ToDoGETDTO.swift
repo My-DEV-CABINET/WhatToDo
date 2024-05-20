@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct ToDoGETDTO {
-    let query: String? = nil
-    let page: Int?
-    let filter: Filter?
-    let orderBy: Order?
-    let isDone: Bool? = nil
-    let perPage: Int?
-}
+//struct ToDoGETDTO {
+//    let query: String? = nil
+//    let page: Int?
+//    let filter: Filter?
+//    let orderBy: Order?
+//    let isDone: Bool? = nil
+//    let perPage: Int?
+//}

@@ -8,7 +8,10 @@
 import Foundation
 
 struct Constants {
-    static let scheme: String = "https://phplaravel-574671-2962113.cloudwaysapps.com"
+    static let scheme: String = "https"
     static let host: String = "phplaravel-574671-2962113.cloudwaysapps.com"
-    static let headerField = "Content-Type"
+    static let path: String = "/api/v2/todos"
+    static let searchPath: String = "/api/v2/todos/search"
+    static let headerFieldKey = "Content-Type"
+    static let headerFieldValue = "application/json"
 }
