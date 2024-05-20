@@ -1,10 +1,11 @@
 //
-//  NewToDoView.swift
+//  DetailToDoView.swift
 //  REST_TODO
 //
 //  Created by 준우의 MacBook 16 on 5/18/24.
 //
 
+import Combine
 import UIKit
 
 enum Detail {
@@ -37,6 +38,11 @@ enum Detail {
 }
 
 final class DetailToDoView: UIViewController {
+    var viewModel: DetailToDoViewModel!
+
+    private let input: PassthroughSubject<DetailToDoViewModel.Input, Never> = .init()
+    private var subscriptions = Set<AnyCancellable>()
+
     private let titleDefaultLabel = UILabel(frame: .zero)
     private let titleLabel = UILabel(frame: .zero)
     private let titleTextField = UITextField(frame: .zero)
@@ -45,6 +51,8 @@ final class DetailToDoView: UIViewController {
     private let isDoneSwitch = UISwitch(frame: .zero)
 
     private let doneButton = UIButton(frame: .zero)
+
+    var delegate: ToDoViewDelegate?
 
     deinit {
         print("&&&& DetailToDoView Deinitialized")
@@ -56,13 +64,24 @@ final class DetailToDoView: UIViewController {
 extension DetailToDoView {
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemOrange
-
         setupUI()
+        bind()
     }
+}
 
-    override func viewWillAppear(_ animated: Bool) {
-//        configure(action: <#T##UserAction#>)
+// MARK: - ViewModel Binding
+
+extension DetailToDoView {
+    private func bind() {
+        let output = viewModel.transform(input: input.eraseToAnyPublisher())
+
+        output.sink { [weak self] event in
+            switch event {
+            case .PUTToDoAPI:
+                self?.delegate?.dismissView()
+            }
+        }
+        .store(in: &subscriptions)
     }
 }
 
@@ -70,6 +89,7 @@ extension DetailToDoView {
 
 extension DetailToDoView {
     private func setupUI() {
+        view.backgroundColor = .init(hexCode: "#F7F8FA")
         addView()
 
         configureTitleDefaultLabel()
@@ -78,6 +98,8 @@ extension DetailToDoView {
         configureIsDoneLabel()
         configureIsDoneSwitch()
         configureDoneButton()
+
+        configureBackButton()
     }
 
     private func addView() {
@@ -91,6 +113,7 @@ extension DetailToDoView {
             titleLabel.text = Detail.basic.defaultStr
             titleTextField.placeholder = Detail.basic.placeHolder
             isDoneLabel.text = Detail.basic.isDone
+            isDoneSwitch.isOn = false
             doneButton.setTitle(Detail.basic.isDone, for: .normal)
         }
     }
@@ -107,8 +130,8 @@ extension DetailToDoView {
 
         let constraints = [
             titleDefaultLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
-            titleDefaultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15),
-            titleDefaultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+            titleDefaultLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
+            titleDefaultLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
             titleDefaultLabel.heightAnchor.constraint(equalToConstant: 30)
         ]
 
@@ -122,7 +145,7 @@ extension DetailToDoView {
         titleLabel.textColor = .black
 
         let constraints = [
-            titleLabel.topAnchor.constraint(equalTo: titleDefaultLabel.bottomAnchor, constant: 15),
+            titleLabel.topAnchor.constraint(equalTo: titleDefaultLabel.bottomAnchor, constant: 30),
             titleLabel.leftAnchor.constraint(equalTo: titleDefaultLabel.leftAnchor),
             titleLabel.widthAnchor.constraint(equalToConstant: 50),
             titleLabel.heightAnchor.constraint(equalToConstant: 30)
@@ -134,14 +157,21 @@ extension DetailToDoView {
     private func configureTitleTextField() {
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
 
+        titleTextField.layer.borderColor = UIColor.systemGray4.cgColor
+        titleTextField.layer.borderWidth = 1
+        titleTextField.layer.cornerRadius = 10
+
         titleTextField.font = .systemFont(ofSize: 17, weight: .regular)
         titleTextField.textColor = .black
 
+        titleTextField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
+        titleTextField.leftViewMode = .always
+
         let constraints = [
+            titleTextField.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             titleTextField.leftAnchor.constraint(equalTo: titleLabel.rightAnchor, constant: 15),
-            titleTextField.topAnchor.constraint(equalTo: titleLabel.topAnchor),
-            titleTextField.bottomAnchor.constraint(equalTo: titleTextField.bottomAnchor),
-            titleTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15)
+            titleTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
+            titleTextField.heightAnchor.constraint(equalToConstant: 40)
         ]
 
         NSLayoutConstraint.activate(constraints)
@@ -154,7 +184,7 @@ extension DetailToDoView {
         isDoneLabel.textColor = .black
 
         let constraints = [
-            isDoneLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 60),
+            isDoneLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 90),
             isDoneLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
             isDoneLabel.widthAnchor.constraint(equalToConstant: 50),
             isDoneLabel.heightAnchor.constraint(equalToConstant: 30)
@@ -169,7 +199,7 @@ extension DetailToDoView {
         let constraints = [
             isDoneSwitch.topAnchor.constraint(equalTo: isDoneLabel.topAnchor),
             isDoneSwitch.bottomAnchor.constraint(equalTo: isDoneLabel.bottomAnchor),
-            isDoneSwitch.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15),
+            isDoneSwitch.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -30),
             isDoneSwitch.widthAnchor.constraint(equalToConstant: 50)
         ]
 
@@ -179,13 +209,47 @@ extension DetailToDoView {
     private func configureDoneButton() {
         doneButton.translatesAutoresizingMaskIntoConstraints = false
 
+        doneButton.layer.masksToBounds = true
+        doneButton.layer.cornerRadius = 10
+
+        doneButton.tintColor = .white
+        doneButton.backgroundColor = .black
+
         let constraints = [
             doneButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            doneButton.topAnchor.constraint(equalTo: isDoneLabel.bottomAnchor, constant: 30),
-            doneButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
+            doneButton.topAnchor.constraint(equalTo: isDoneLabel.bottomAnchor, constant: 50),
+            doneButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 30),
             doneButton.heightAnchor.constraint(equalToConstant: 50)
         ]
 
         NSLayoutConstraint.activate(constraints)
+
+        doneButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let text = self?.titleTextField.text else { return }
+            guard let isDone = self?.isDoneSwitch.isOn else { return }
+            self?.input.send(.requestPUTToDoAPI(title: text, isDone: isDone))
+        }), for: .touchUpInside)
+    }
+}
+
+extension DetailToDoView {
+    private func configureBackButton() {
+        // UIButton을 생성하고 이미지와 타이틀을 설정
+        let backButton = UIButton(type: .system)
+        backButton.setTitle("닫기", for: .normal)
+        backButton.titleLabel?.font = .systemFont(ofSize: 18)
+
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+        let image = UIImage(systemName: "chevron.left", withConfiguration: imageConfig)
+        backButton.setImage(image, for: .normal)
+        backButton.sizeToFit()
+
+        backButton.addAction(UIAction(handler: { [weak self] _ in
+            self?.navigationController?.dismiss(animated: true)
+        }), for: .touchUpInside)
+
+        // UIButton을 UIBarButtonItem으로 설정
+        let backBarButtonItem = UIBarButtonItem(customView: backButton)
+        navigationItem.leftBarButtonItem = backBarButtonItem
     }
 }

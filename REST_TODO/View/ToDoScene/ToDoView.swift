@@ -10,6 +10,7 @@ import UIKit
 
 protocol ToDoViewDelegate {
     func goToDetailView()
+    func dismissView()
 }
 
 final class ToDoView: UIViewController {
@@ -42,8 +43,15 @@ extension ToDoView {
         view.backgroundColor = .systemBackground
         setupUI()
         bind()
+    }
 
+    override func viewWillAppear(_ animated: Bool) {
+        print("#### ToDoView viewWillAppear")
         input.send(.requestGETTodos)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        print("&&&& ToDoView viewWillDisappear")
     }
 }
 
@@ -128,6 +136,7 @@ extension ToDoView {
         addButton.addAction(UIAction(handler: { [weak self] _ in
             print("#### \(#line)")
             self?.delegate?.goToDetailView()
+            self?.viewWillDisappear(true)
         }), for: .touchUpInside)
     }
 
@@ -363,7 +372,7 @@ extension ToDoView: UITableViewDataSource {
 
 extension ToDoView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.goToDetailView()
+        //
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

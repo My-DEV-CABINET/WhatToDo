@@ -108,25 +108,30 @@ struct POSTToDoAPI: NetworkAPIDefinition {
 
     struct Parameter: Encodable {
         let title: String
-        let is_Done: String
+        let is_done: Bool
     }
 
-    typealias Response = ToDo
+    struct Response: Decodable {
+        // Response for the POST request
+    }
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
             host: Constants.host,
-            path: Constants.path
+            path: Constants.postPath
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .post,
-            headers: [Constants.headerFieldKey: Constants.headerFieldValue],
+            headers: [
+                Constants.accept: Constants.headerFieldValue,
+                Constants.headerFieldKey: Constants.headerFieldValue,
+            ],
             parameters: Parameter(
                 title: dto.title,
-                is_Done: dto.isDone.description
+                is_done: dto.is_Done
             )
         )
     }
@@ -158,7 +163,7 @@ struct PUTToDoAPI: NetworkAPIDefinition {
             headers: [Constants.headerFieldKey: Constants.headerFieldValue],
             parameters: Parameter(
                 title: bodyDTO.title,
-                is_Done: bodyDTO.isDone.description
+                is_Done: bodyDTO.is_Done.description
             )
         )
     }

@@ -7,10 +7,10 @@
 
 import Foundation
 
- struct ToDoBodyDTO {
+struct ToDoBodyDTO: Codable {
     let title: String
-    let isDone: Bool
- }
+    let is_Done: Bool
+}
 
 struct ToDoIDDTO {
     let id: String

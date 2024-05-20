@@ -27,6 +27,8 @@
 		4E86495B2BF911760099DFB5 /* ViewModelType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86495A2BF911760099DFB5 /* ViewModelType.swift */; };
 		4E89298D2BFAB43500316E42 /* NetworkAPIDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E89298C2BFAB43500316E42 /* NetworkAPIDefinition.swift */; };
 		4E89298F2BFAB77100316E42 /* GetTodosAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E89298E2BFAB77100316E42 /* GetTodosAPI.swift */; };
+		4E9939582BFB9EE30087AA39 /* Extension+UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9939572BFB9EE30087AA39 /* Extension+UIColor.swift */; };
+		4E99395A2BFBA8C80087AA39 /* DetailToDoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9939592BFBA8C80087AA39 /* DetailToDoViewModel.swift */; };
 		4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0912BF51A420043D833 /* AppDelegate.swift */; };
 		4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0932BF51A420043D833 /* SceneDelegate.swift */; };
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
@@ -67,6 +69,8 @@
 		4E86495A2BF911760099DFB5 /* ViewModelType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewModelType.swift; sourceTree = "<group>"; };
 		4E89298C2BFAB43500316E42 /* NetworkAPIDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkAPIDefinition.swift; sourceTree = "<group>"; };
 		4E89298E2BFAB77100316E42 /* GetTodosAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTodosAPI.swift; sourceTree = "<group>"; };
+		4E9939572BFB9EE30087AA39 /* Extension+UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIColor.swift"; sourceTree = "<group>"; };
+		4E9939592BFBA8C80087AA39 /* DetailToDoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailToDoViewModel.swift; sourceTree = "<group>"; };
 		4EE6F08E2BF51A420043D833 /* REST_TODO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = REST_TODO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EE6F0912BF51A420043D833 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EE6F0932BF51A420043D833 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -136,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */,
+				4E9939592BFBA8C80087AA39 /* DetailToDoViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -262,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				4EFF4EBD2BF9B5B6006EC07C /* Extension+String.swift */,
+				4E9939572BFB9EE30087AA39 /* Extension+UIColor.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -384,6 +390,7 @@
 				4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */,
 				4E8649572BF909FC0099DFB5 /* ToDoGETDTO.swift in Sources */,
 				4E7C5D812BF8597D00A4AE33 /* APIServiceProtocol.swift in Sources */,
+				4E99395A2BFBA8C80087AA39 /* DetailToDoViewModel.swift in Sources */,
 				4E8649392BF8D9710099DFB5 /* DIContainer.swift in Sources */,
 				4E89298F2BFAB77100316E42 /* GetTodosAPI.swift in Sources */,
 				4E7C5D7A2BF8554600A4AE33 /* ToDo.swift in Sources */,
@@ -397,6 +404,7 @@
 				4E8649362BF8CE770099DFB5 /* ToDoCoordinator.swift in Sources */,
 				4E86493A2BF8D9710099DFB5 /* DICProtocol.swift in Sources */,
 				4E7C5D852BF85CDA00A4AE33 /* DetailToDoView.swift in Sources */,
+				4E9939582BFB9EE30087AA39 /* Extension+UIColor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

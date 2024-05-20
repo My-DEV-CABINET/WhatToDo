@@ -95,6 +95,7 @@ extension NetworkAPI.RequestInfo {
         headers.map {
             request.allHTTPHeaderFields?.merge($0) { lhs, rhs in lhs }
         }
+
         return request
     }
 }

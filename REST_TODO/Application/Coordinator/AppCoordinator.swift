@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AppCoordinator: Coordinator, ToDoCoordinatorDelegate {
+final class AppCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     private var navigationController: UINavigationController!
 
@@ -32,12 +32,22 @@ final class AppCoordinator: Coordinator, ToDoCoordinatorDelegate {
         coordinator.start()
         self.childCoordinators.append(coordinator)
     }
+}
 
+// MARK: - ToDoCoordinatorDelegate
+
+extension AppCoordinator: ToDoCoordinatorDelegate {
     func goToDetailView(_ coordinator: ToDoCoordinator) {
-        let vc = DetailToDoView()
-        let navigationController = UINavigationController(rootViewController: vc)
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-        navigationController.isNavigationBarHidden = false
-        self.navigationController.present(navigationController, animated: true)
+        let coordinator = ToDoCoordinator(navigationController: self.navigationController)
+        coordinator.delegate = self
+        coordinator.pushDetailView()
+        self.childCoordinators.append(coordinator)
+    }
+
+    func dismissView(_ coordinator: ToDoCoordinator) {
+        let coordinator = ToDoCoordinator(navigationController: self.navigationController)
+        coordinator.delegate = self
+        coordinator.start()
+        coordinator.popView()
     }
 }

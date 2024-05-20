@@ -126,7 +126,7 @@ extension ToDoViewModel {
                 }
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
-                todos! += response.data ?? []
+                todos? += response.data ?? []
                 output.send(.scrolling(todos: response.data ?? []))
             }
             .store(in: &subcriptions)
