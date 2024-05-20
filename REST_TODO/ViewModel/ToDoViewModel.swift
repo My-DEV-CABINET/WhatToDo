@@ -42,7 +42,7 @@ final class ToDoViewModel: ViewModelType {
         let groupedDictionary = Dictionary(grouping: todos ?? []) { todo in
             return todo.updatedAt?.dateFormatterForDate() ?? ""
         }
-        print("&&&& \(groupedDictionary.keys)")
+
         return groupedDictionary
     }
 

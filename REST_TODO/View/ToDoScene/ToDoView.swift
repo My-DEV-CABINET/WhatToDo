@@ -375,12 +375,32 @@ extension ToDoView: UITableViewDelegate {
         //
     }
 
+    // 셀 우측 스와이프 - 삭제
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .destructive, title: "DELETE") { (action, view, success) in
+            print("#### 삭제!!")
+        }
+        action.image = UIImage(systemName: "trash")
+        action.backgroundColor = UIColor.systemRed
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+
+    // 셀 좌측 스와이프 - 수정
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .destructive, title: "EDIT") { (action, view, success) in
+            print("#### 수정!!")
+        }
+        action.image = UIImage(systemName: "square.and.pencil")
+        action.backgroundColor = UIColor.systemBlue
+        return UISwipeActionsConfiguration(actions: [action])
+    }
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
 
         if offsetY > contentHeight - scrollView.frame.height {
-            if !viewModel.fetchingMore {
+            if !viewModel.fetchingMore, viewModel.todos?.count ?? 0 > 7 {
                 beginBatchFetch()
             }
         }
