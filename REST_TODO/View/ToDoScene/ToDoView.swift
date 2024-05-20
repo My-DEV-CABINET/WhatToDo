@@ -125,8 +125,9 @@ extension ToDoView {
 
         NSLayoutConstraint.activate(constraints)
 
-        addButton.addAction(UIAction(handler: { _ in
+        addButton.addAction(UIAction(handler: { [weak self] _ in
             print("#### \(#line)")
+            self?.delegate?.goToDetailView()
         }), for: .touchUpInside)
     }
 
@@ -151,7 +152,7 @@ extension ToDoView {
 
         NSLayoutConstraint.activate(constraints)
 
-        hideButton.addAction(UIAction(handler: { _ in
+        hideButton.addAction(UIAction(handler: { [weak self] _ in
             print("#### \(#line)")
         }), for: .touchUpInside)
     }
@@ -193,6 +194,9 @@ extension ToDoView {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = true
         searchController.obscuresBackgroundDuringPresentation = false
+
+        searchController.delegate = self
+        searchController.searchBar.delegate = self
 
         if let textfield = searchController.searchBar.value(forKey: "searchField") as? UITextField,
            let clearButton = searchController.searchBar.searchTextField.value(forKey: "_clearButton") as? UIButton
@@ -385,6 +389,37 @@ extension ToDoView: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 100
+    }
+}
+
+// MARK: - UISearchControllerDelegate
+
+extension ToDoView: UISearchControllerDelegate {
+    func willPresentSearchController(_ searchController: UISearchController) {
+        print(#function, "updateQueriesSuggestions")
+    }
+
+    func willDismissSearchController(_ searchController: UISearchController) {
+        print(#function, "updateQueriesSuggestions")
+    }
+
+    func didDismissSearchController(_ searchController: UISearchController) {
+        print(#function, "updateQueriesSuggestions")
+    }
+}
+
+// MARK: - UISearchBarDelegate
+
+extension ToDoView: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text, !searchText.isEmpty else { return }
+        searchController.isActive = false
+        print(searchText)
+        input.send(.requestGETSearchToDosAPI(query: searchText))
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        print("cancel")
     }
 }
 

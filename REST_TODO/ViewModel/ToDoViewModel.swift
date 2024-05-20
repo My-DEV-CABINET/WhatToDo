@@ -94,6 +94,7 @@ extension ToDoViewModel {
     }
 
     private func requestGETSearchToDosAPI(query: String) {
+        resetPageCount()
         let dto = ToDoQueryDTO(query: query, page: page.description, filter: Filter.updatedAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
         let api = GETSearchToDosAPI(dto: dto)
 
