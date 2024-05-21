@@ -8,17 +8,17 @@
 import Foundation
 
 struct ToDo: Codable {
-    let data: [ToDoData]?
-    let meta: ToDoMeta?
-    let message: String?
+    var data: [ToDoData]?
+    var meta: ToDoMeta?
+    var message: String?
 }
 
 struct ToDoData: Codable {
-    let id: Int?
-    let title: String?
-    let isDone: Bool?
-    let createdAt: String?
-    let updatedAt: String?
+    var id: Int?
+    var title: String?
+    var isDone: Bool?
+    var createdAt: String?
+    var updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -30,12 +30,12 @@ struct ToDoData: Codable {
 }
 
 struct ToDoMeta: Codable {
-    let currentPage: Int?
-    let from: Int?
-    let lastPage: Int?
-    let perPage: Int?
-    let to: Int?
-    let total: Int?
+    var currentPage: Int?
+    var from: Int?
+    var lastPage: Int?
+    var perPage: Int?
+    var to: Int?
+    var total: Int?
 
     enum CodingKeys: String, CodingKey {
         case currentPage = "current_page"

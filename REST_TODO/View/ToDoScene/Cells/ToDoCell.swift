@@ -12,13 +12,14 @@ enum Identifier: String {
 }
 
 protocol ToDoCellDelegate {
-    func didTapCheckBox(id: Int)
+    func didTapCheckBox(todo: ToDoData)
     func didTapFavoriteBox(id: Int)
 }
 
 final class ToDoCell: UITableViewCell {
     static let identifier = Identifier.todoCell.rawValue
 
+    private var todo: ToDoData?
     var delegate: ToDoCellDelegate?
 
     var checkBox = UIButton(frame: .zero)
@@ -68,6 +69,11 @@ extension ToDoCell {
         ]
 
         NSLayoutConstraint.activate(constraints)
+
+        checkBox.addAction(UIAction(handler: { [weak self] _ in
+            guard let self = self, let todo = self.todo else { return }
+            delegate?.didTapCheckBox(todo: todo)
+        }), for: .touchUpInside)
     }
 
     private func configureTitleLabel() {
@@ -116,35 +122,32 @@ extension ToDoCell {
         ]
 
         NSLayoutConstraint.activate(constraints)
+
+        favoriteButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let self = self, let todo = self.todo else { return }
+            if let id = todo.id {
+                delegate?.didTapFavoriteBox(id: id)
+            }
+        }), for: .touchUpInside)
     }
 
     func configure(todo: ToDoData) {
+        self.todo = todo
+        guard let isDone = todo.isDone else { return }
+
         titleLabel.text = todo.title
-        if let date = todo.updatedAt {
+        if let date = todo.createdAt {
             dateLabel.text = date.dateFormatterForTime()
         }
 
         let checkImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
-        let checkImage = UIImage(systemName: todo.isDone ?? false ? "checkmark.square.fill" : "square", withConfiguration: checkImageConfig)
+        let checkImage = UIImage(systemName: isDone ? "checkmark.square.fill" : "square", withConfiguration: checkImageConfig)
 
         checkBox.setImage(checkImage, for: .normal)
-
-        checkBox.addAction(UIAction(handler: { [weak self] _ in
-            if let id = todo.id {
-                self?.delegate?.didTapCheckBox(id: id)
-            }
-
-        }), for: .touchUpInside)
 
         let favoriteImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
         let favoriteImage = UIImage(systemName: "star", withConfiguration: favoriteImageConfig)
 
         favoriteButton.setImage(favoriteImage, for: .normal)
-
-        favoriteButton.addAction(UIAction(handler: { [weak self] _ in
-            if let id = todo.id {
-                self?.delegate?.didTapFavoriteBox(id: id)
-            }
-        }), for: .touchUpInside)
     }
 }

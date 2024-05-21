@@ -12,11 +12,11 @@ struct ToDoBodyDTO: Codable {
     let is_Done: Bool
 }
 
-struct ToDoIDDTO {
+struct ToDoIDDTO: Codable {
     let id: String
 }
 
-struct ToDoQueryDTO {
+struct ToDoQueryDTO: Codable {
     let query: String
     let page: String
     let filter: String

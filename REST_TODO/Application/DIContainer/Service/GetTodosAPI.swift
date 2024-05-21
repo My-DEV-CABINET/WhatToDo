@@ -37,7 +37,7 @@ struct GETTodosAPI: NetworkAPIDefinition {
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .get,
-            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
+            headers: [Constants.accept: Constants.applicationJson]
         )
     }
 }
@@ -50,22 +50,21 @@ struct GETTodoAPI: NetworkAPIDefinition {
         // Parameters for the GET request
     }
 
-    typealias Response = ToDo
+    struct Response: Decodable {
+        // Response for the GET request
+    }
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
             host: Constants.host,
-            path: Constants.path,
-            query: [
-                "id": dto.id,
-            ]
+            path: "\(Constants.path)/\(dto.id)"
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .get,
-            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
+            headers: [Constants.accept: Constants.applicationJson]
         )
     }
 }
@@ -97,7 +96,7 @@ struct GETSearchToDosAPI: NetworkAPIDefinition {
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .get,
-            headers: [Constants.headerFieldKey: Constants.headerFieldValue]
+            headers: [Constants.accept: Constants.applicationJson]
         )
     }
 }
@@ -126,8 +125,8 @@ struct POSTToDoAPI: NetworkAPIDefinition {
         NetworkAPI.RequestInfo(
             method: .post,
             headers: [
-                Constants.accept: Constants.headerFieldValue,
-                Constants.headerFieldKey: Constants.headerFieldValue,
+                Constants.accept: Constants.applicationJson,
+                Constants.contentType: Constants.applicationJson,
             ],
             parameters: Parameter(
                 title: dto.title,
@@ -144,26 +143,30 @@ struct PUTToDoAPI: NetworkAPIDefinition {
 
     struct Parameter: Encodable {
         let title: String
-        let is_Done: String
+        let is_done: Bool
     }
 
-    typealias Response = ToDo
+    struct Response: Decodable {
+        // Response for the POST request
+    }
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
             host: Constants.host,
-            path: Constants.path,
-            query: ["id": idDTO.id]
+            path: "\(Constants.path)/\(idDTO.id)"
         )
     }
 
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .put,
-            headers: [Constants.headerFieldKey: Constants.headerFieldValue],
+            headers: [
+                Constants.accept: Constants.applicationJson,
+                Constants.contentType: Constants.applicationXw3FormUrlencoded,
+            ],
             parameters: Parameter(
                 title: bodyDTO.title,
-                is_Done: bodyDTO.is_Done.description
+                is_done: bodyDTO.is_Done
             )
         )
     }
@@ -191,7 +194,7 @@ struct DELETEToDoAPI: NetworkAPIDefinition {
     var requestInfo: NetworkAPI.RequestInfo<Parameter> {
         NetworkAPI.RequestInfo(
             method: .delete,
-            headers: [Constants.accept: Constants.headerFieldValue]
+            headers: [Constants.accept: Constants.applicationJson]
         )
     }
 }

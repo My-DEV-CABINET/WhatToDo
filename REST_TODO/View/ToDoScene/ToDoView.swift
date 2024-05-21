@@ -43,15 +43,7 @@ extension ToDoView {
         view.backgroundColor = .systemBackground
         setupUI()
         bind()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        print("#### ToDoView viewWillAppear")
         input.send(.requestGETTodos)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        print("&&&& ToDoView viewWillDisappear")
     }
 }
 
@@ -273,27 +265,22 @@ extension ToDoView {
         output.sink { [weak self] event in
             switch event {
             case .showGETTodos(let todos):
-                print("#### \(todos)")
+                print("#### 현재 showGETTodos 의 ToDo - 1 갯수: \(todos.count)")
 
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
 
             case .showGETSearchToDosAPI(let todos):
-                print("#### \(todos)")
-
-                DispatchQueue.main.async {
-                    self?.tableView.reloadData()
-                }
-
-            case .showDELETEToDoAPI:
 
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
 
             case .scrolling(let todos):
-                print("#### \(todos)")
+                print("#### 현재 scrolling 의 ToDo - 1 갯수: \(todos.count)")
+
+                self?.viewModel.toggleFetchingMore()
 
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
@@ -340,6 +327,7 @@ extension ToDoView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ToDoCell.identifier, for: indexPath) as? ToDoCell else { return UITableViewCell() }
         let key = viewModel.sortedSectionKeys[indexPath.section]
+
         if let todo = viewModel.groupedTodos[key]?[indexPath.row] {
             cell.delegate = self
             cell.configure(todo: todo)
@@ -413,19 +401,33 @@ extension ToDoView: UITableViewDelegate {
         let contentHeight = scrollView.contentSize.height
 
         if offsetY > contentHeight - scrollView.frame.height {
-            if !viewModel.fetchingMore, viewModel.todos?.count ?? 0 > 7 {
-                beginBatchFetch()
+            if !viewModel.fetchingMore {
+                beginForwardFetch()
             }
+        }
+
+//        if offsetY < 0 {
+//            if !viewModel.fetchingMore, viewModel.page > 1 {
+//                beginPreviousFetch()
+//            }
+//        }
+    }
+
+    func beginForwardFetch() {
+        viewModel.toggleFetchingMore()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.viewModel.increasePageCount()
+            self.input.send(.requestScrolling)
         }
     }
 
-    func beginBatchFetch() {
+    func beginPreviousFetch() {
         viewModel.toggleFetchingMore()
-        viewModel.increasePageCount()
-        print("#### \(viewModel.fetchingMore)")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.viewModel.decreasePageCount()
             self.input.send(.requestScrolling)
-            self.viewModel.toggleFetchingMore()
         }
     }
 
@@ -468,8 +470,20 @@ extension ToDoView: UISearchBarDelegate {
 // MARK: - ToDoCellDelegate
 
 extension ToDoView: ToDoCellDelegate {
-    func didTapCheckBox(id: Int) {
-        print("#### Check ID : \(id)")
+    func didTapCheckBox(todo: ToDoData) {
+        print("#### TODO : \(todo)")
+        var updateToDo = todo
+        if let isDone = updateToDo.isDone {
+            updateToDo.isDone = !isDone
+        }
+
+        let currentOffset = tableView.contentOffset
+
+        input.send(.requestPUTToDoAPI(todo: updateToDo))
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.tableView.setContentOffset(currentOffset, animated: false)
+        }
     }
 
     func didTapFavoriteBox(id: Int) {
