@@ -131,7 +131,7 @@ extension ToDoCell {
         }), for: .touchUpInside)
     }
 
-    func configure(todo: ToDoData) {
+    func configure(todo: ToDoData, isExistFavorite: Bool) {
         self.todo = todo
         guard let isDone = todo.isDone else { return }
 
@@ -145,9 +145,14 @@ extension ToDoCell {
 
         checkBox.setImage(checkImage, for: .normal)
 
-        let favoriteImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
-        let favoriteImage = UIImage(systemName: "star", withConfiguration: favoriteImageConfig)
-
-        favoriteButton.setImage(favoriteImage, for: .normal)
+        if isExistFavorite {
+            let favoriteImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
+            let favoriteImage = UIImage(systemName: "star.fill", withConfiguration: favoriteImageConfig)
+            favoriteButton.setImage(favoriteImage, for: .normal)
+        } else {
+            let favoriteImageConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .light)
+            let favoriteImage = UIImage(systemName: "star", withConfiguration: favoriteImageConfig)
+            favoriteButton.setImage(favoriteImage, for: .normal)
+        }
     }
 }

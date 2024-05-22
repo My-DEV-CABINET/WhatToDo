@@ -16,6 +16,7 @@ protocol ToDoViewDelegate {
 
 final class ToDoView: UIViewController {
     var viewModel: ToDoViewModel!
+    private let dbManager = DBManager()
 
     private let input: PassthroughSubject<ToDoViewModel.Input, Never> = .init()
     private var subscriptions = Set<AnyCancellable>()
@@ -46,6 +47,12 @@ extension ToDoView {
         setupUI()
         bind()
         input.send(.requestGETTodos)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        // 모든 데이터 조회
+        let favorites = dbManager.getAllFavorite()
+        print("All favorites: \(favorites)")
     }
 }
 
@@ -376,8 +383,10 @@ extension ToDoView: UITableViewDataSource {
         let key = viewModel.sortedSectionKeys[indexPath.section]
 
         if let todo = viewModel.groupedTodos[key]?[indexPath.row] {
+            guard let id = todo.id else { return UITableViewCell() }
+            let favorite = dbManager.fetchFavoriteByID(id: id)
             cell.delegate = self
-            cell.configure(todo: todo)
+            cell.configure(todo: todo, isExistFavorite: favorite)
         }
         return cell
     }
@@ -446,6 +455,7 @@ extension ToDoView: UITableViewDelegate {
         if let id = todo?.id {
             let action = UIContextualAction(style: .destructive, title: "EDIT") { [weak self] (action, view, success) in
                 self?.input.send(.requestGoToEdit(id: id))
+                let _ = self?.dbManager.deleteFavorite(id: id)
             }
             action.image = UIImage(systemName: "square.and.pencil")
             action.backgroundColor = UIColor.systemBlue
@@ -569,6 +579,18 @@ extension ToDoView: ToDoCellDelegate {
 
     func didTapFavoriteBox(id: Int) {
         print("#### Favorite ID: \(id)")
+
+        let favorite = dbManager.fetchFavoriteByID(id: id)
+
+        if favorite {
+            let _ = dbManager.deleteFavorite(id: id)
+        } else {
+            let _ = dbManager.insertFavorite(id: id)
+        }
+
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
 }
 
