@@ -194,7 +194,9 @@ extension DetailToDoView {
         titleTextField.textColor = .black
 
         titleTextField.leftView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
+        titleTextField.rightView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 16.0, height: 0.0))
         titleTextField.leftViewMode = .always
+        titleTextField.rightViewMode = .always
 
         let constraints = [
             titleTextField.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),

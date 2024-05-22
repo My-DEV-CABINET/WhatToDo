@@ -27,7 +27,8 @@ final class ToDoView: UIViewController {
     private let addButton = UIButton(frame: .zero)
     private let hideButton = UIButton(frame: .zero)
 
-    private var searchController: UISearchController = .init(searchResultsController: nil)
+    private var searchController: UISearchController!
+    private let refreshControl = UIRefreshControl()
 
     var delegate: ToDoViewDelegate?
 
@@ -76,6 +77,8 @@ extension ToDoView {
 
         tableView.dataSource = self
         tableView.delegate = self
+
+        tableView.refreshControl = refreshControl
 
         let constraints = [
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -209,35 +212,42 @@ extension ToDoView {
     }
 
     private func configureSearchVC() {
-        searchController.searchBar.searchTextField.layer.cornerRadius = 15
-        searchController.searchBar.searchTextField.layer.masksToBounds = true
+        navigationItem.title = "Hello"
 
-        searchController.searchBar.searchTextField.backgroundColor = .black
-
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = true
-        searchController.obscuresBackgroundDuringPresentation = false
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
 
         searchController.delegate = self
         searchController.searchBar.delegate = self
 
+        navigationItem.hidesSearchBarWhenScrolling = false
+
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+
+        searchController.searchBar.searchTextField.layer.cornerRadius = 15
+        searchController.searchBar.searchTextField.layer.masksToBounds = true
+
         if let textfield = searchController.searchBar.value(forKey: "searchField") as? UITextField,
            let clearButton = searchController.searchBar.searchTextField.value(forKey: "_clearButton") as? UIButton
         {
-            textfield.backgroundColor = .black
+            textfield.backgroundColor = .systemOrange
             textfield.attributedPlaceholder = NSAttributedString(
                 string: textfield.placeholder ?? "",
                 attributes: [.foregroundColor: UIColor.white]
             )
             textfield.textColor = .white
+
             if let leftView = textfield.leftView as? UIImageView {
                 leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
                 leftView.tintColor = .white
             }
+
             if let rightView = textfield.rightView as? UIImageView {
                 rightView.image = rightView.image?.withRenderingMode(.alwaysTemplate)
                 rightView.tintColor = .white
             }
+
             if let clearImage = clearButton.image(for: .normal) {
                 clearButton.isHidden = false
                 let tintedClearImage = clearImage.withTintColor(.white, renderingMode: .alwaysOriginal)
@@ -253,8 +263,11 @@ extension ToDoView {
             .backgroundColor: UIColor.clear,
             .font: UIFont.systemFont(ofSize: 18, weight: .bold),
         ]
+
         let attributedPlaceholder = NSAttributedString(string: "할 일 검색", attributes: placeholderAttributes)
         searchController.searchBar.searchTextField.attributedPlaceholder = attributedPlaceholder
+
+        navigationItem.searchController = searchController
     }
 }
 
@@ -437,6 +450,8 @@ extension ToDoView: UITableViewDelegate {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
 
+        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(offsetY), \(contentHeight)")
+
         let ceilOffsetY = trunc(offsetY) - 1
         let ceilHeight = trunc(contentHeight - scrollView.frame.height)
 
@@ -448,6 +463,12 @@ extension ToDoView: UITableViewDelegate {
                 guard let text = searchController.searchBar.text else { return }
                 beginForwardFetchWithQuery(query: text)
             }
+        } else if offsetY < 0, searchController.isActive == false {
+            input.send(.requestGETTodos)
+            refreshControl.endRefreshing()
+        } else if offsetY < 0, searchController.isActive == true {
+            guard let text = searchController.searchBar.text else { return }
+            input.send(.requestGETSearchToDosAPI(query: text))
         }
     }
 
@@ -479,8 +500,8 @@ extension ToDoView: UITableViewDelegate {
 extension ToDoView: UISearchControllerDelegate {
     func willPresentSearchController(_ searchController: UISearchController) {
         hideButton.isEnabled = false
+        searchController.searchBar.searchTextField.textColor = .white
 
-        print(#function, "updateQueriesSuggestions")
         UIView.animate(withDuration: 0.1) {
             let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
             let image = UIImage(systemName: "eye", withConfiguration: imageConfig)
