@@ -20,6 +20,7 @@ final class ToDoViewModel: ViewModelType {
 
     private(set) var todos: [ToDoData]?
     private(set) var page: Int = 1
+    private(set) var isHide: Bool = false
     private(set) var isTapped: Bool = false
     private(set) var fetchingMore: Bool = false
 
@@ -29,6 +30,8 @@ final class ToDoViewModel: ViewModelType {
         case requestPUTToDoAPI(todo: ToDoData)
         case requestDELETEToDoAPI(id: Int)
         case requestGoToEdit(id: Int)
+
+        case requestHideComplete
         case requestScrolling
         case requestScrollingWithQuery(query: String)
         case requestTapFloattingButton
@@ -38,6 +41,7 @@ final class ToDoViewModel: ViewModelType {
         case showGETTodos(todos: [ToDoData])
         case showGETSearchToDosAPI(todos: [ToDoData])
         case goToEdit(id: Int)
+
         case scrolling(todos: [ToDoData])
         case tapFloattingButton(isTapped: Bool)
     }
@@ -64,7 +68,11 @@ extension ToDoViewModel {
         input.sink { [weak self] event in
             switch event {
             case .requestGETTodos:
-                self?.requestGETTodos()
+                if self?.isHide == true {
+                    self?.requestGETNonCompletedTodos()
+                } else {
+                    self?.requestGETTodos()
+                }
 
             case .requestGETSearchToDosAPI(let query):
                 self?.requestGETSearchToDosAPI(query: query)
@@ -78,8 +86,15 @@ extension ToDoViewModel {
             case .requestGoToEdit(let id):
                 self?.output.send(.goToEdit(id: id))
 
+            case .requestHideComplete:
+                self?.requestGETTodos()
+
             case .requestScrolling:
-                self?.requestScrolling()
+                if self?.isHide == true {
+                    self?.requestScrollingNonCompleted()
+                } else {
+                    self?.requestScrolling()
+                }
 
             case .requestScrollingWithQuery(let query):
                 self?.requestScrollingWithQuery(query: query)
@@ -93,9 +108,39 @@ extension ToDoViewModel {
         return output.eraseToAnyPublisher()
     }
 
-    /// ToDo 데이터 10개 호출
+    /// ToDo 데이터 10개 호출 - 완료 숨김 X
     private func requestGETTodos() {
-        let api = GETTodosAPI(page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+        let api = GETTodosAPI(
+            page: page.description,
+            filter: Filter.createdAt.rawValue,
+            orderBy: Order.desc.rawValue,
+            perPage: 10.description
+        )
+
+        apiService.request(api)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("#### Error fetching todos: \(error)")
+                case .finished:
+                    print("#### Finished \(completion)")
+                }
+            } receiveValue: { [weak self] response in
+                self?.todos = response.data
+                self?.output.send(.showGETTodos(todos: response.data ?? []))
+            }
+            .store(in: &subcriptions)
+    }
+
+    /// ToDo 데이터 10개 호출 - 완료 숨김 O
+    private func requestGETNonCompletedTodos() {
+        let api = GETHideCompletedTodosAPI(
+            page: page.description,
+            filter: Filter.createdAt.rawValue,
+            orderBy: Order.desc.rawValue,
+            perPage: 10.description,
+            isDone: false.description
+        )
 
         apiService.request(api)
             .sink { completion in
@@ -189,9 +234,36 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
-    /// 무한 스크롤링 - 검색 X
+    /// 무한 스크롤링 - 검색 X, 완료 숨김 X
     private func requestScrolling() {
         let api = GETTodosAPI(page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+
+        apiService.request(api)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("#### Error fetching more todos: \(error)")
+                case .finished:
+                    print("#### Finished \(completion)")
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                self.todos? += response.data ?? []
+                self.output.send(.scrolling(todos: self.todos ?? []))
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(todos?.count)")
+            }
+            .store(in: &subcriptions)
+    }
+
+    /// 무한 스크롤링 - 검색 X, 완료 숨김 O
+    private func requestScrollingNonCompleted() {
+        let api = GETHideCompletedTodosAPI(
+            page: page.description,
+            filter: Filter.createdAt.rawValue,
+            orderBy: Order.desc.rawValue,
+            perPage: 10.description,
+            isDone: false.description
+        )
 
         apiService.request(api)
             .sink { completion in
@@ -262,5 +334,13 @@ extension ToDoViewModel {
 
     func resetPageCount() {
         page = 1
+    }
+
+    func toggleIsHide() {
+        isHide.toggle()
+    }
+
+    func resetIsHide() {
+        isHide = false
     }
 }

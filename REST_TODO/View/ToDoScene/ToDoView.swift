@@ -136,8 +136,8 @@ extension ToDoView {
     private func configureHideButton() {
         hideButton.translatesAutoresizingMaskIntoConstraints = false
 
-        let imageConfig = UIImage.SymbolConfiguration(pointSize: 25, weight: .bold)
-        let image = UIImage(systemName: "eye.slash", withConfiguration: imageConfig)
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+        let image = UIImage(systemName: "eye", withConfiguration: imageConfig)
         hideButton.setImage(image, for: .normal)
 
         hideButton.tintColor = .white
@@ -155,7 +155,22 @@ extension ToDoView {
         NSLayoutConstraint.activate(constraints)
 
         hideButton.addAction(UIAction(handler: { [weak self] _ in
-            print("#### \(#line)")
+            self?.viewModel.toggleIsHide()
+            self?.viewModel.resetPageCount()
+            self?.input.send(.requestGETTodos)
+
+            UIView.animate(withDuration: 0.1) {
+                if self?.viewModel.isHide == true {
+                    let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+                    let image = UIImage(systemName: "eye.slash", withConfiguration: imageConfig)
+                    self?.hideButton.setImage(image, for: .normal)
+                } else {
+                    let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+                    let image = UIImage(systemName: "eye", withConfiguration: imageConfig)
+                    self?.hideButton.setImage(image, for: .normal)
+                }
+            }
+
         }), for: .touchUpInside)
     }
 

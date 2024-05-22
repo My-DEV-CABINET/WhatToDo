@@ -7,7 +7,7 @@
 
 import Foundation
 
-// 모든 할일 목록 가져오기
+// 모든 할일 목록 가져오기 - 완료 숨김 X
 struct GETTodosAPI: NetworkAPIDefinition {
     let page: String
     let filter: String
@@ -30,6 +30,43 @@ struct GETTodosAPI: NetworkAPIDefinition {
                 "filter": filter,
                 "order_by": orderBy,
                 "per_page": perPage,
+            ]
+        )
+    }
+
+    var requestInfo: NetworkAPI.RequestInfo<Parameter> {
+        NetworkAPI.RequestInfo(
+            method: .get,
+            headers: [Constants.accept: Constants.applicationJson]
+        )
+    }
+}
+
+// 모든 할일 목록 가져오기 - 완료 숨김 O
+struct GETHideCompletedTodosAPI: NetworkAPIDefinition {
+    let page: String
+    let filter: String
+    let orderBy: String
+    let perPage: String
+    let isDone: String
+
+    // BODY Parameter
+    struct Parameter: Encodable {
+        // Parameters for the GET request
+    }
+
+    typealias Response = ToDos
+
+    var urlInfo: NetworkAPI.URLInfo {
+        NetworkAPI.URLInfo(
+            host: Constants.host,
+            path: Constants.path,
+            query: [
+                "page": page,
+                "filter": filter,
+                "order_by": orderBy,
+                "per_page": perPage,
+                "is_done": isDone,
             ]
         )
     }

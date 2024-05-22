@@ -26,7 +26,7 @@ final class APIService: APIServiceProtocol {
         let request = api.requestInfo.requests(url: url)
 
         print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(url)")
-        
+
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { output in
                 guard let response = output.response as? HTTPURLResponse else {
