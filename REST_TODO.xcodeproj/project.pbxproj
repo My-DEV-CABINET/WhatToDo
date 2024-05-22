@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4E28FB302BFC085200386215 /* Extension+URLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E28FB2F2BFC085200386215 /* Extension+URLRequest.swift */; };
+		4E490E0C2BFE979E000665F7 /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */; };
 		4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5979052BF7358D00A6951F /* ToDoCell.swift */; };
 		4E7C5D762BF8541F00A4AE33 /* ToDoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */; };
 		4E7C5D7A2BF8554600A4AE33 /* ToDos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D792BF8554600A4AE33 /* ToDos.swift */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		4E28FB2F2BFC085200386215 /* Extension+URLRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+URLRequest.swift"; sourceTree = "<group>"; };
+		4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		4E5979052BF7358D00A6951F /* ToDoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoCell.swift; sourceTree = "<group>"; };
 		4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoViewModel.swift; sourceTree = "<group>"; };
 		4E7C5D792BF8554600A4AE33 /* ToDos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDos.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				4E7C5D7E2BF8587000A4AE33 /* ToDoScene */,
+				4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				4E89298F2BFAB77100316E42 /* GetTodosAPI.swift in Sources */,
 				4E7C5D7A2BF8554600A4AE33 /* ToDos.swift in Sources */,
 				4E7C5D8A2BF85D0D00A4AE33 /* UserAction.swift in Sources */,
+				4E490E0C2BFE979E000665F7 /* ActivityIndicatorView.swift in Sources */,
 				4E28FB302BFC085200386215 /* Extension+URLRequest.swift in Sources */,
 				4E8649522BF8FE790099DFB5 /* Constants.swift in Sources */,
 				4E8649312BF8CC620099DFB5 /* Coordinator.swift in Sources */,
