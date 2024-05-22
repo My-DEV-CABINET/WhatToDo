@@ -157,7 +157,12 @@ extension ToDoView {
         hideButton.addAction(UIAction(handler: { [weak self] _ in
             self?.viewModel.toggleIsHide()
             self?.viewModel.resetPageCount()
-            self?.input.send(.requestGETTodos)
+
+            if self?.searchController.isActive == false {
+                self?.input.send(.requestGETTodos)
+            } else {
+                //
+            }
 
             UIView.animate(withDuration: 0.1) {
                 if self?.viewModel.isHide == true {
@@ -169,6 +174,8 @@ extension ToDoView {
                     let image = UIImage(systemName: "eye", withConfiguration: imageConfig)
                     self?.hideButton.setImage(image, for: .normal)
                 }
+
+                self?.hideButton.layoutIfNeeded()
             }
 
         }), for: .touchUpInside)
@@ -471,7 +478,14 @@ extension ToDoView: UITableViewDelegate {
 
 extension ToDoView: UISearchControllerDelegate {
     func willPresentSearchController(_ searchController: UISearchController) {
+        hideButton.isEnabled = false
+
         print(#function, "updateQueriesSuggestions")
+        UIView.animate(withDuration: 0.1) {
+            let imageConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+            let image = UIImage(systemName: "eye", withConfiguration: imageConfig)
+            self.hideButton.setImage(image, for: .normal)
+        }
     }
 
     func willDismissSearchController(_ searchController: UISearchController) {
@@ -487,6 +501,7 @@ extension ToDoView: UISearchControllerDelegate {
 
 extension ToDoView: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.resetIsHide()
         viewModel.resetFetchMore()
 
         guard let searchText = searchBar.text, !searchText.isEmpty else { return }
@@ -495,6 +510,8 @@ extension ToDoView: UISearchBarDelegate {
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.resetIsHide()
+        hideButton.isEnabled = true
         searchController.isActive = false
         viewModel.resetFetchMore()
         input.send(.requestGETTodos)
@@ -515,7 +532,7 @@ extension ToDoView: ToDoCellDelegate {
         input.send(.requestPUTToDoAPI(todo: updateToDo))
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.tableView.setContentOffset(currentOffset, animated: false)
+            self.tableView.setContentOffset(currentOffset, animated: true)
         }
     }
 

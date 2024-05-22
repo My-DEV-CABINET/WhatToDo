@@ -282,7 +282,7 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
-    /// 무한 스크롤링 - 검색 O
+    /// 무한 스크롤링 - 검색 O - 완료 여부 숨김 처리 X
     private func requestScrollingWithQuery(query: String) {
         let dto = ToDoQueryDTO(query: query, page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
         let api = GETSearchToDosAPI(dto: dto)
