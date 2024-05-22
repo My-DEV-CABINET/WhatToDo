@@ -9,7 +9,8 @@ import Combine
 import UIKit
 
 protocol ToDoViewDelegate {
-    func goToDetailView()
+    func goToDetailViewWithAdd()
+    func goToDetailViewWithEdit(id: Int)
     func dismissView()
 }
 
@@ -127,7 +128,7 @@ extension ToDoView {
 
         addButton.addAction(UIAction(handler: { [weak self] _ in
             print("#### \(#line)")
-            self?.delegate?.goToDetailView()
+            self?.delegate?.goToDetailViewWithAdd()
             self?.viewWillDisappear(true)
         }), for: .touchUpInside)
     }
@@ -179,7 +180,6 @@ extension ToDoView {
 
         floatingButton.addAction(UIAction(handler: { [weak self] _ in
             guard let self = self else { return }
-            print("#### \(#line)")
             viewModel.toggleIsTapped()
             rotateMorseButton(viewModel.isTapped)
 
@@ -266,13 +266,11 @@ extension ToDoView {
             switch event {
             case .showGETTodos(let todos):
                 print("#### 현재 showGETTodos 의 ToDo - 1 갯수: \(todos.count)")
-
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
 
             case .showGETSearchToDosAPI(let todos):
-
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
@@ -281,13 +279,14 @@ extension ToDoView {
                 print("#### 현재 scrolling 의 ToDo - 1 갯수: \(todos.count)")
 
                 self?.viewModel.toggleFetchingMore()
-
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
 
-            case .tapFloattingButton(let isTapped):
+            case .goToEdit(let id):
+                self?.delegate?.goToDetailViewWithEdit(id: id)
 
+            case .tapFloattingButton(let isTapped):
                 if isTapped == true {
                     buttons.enumerated().forEach { [weak self] (index, button) in
                         button.layer.transform = CATransform3DMakeScale(0.3, 0.3, 1)
@@ -366,7 +365,12 @@ extension ToDoView: UITableViewDataSource {
 
 extension ToDoView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //
+        let key = viewModel.sortedSectionKeys[indexPath.section]
+        let todo = viewModel.groupedTodos[key]?[indexPath.row]
+
+        if let id = todo?.id {
+            input.send(.requestGoToEdit(id: id))
+        }
     }
 
     // 셀 우측 스와이프 - 삭제
@@ -375,8 +379,8 @@ extension ToDoView: UITableViewDelegate {
         let todo = viewModel.groupedTodos[key]?[indexPath.row]
 
         if let id = todo?.id {
-            let action = UIContextualAction(style: .destructive, title: "DELETE") { (action, view, success) in
-                self.input.send(.requestDELETEToDoAPI(id: id))
+            let action = UIContextualAction(style: .destructive, title: "DELETE") { [weak self] (action, view, success) in
+                self?.input.send(.requestDELETEToDoAPI(id: id))
             }
             action.image = UIImage(systemName: "trash")
             action.backgroundColor = UIColor.systemRed
@@ -388,12 +392,19 @@ extension ToDoView: UITableViewDelegate {
 
     // 셀 좌측 스와이프 - 수정
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let action = UIContextualAction(style: .destructive, title: "EDIT") { (action, view, success) in
-            print("#### 수정!!")
+        let key = viewModel.sortedSectionKeys[indexPath.section]
+        let todo = viewModel.groupedTodos[key]?[indexPath.row]
+
+        if let id = todo?.id {
+            let action = UIContextualAction(style: .destructive, title: "EDIT") { [weak self] (action, view, success) in
+                self?.input.send(.requestGoToEdit(id: id))
+            }
+            action.image = UIImage(systemName: "square.and.pencil")
+            action.backgroundColor = UIColor.systemBlue
+            return UISwipeActionsConfiguration(actions: [action])
         }
-        action.image = UIImage(systemName: "square.and.pencil")
-        action.backgroundColor = UIColor.systemBlue
-        return UISwipeActionsConfiguration(actions: [action])
+
+        return .init()
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -405,12 +416,6 @@ extension ToDoView: UITableViewDelegate {
                 beginForwardFetch()
             }
         }
-
-//        if offsetY < 0 {
-//            if !viewModel.fetchingMore, viewModel.page > 1 {
-//                beginPreviousFetch()
-//            }
-//        }
     }
 
     func beginForwardFetch() {
@@ -458,7 +463,6 @@ extension ToDoView: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text, !searchText.isEmpty else { return }
         searchController.isActive = false
-        print(searchText)
         input.send(.requestGETSearchToDosAPI(query: searchText))
     }
 
@@ -471,7 +475,6 @@ extension ToDoView: UISearchBarDelegate {
 
 extension ToDoView: ToDoCellDelegate {
     func didTapCheckBox(todo: ToDoData) {
-        print("#### TODO : \(todo)")
         var updateToDo = todo
         if let isDone = updateToDo.isDone {
             updateToDo.isDone = !isDone

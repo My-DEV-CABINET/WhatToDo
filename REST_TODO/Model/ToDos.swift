@@ -7,8 +7,16 @@
 
 import Foundation
 
-struct ToDo: Codable {
+/// ToDo 데이터들
+struct ToDos: Codable {
     var data: [ToDoData]?
+    var meta: ToDoMeta?
+    var message: String?
+}
+
+/// 단일 ToDo 데이터
+struct ToDo: Codable {
+    var data: ToDoData?
     var meta: ToDoMeta?
     var message: String?
 }

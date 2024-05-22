@@ -10,5 +10,5 @@ import Foundation
 
 protocol APIServiceProtocol {
     func request<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error>
-    func requestPUT<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error> where T == PUTToDoAPI
+    func requestWithEncoded<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error> where T == PUTToDoAPI
 }

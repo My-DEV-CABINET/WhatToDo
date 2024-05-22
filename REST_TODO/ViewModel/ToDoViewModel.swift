@@ -19,6 +19,7 @@ final class ToDoViewModel: ViewModelType {
     private var subcriptions = Set<AnyCancellable>()
 
     private(set) var todos: [ToDoData]?
+    private(set) var page: Int = 1
     private(set) var isTapped: Bool = false
     private(set) var fetchingMore: Bool = false
 
@@ -27,6 +28,7 @@ final class ToDoViewModel: ViewModelType {
         case requestGETSearchToDosAPI(query: String)
         case requestPUTToDoAPI(todo: ToDoData)
         case requestDELETEToDoAPI(id: Int)
+        case requestGoToEdit(id: Int)
         case requestScrolling
         case requestTapFloattingButton
     }
@@ -34,6 +36,7 @@ final class ToDoViewModel: ViewModelType {
     enum Output {
         case showGETTodos(todos: [ToDoData])
         case showGETSearchToDosAPI(todos: [ToDoData])
+        case goToEdit(id: Int)
         case scrolling(todos: [ToDoData])
         case tapFloattingButton(isTapped: Bool)
     }
@@ -48,26 +51,35 @@ final class ToDoViewModel: ViewModelType {
     var sortedSectionKeys: [String] {
         return groupedTodos.keys.sorted(by: >)
     }
-
-    var page: Int = 1
 }
 
 // MARK: - API 및 Output
 
 extension ToDoViewModel {
+    /// Input -> Output
+    /// - Parameter input: Input Publisher
+    /// - Returns: Output Publisher
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
             case .requestGETTodos:
                 self?.requestGETTodos()
+
             case .requestGETSearchToDosAPI(let query):
                 self?.requestGETSearchToDosAPI(query: query)
+
             case .requestPUTToDoAPI(let todo):
                 self?.requestPUTToDoAPI(todo: todo)
+
             case .requestDELETEToDoAPI(let id):
                 self?.requestDELETEToDoAPI(id: id)
+
+            case .requestGoToEdit(let id):
+                self?.output.send(.goToEdit(id: id))
+
             case .requestScrolling:
                 self?.requestScrolling()
+
             case .requestTapFloattingButton:
                 self?.toggleIsTapped()
             }
@@ -77,17 +89,17 @@ extension ToDoViewModel {
         return output.eraseToAnyPublisher()
     }
 
+    /// ToDo 데이터 10개 호출
     private func requestGETTodos() {
-        print("#### \(page.description)")
         let api = GETTodosAPI(page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
 
         apiService.request(api)
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("Error fetching todos: \(error)")
+                    print("#### Error fetching todos: \(error)")
                 case .finished:
-                    break
+                    print("#### Finished \(completion)")
                 }
             } receiveValue: { [weak self] response in
                 self?.todos = response.data
@@ -96,6 +108,8 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
+    /// 서버에서 Query 값을 기준으로 ToDo 데이터 검색
+    /// - Parameter query: 검색 값
     private func requestGETSearchToDosAPI(query: String) {
         resetPageCount()
         let dto = ToDoQueryDTO(query: query, page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
@@ -105,9 +119,9 @@ extension ToDoViewModel {
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("Error fetching todos: \(error)")
+                    print("#### Error Searching todos: \(error)")
                 case .finished:
-                    break
+                    print("#### Finished \(completion)")
                 }
             } receiveValue: { [weak self] response in
                 self?.todos = response.data
@@ -116,6 +130,8 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
+    /// ToDo 데이터 업데이트
+    /// - Parameter todo: 변경할 ToDo 데이터
     private func requestPUTToDoAPI(todo: ToDoData) {
         guard let title = todo.title else { return }
         guard let isDone = todo.isDone else { return }
@@ -125,13 +141,13 @@ extension ToDoViewModel {
         let bodyDTO = ToDoBodyDTO(title: title, is_Done: isDone)
         let api = PUTToDoAPI(idDTO: idDTO, bodyDTO: bodyDTO)
 
-        apiService.requestPUT(api)
+        apiService.requestWithEncoded(api)
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("Error updating todo: \(error)")
+                    print("#### Error updating todo: \(error)")
                 case .finished:
-                    break
+                    print("#### Finished \(completion)")
                 }
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }
@@ -144,6 +160,8 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
+    /// ToDo 데이터 삭제
+    /// - Parameter id: 삭제할 ToDo 데이터의 ID 값
     private func requestDELETEToDoAPI(id: Int) {
         let dto = ToDoIDDTO(id: id.description)
         let api = DELETEToDoAPI(dto: dto)
@@ -152,9 +170,9 @@ extension ToDoViewModel {
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("Error fetching todos: \(error)")
+                    print("#### Error Delete todos: \(error)")
                 case .finished:
-                    break
+                    print("#### Finished \(completion)")
                 }
             } receiveValue: { [weak self] _ in
                 guard let self = self else { return }
@@ -167,6 +185,7 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
+    /// 무한 스크롤링
     private func requestScrolling() {
         let api = GETTodosAPI(page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
 
@@ -174,9 +193,9 @@ extension ToDoViewModel {
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("Error fetching todos: \(error)")
+                    print("#### Error fetching more todos: \(error)")
                 case .finished:
-                    break
+                    print("#### Finished \(completion)")
                 }
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
@@ -195,6 +214,10 @@ extension ToDoViewModel {
         output.send(.tapFloattingButton(isTapped: isTapped))
     }
 
+    func toggleFetchingMore() {
+        fetchingMore.toggle()
+    }
+
     func increasePageCount() {
         page += 1
     }
@@ -209,9 +232,5 @@ extension ToDoViewModel {
 
     func resetPageCount() {
         page = 1
-    }
-
-    func toggleFetchingMore() {
-        fetchingMore.toggle()
     }
 }

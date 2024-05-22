@@ -19,7 +19,7 @@ struct GETTodosAPI: NetworkAPIDefinition {
         // Parameters for the GET request
     }
 
-    typealias Response = ToDo
+    typealias Response = ToDos
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
@@ -50,9 +50,7 @@ struct GETTodoAPI: NetworkAPIDefinition {
         // Parameters for the GET request
     }
 
-    struct Response: Decodable {
-        // Response for the GET request
-    }
+    typealias Response = ToDo
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(
@@ -77,7 +75,7 @@ struct GETSearchToDosAPI: NetworkAPIDefinition {
         // Parameters for the GET request
     }
 
-    typealias Response = ToDo
+    typealias Response = ToDos
 
     var urlInfo: NetworkAPI.URLInfo {
         NetworkAPI.URLInfo(

@@ -67,6 +67,10 @@ extension DetailToDoView {
         setupUI()
         bind()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        confirmUserAction(action: viewModel.currentUserAction)
+    }
 }
 
 // MARK: - ViewModel Binding
@@ -77,8 +81,11 @@ extension DetailToDoView {
 
         output.sink { [weak self] event in
             switch event {
-            case .PUTToDoAPI:
+            case .dismissView:
                 self?.delegate?.dismissView()
+
+            case .getToDo(let todo):
+                self?.configure(action: .edit, todo: todo)
             }
         }
         .store(in: &subscriptions)
@@ -106,7 +113,7 @@ extension DetailToDoView {
         [titleDefaultLabel, titleLabel, titleTextField, isDoneLabel, isDoneSwitch, doneButton].forEach { view.addSubview($0) }
     }
 
-    func configure(action: UserAction) {
+    private func configure(action: UserAction, todo: ToDoData?) {
         if action == UserAction.add {
             navigationItem.title = Detail.add.defaultTitle
             titleDefaultLabel.text = Detail.add.defaultTitle
@@ -115,6 +122,28 @@ extension DetailToDoView {
             isDoneLabel.text = Detail.basic.isDone
             isDoneSwitch.isOn = false
             doneButton.setTitle(Detail.basic.isDone, for: .normal)
+        } else {
+            guard let title = todo?.title else { return }
+            guard let isDone = todo?.isDone else { return }
+
+            DispatchQueue.main.async {
+                self.navigationItem.title = Detail.edit.defaultTitle
+                self.titleDefaultLabel.text = Detail.edit.defaultTitle
+                self.titleLabel.text = Detail.basic.defaultStr
+                self.titleTextField.placeholder = Detail.basic.placeHolder
+                self.titleTextField.text = title
+                self.isDoneLabel.text = Detail.basic.isDone
+                self.isDoneSwitch.isOn = isDone
+                self.doneButton.setTitle(Detail.basic.isDone, for: .normal)
+            }
+        }
+    }
+
+    func confirmUserAction(action: UserAction) {
+        if action == .add {
+            configure(action: action, todo: nil)
+        } else {
+            input.send(.requestGETToDo)
         }
     }
 }
@@ -227,14 +256,19 @@ extension DetailToDoView {
         doneButton.addAction(UIAction(handler: { [weak self] _ in
             guard let text = self?.titleTextField.text else { return }
             guard let isDone = self?.isDoneSwitch.isOn else { return }
-            self?.input.send(.requestPUTToDoAPI(title: text, isDone: isDone))
+
+            if self?.viewModel.currentUserAction == .add {
+                self?.input.send(.requestPOSTToDoAPI(title: text, isDone: isDone))
+            } else {
+                self?.input.send(.requestPUTToDoAPI(title: text, isDone: isDone))
+            }
+
         }), for: .touchUpInside)
     }
 }
 
 extension DetailToDoView {
     private func configureBackButton() {
-        // UIButton을 생성하고 이미지와 타이틀을 설정
         let backButton = UIButton(type: .system)
         backButton.setTitle("닫기", for: .normal)
         backButton.titleLabel?.font = .systemFont(ofSize: 18)
@@ -248,7 +282,6 @@ extension DetailToDoView {
             self?.navigationController?.dismiss(animated: true)
         }), for: .touchUpInside)
 
-        // UIButton을 UIBarButtonItem으로 설정
         let backBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem = backBarButtonItem
     }

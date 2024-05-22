@@ -37,10 +37,17 @@ final class AppCoordinator: Coordinator {
 // MARK: - ToDoCoordinatorDelegate
 
 extension AppCoordinator: ToDoCoordinatorDelegate {
-    func goToDetailView(_ coordinator: ToDoCoordinator) {
+    func goToDetailViewWithAdd(_ coordinator: ToDoCoordinator) {
         let coordinator = ToDoCoordinator(navigationController: self.navigationController)
         coordinator.delegate = self
-        coordinator.pushDetailView()
+        coordinator.pushDetailViewWithAdd()
+        self.childCoordinators.append(coordinator)
+    }
+
+    func goToDetailViewWithEdit(_ coordinator: ToDoCoordinator, id: Int) {
+        let coordinator = ToDoCoordinator(navigationController: self.navigationController)
+        coordinator.delegate = self
+        coordinator.pushDetailViewWithEdit(id: id)
         self.childCoordinators.append(coordinator)
     }
 

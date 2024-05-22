@@ -25,6 +25,8 @@ final class APIService: APIServiceProtocol {
         let url = api.urlInfo.url
         let request = api.requestInfo.requests(url: url)
 
+        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(url)")
+        
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { output in
                 guard let response = output.response as? HTTPURLResponse else {
@@ -43,7 +45,7 @@ final class APIService: APIServiceProtocol {
             .eraseToAnyPublisher()
     }
 
-    func requestPUT<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error> where T == PUTToDoAPI {
+    func requestWithEncoded<T: NetworkAPIDefinition>(_ api: T) -> AnyPublisher<T.Response, Error> where T == PUTToDoAPI {
         let url = api.urlInfo.url
         var request = api.requestInfo.requests(url: url)
 

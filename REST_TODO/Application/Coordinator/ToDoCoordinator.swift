@@ -8,7 +8,8 @@
 import UIKit
 
 protocol ToDoCoordinatorDelegate {
-    func goToDetailView(_ coordinator: ToDoCoordinator)
+    func goToDetailViewWithAdd(_ coordinator: ToDoCoordinator)
+    func goToDetailViewWithEdit(_ coordinator: ToDoCoordinator, id: Int)
     func dismissView(_ coordinator: ToDoCoordinator)
 }
 
@@ -31,11 +32,26 @@ final class ToDoCoordinator: Coordinator {
         self.navigationController.viewControllers = [vc]
     }
 
-    func pushDetailView() {
+    func pushDetailViewWithAdd() {
         let vc = DetailToDoView()
         vc.viewModel = DetailToDoViewModel(apiService: self.container.resolve(type: APIServiceProtocol.self)!)
         vc.delegate = self
-        vc.configure(action: .add)
+        vc.viewModel.currentUserAction = .add
+
+        let rootNavigationViewController = UINavigationController(rootViewController: vc)
+        rootNavigationViewController.modalPresentationStyle = .formSheet
+        rootNavigationViewController.isNavigationBarHidden = false
+
+        self.navigationController.present(rootNavigationViewController, animated: true)
+    }
+
+    func pushDetailViewWithEdit(id: Int) {
+        let vc = DetailToDoView()
+        vc.viewModel = DetailToDoViewModel(apiService: self.container.resolve(type: APIServiceProtocol.self)!)
+        vc.delegate = self
+        vc.viewModel.id = id
+        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(id)")
+        vc.viewModel.currentUserAction = .edit
 
         let rootNavigationViewController = UINavigationController(rootViewController: vc)
         rootNavigationViewController.modalPresentationStyle = .formSheet
@@ -52,8 +68,12 @@ final class ToDoCoordinator: Coordinator {
 // MARK: - ToDoViewDelegate
 
 extension ToDoCoordinator: ToDoViewDelegate {
-    func goToDetailView() {
-        self.delegate?.goToDetailView(self)
+    func goToDetailViewWithAdd() {
+        self.delegate?.goToDetailViewWithAdd(self)
+    }
+
+    func goToDetailViewWithEdit(id: Int) {
+        self.delegate?.goToDetailViewWithEdit(self, id: id)
     }
 
     func dismissView() {

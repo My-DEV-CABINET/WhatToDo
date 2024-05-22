@@ -59,7 +59,7 @@ final class REST_TODOTests: XCTestCase {
 
             if let data = data {
                 do {
-                    let todos = try JSONDecoder().decode(ToDo.self, from: data)
+                    let todos = try JSONDecoder().decode(ToDos.self, from: data)
                     XCTAssertEqual(todos.data?.count, 10, "테스트 성공: 10개 호출")
 
                 } catch {
@@ -110,7 +110,7 @@ final class REST_TODOTests: XCTestCase {
 
             if let data = data {
                 do {
-                    let todos = try JSONDecoder().decode(ToDo.self, from: data)
+                    let todos = try JSONDecoder().decode(ToDos.self, from: data)
                     XCTAssertEqual(todos.data?.count, 1, "테스트 성공: 1개 호출")
 
                 } catch {
@@ -159,7 +159,7 @@ final class REST_TODOTests: XCTestCase {
             }
 
             do {
-                let addedTodo = try JSONDecoder().decode(ToDo.self, from: data)
+                let addedTodo = try JSONDecoder().decode(ToDos.self, from: data)
                 print("#### \(addedTodo)")
             } catch {
                 print("Failed to decode response: \(error)")
