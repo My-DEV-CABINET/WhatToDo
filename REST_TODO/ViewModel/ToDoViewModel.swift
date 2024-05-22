@@ -30,6 +30,7 @@ final class ToDoViewModel: ViewModelType {
         case requestDELETEToDoAPI(id: Int)
         case requestGoToEdit(id: Int)
         case requestScrolling
+        case requestScrollingWithQuery(query: String)
         case requestTapFloattingButton
     }
 
@@ -79,6 +80,9 @@ extension ToDoViewModel {
 
             case .requestScrolling:
                 self?.requestScrolling()
+
+            case .requestScrollingWithQuery(let query):
+                self?.requestScrollingWithQuery(query: query)
 
             case .requestTapFloattingButton:
                 self?.toggleIsTapped()
@@ -185,7 +189,7 @@ extension ToDoViewModel {
             .store(in: &subcriptions)
     }
 
-    /// 무한 스크롤링
+    /// 무한 스크롤링 - 검색 X
     private func requestScrolling() {
         let api = GETTodosAPI(page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
 
@@ -200,7 +204,29 @@ extension ToDoViewModel {
             } receiveValue: { [weak self] response in
                 guard let self = self else { return }
                 self.todos? += response.data ?? []
-                self.output.send(.scrolling(todos: response.data ?? []))
+                self.output.send(.scrolling(todos: self.todos ?? []))
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(todos?.count)")
+            }
+            .store(in: &subcriptions)
+    }
+
+    /// 무한 스크롤링 - 검색 O
+    private func requestScrollingWithQuery(query: String) {
+        let dto = ToDoQueryDTO(query: query, page: page.description, filter: Filter.createdAt.rawValue, orderBy: Order.desc.rawValue, perPage: 10.description)
+        let api = GETSearchToDosAPI(dto: dto)
+
+        apiService.request(api)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("#### Error Searching todos: \(error)")
+                case .finished:
+                    print("#### Finished \(completion)")
+                }
+            } receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                self.todos? += response.data ?? []
+                self.output.send(.scrolling(todos: self.todos ?? []))
             }
             .store(in: &subcriptions)
     }
@@ -216,6 +242,10 @@ extension ToDoViewModel {
 
     func toggleFetchingMore() {
         fetchingMore.toggle()
+    }
+
+    func resetFetchMore() {
+        fetchingMore = false
     }
 
     func increasePageCount() {

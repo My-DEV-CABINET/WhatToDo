@@ -271,20 +271,24 @@ extension ToDoView {
                 }
 
             case .showGETSearchToDosAPI(let todos):
+                print("#### 현재 showGETSearchToDosAPI 의 ToDo - 2 갯수: \(todos.count)")
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
 
             case .scrolling(let todos):
-                print("#### 현재 scrolling 의 ToDo - 1 갯수: \(todos.count)")
+                print("#### 현재 scrolling 의 ToDo - 3 갯수: \(todos.count)")
 
                 self?.viewModel.toggleFetchingMore()
+
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
                 }
 
             case .goToEdit(let id):
                 self?.delegate?.goToDetailViewWithEdit(id: id)
+
+                self?.viewModel.toggleFetchingMore()
 
             case .tapFloattingButton(let isTapped):
                 if isTapped == true {
@@ -411,14 +415,21 @@ extension ToDoView: UITableViewDelegate {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
 
+        let ceilOffsetY = trunc(offsetY) - 1
+        let ceilHeight = trunc(contentHeight - scrollView.frame.height)
+
         if offsetY > contentHeight - scrollView.frame.height {
-            if !viewModel.fetchingMore {
+            if ceilOffsetY == ceilHeight, viewModel.fetchingMore == false, searchController.isActive == false {
                 beginForwardFetch()
+
+            } else if ceilOffsetY == ceilHeight, viewModel.fetchingMore == false, searchController.isActive == true {
+                guard let text = searchController.searchBar.text else { return }
+                beginForwardFetchWithQuery(query: text)
             }
         }
     }
 
-    func beginForwardFetch() {
+    private func beginForwardFetch() {
         viewModel.toggleFetchingMore()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -427,12 +438,12 @@ extension ToDoView: UITableViewDelegate {
         }
     }
 
-    func beginPreviousFetch() {
+    private func beginForwardFetchWithQuery(query: String) {
         viewModel.toggleFetchingMore()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.viewModel.decreasePageCount()
-            self.input.send(.requestScrolling)
+            self.viewModel.increasePageCount()
+            self.input.send(.requestScrollingWithQuery(query: query))
         }
     }
 
@@ -461,13 +472,17 @@ extension ToDoView: UISearchControllerDelegate {
 
 extension ToDoView: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.resetFetchMore()
+
         guard let searchText = searchBar.text, !searchText.isEmpty else { return }
-        searchController.isActive = false
+        searchController.isActive = true
         input.send(.requestGETSearchToDosAPI(query: searchText))
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print("cancel")
+        searchController.isActive = false
+        viewModel.resetFetchMore()
+        input.send(.requestGETTodos)
     }
 }
 
