@@ -35,11 +35,12 @@ final class APIService: APIServiceProtocol {
                 guard (200 ... 299).contains(response.statusCode) else {
                     throw NetworkError.serverError(code: response.statusCode, error: "Server error with code: \(response.statusCode)")
                 }
+
                 return output.data
             }
             .decode(type: T.Response.self, decoder: JSONDecoder())
             .mapError { error in
-                return NetworkError.invalidJSON(String(describing: error))
+                return NetworkError.invalidJSON(error.localizedDescription)
             }
             .receive(on: RunLoop.main)
             .eraseToAnyPublisher()

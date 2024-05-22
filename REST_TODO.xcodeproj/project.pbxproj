@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		4E28FB302BFC085200386215 /* Extension+URLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E28FB2F2BFC085200386215 /* Extension+URLRequest.swift */; };
 		4E490E0C2BFE979E000665F7 /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */; };
+		4E490E0E2BFEA4B1000665F7 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E490E0D2BFEA4B1000665F7 /* CacheManager.swift */; };
 		4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5979052BF7358D00A6951F /* ToDoCell.swift */; };
 		4E7C5D762BF8541F00A4AE33 /* ToDoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */; };
 		4E7C5D7A2BF8554600A4AE33 /* ToDos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C5D792BF8554600A4AE33 /* ToDos.swift */; };
@@ -52,6 +53,7 @@
 /* Begin PBXFileReference section */
 		4E28FB2F2BFC085200386215 /* Extension+URLRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+URLRequest.swift"; sourceTree = "<group>"; };
 		4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
+		4E490E0D2BFEA4B1000665F7 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		4E5979052BF7358D00A6951F /* ToDoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoCell.swift; sourceTree = "<group>"; };
 		4E7C5D752BF8541F00A4AE33 /* ToDoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoViewModel.swift; sourceTree = "<group>"; };
 		4E7C5D792BF8554600A4AE33 /* ToDos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDos.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				4E8649532BF9015C0099DFB5 /* NetworkAPI.swift */,
 				4E89298C2BFAB43500316E42 /* NetworkAPIDefinition.swift */,
 				4E89298E2BFAB77100316E42 /* GetTodosAPI.swift */,
+				4E490E0D2BFEA4B1000665F7 /* CacheManager.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -344,6 +347,9 @@
 				Base,
 			);
 			mainGroup = 4EE6F0852BF51A420043D833;
+			packageReferences = (
+				4E490E0F2BFEADA4000665F7 /* XCRemoteSwiftPackageReference "sqlite" */,
+			);
 			productRefGroup = 4EE6F08F2BF51A420043D833 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -406,6 +412,7 @@
 				4E8649522BF8FE790099DFB5 /* Constants.swift in Sources */,
 				4E8649312BF8CC620099DFB5 /* Coordinator.swift in Sources */,
 				4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */,
+				4E490E0E2BFEA4B1000665F7 /* CacheManager.swift in Sources */,
 				4E8649542BF9015D0099DFB5 /* NetworkAPI.swift in Sources */,
 				4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */,
 				4EFF4EBE2BF9B5B6006EC07C /* Extension+String.swift in Sources */,
@@ -692,6 +699,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4E490E0F2BFEADA4000665F7 /* XCRemoteSwiftPackageReference "sqlite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sqlite/sqlite.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 4EE6F0862BF51A420043D833 /* Project object */;
 }

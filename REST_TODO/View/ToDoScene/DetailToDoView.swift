@@ -86,6 +86,9 @@ extension DetailToDoView {
 
             case .getToDo(let todo):
                 self?.configure(action: .edit, todo: todo)
+
+            case .sendError(let error):
+                self?.showAlert(title: error.localizedDescription)
             }
         }
         .store(in: &subscriptions)
@@ -286,5 +289,16 @@ extension DetailToDoView {
 
         let backBarButtonItem = UIBarButtonItem(customView: backButton)
         navigationItem.leftBarButtonItem = backBarButtonItem
+    }
+}
+
+// MARK: - Alert
+
+extension DetailToDoView {
+    private func showAlert(title: String) {
+        let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default)
+        alert.addAction(confirm)
+        present(alert, animated: true)
     }
 }

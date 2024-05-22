@@ -27,6 +27,7 @@ final class DetailToDoViewModel: ViewModelType {
     enum Output {
         case getToDo(todo: ToDoData)
         case dismissView
+        case sendError(error: Error)
     }
 
     var id: Int?
@@ -59,13 +60,12 @@ extension DetailToDoViewModel {
         let dto = ToDoIDDTO(id: id.description)
         let api = GETTodoAPI(dto: dto)
 
-        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(api)")
-
         apiService.request(api)
             .sink { completion in
                 switch completion {
                 case .failure(let error):
                     print("#### Error fetching todo: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -86,6 +86,7 @@ extension DetailToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error Posting todo: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -110,6 +111,7 @@ extension DetailToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error updating todo: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }

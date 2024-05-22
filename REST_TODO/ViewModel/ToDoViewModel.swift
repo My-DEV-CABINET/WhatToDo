@@ -44,6 +44,9 @@ final class ToDoViewModel: ViewModelType {
 
         case scrolling(todos: [ToDoData])
         case tapFloattingButton(isTapped: Bool)
+
+        /// Error
+        case sendError(error: Error)
     }
 
     var groupedTodos: [String: [ToDoData]] {
@@ -122,6 +125,7 @@ extension ToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error fetching todos: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -147,6 +151,7 @@ extension ToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error fetching todos: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -169,6 +174,7 @@ extension ToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error Searching todos: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -195,6 +201,7 @@ extension ToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error updating todo: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -220,6 +227,7 @@ extension ToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error Delete todos: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }
@@ -243,6 +251,7 @@ extension ToDoViewModel {
                 switch completion {
                 case .failure(let error):
                     print("#### Error fetching more todos: \(error)")
+                    self.output.send(.sendError(error: error))
                 case .finished:
                     print("#### Finished \(completion)")
                 }

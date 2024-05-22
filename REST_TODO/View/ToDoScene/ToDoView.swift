@@ -294,29 +294,35 @@ private extension ToDoView {
 
 extension ToDoView {
     private func bind() {
+        let activityIndicator = ActivityIndicator(view: view, navigationController: navigationController, tabBarController: nil)
         lazy var buttons: [UIButton] = [self.addButton, self.hideButton]
         let output = viewModel.transform(input: input.eraseToAnyPublisher())
 
         output.sink { [weak self] event in
             switch event {
             case .showGETTodos(let todos):
-                print("#### 현재 showGETTodos 의 ToDo - 1 갯수: \(todos.count)")
+                activityIndicator.showActivityIndicator(text: "로딩 중")
+
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
+                    activityIndicator.stopActivityIndicator()
                 }
 
             case .showGETSearchToDosAPI(let todos):
-                print("#### 현재 showGETSearchToDosAPI 의 ToDo - 2 갯수: \(todos.count)")
+                activityIndicator.showActivityIndicator(text: "로딩 중")
+
                 DispatchQueue.main.async {
                     self?.tableView.reloadData()
+                    activityIndicator.stopActivityIndicator()
                 }
 
             case .scrolling(let todos):
-                print("#### 현재 scrolling 의 ToDo - 3 갯수: \(todos.count)")
+                activityIndicator.showActivityIndicator(text: "로딩 중")
 
                 self?.viewModel.toggleFetchingMore()
 
                 DispatchQueue.main.async {
+                    activityIndicator.stopActivityIndicator()
                     self?.tableView.reloadData()
                 }
 
@@ -344,6 +350,9 @@ extension ToDoView {
                         self?.view.layoutIfNeeded()
                     }
                 }
+
+            case .sendError(let error):
+                self?.showAlert(title: "\(error)")
             }
         }
         .store(in: &subscriptions)
@@ -450,8 +459,6 @@ extension ToDoView: UITableViewDelegate {
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
 
-        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(offsetY), \(contentHeight)")
-
         let ceilOffsetY = trunc(offsetY) - 1
         let ceilHeight = trunc(contentHeight - scrollView.frame.height)
 
@@ -463,9 +470,12 @@ extension ToDoView: UITableViewDelegate {
                 guard let text = searchController.searchBar.text else { return }
                 beginForwardFetchWithQuery(query: text)
             }
+
         } else if offsetY < 0, searchController.isActive == false {
+            viewModel.resetPageCount()
             input.send(.requestGETTodos)
             refreshControl.endRefreshing()
+
         } else if offsetY < 0, searchController.isActive == true {
             guard let text = searchController.searchBar.text else { return }
             input.send(.requestGETSearchToDosAPI(query: text))
@@ -559,5 +569,16 @@ extension ToDoView: ToDoCellDelegate {
 
     func didTapFavoriteBox(id: Int) {
         print("#### Favorite ID: \(id)")
+    }
+}
+
+// MARK: - Alert
+
+extension ToDoView {
+    private func showAlert(title: String) {
+        let alert = UIAlertController(title: title, message: "", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default)
+        alert.addAction(confirm)
+        present(alert, animated: true)
     }
 }
