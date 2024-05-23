@@ -8,7 +8,7 @@
 import Combine
 import UIKit
 
-enum Detail {
+private enum Detail {
     case add
     case edit
     case basic

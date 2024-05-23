@@ -259,7 +259,6 @@ extension ToDoViewModel {
                 guard let self = self else { return }
                 self.todos? += response.data ?? []
                 self.output.send(.scrolling(todos: self.todos ?? []))
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(todos?.count)")
             }
             .store(in: &subcriptions)
     }
@@ -286,7 +285,6 @@ extension ToDoViewModel {
                 guard let self = self else { return }
                 self.todos? += response.data ?? []
                 self.output.send(.scrolling(todos: self.todos ?? []))
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(todos?.count)")
             }
             .store(in: &subcriptions)
     }

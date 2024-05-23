@@ -25,8 +25,6 @@ final class APIService: APIServiceProtocol {
         let url = api.urlInfo.url
         let request = api.requestInfo.requests(url: url)
 
-        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(url)")
-
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { output in
                 guard let response = output.response as? HTTPURLResponse else {
@@ -75,25 +73,3 @@ final class APIService: APIServiceProtocol {
             .eraseToAnyPublisher()
     }
 }
-
-//    func requestTodosFromServer(dto: ToDoResponseDTO) -> AnyPublisher<ToDo, any Error> {
-//        do {
-//            let url = try NetworkAPI.requestTodos(dto: dto).asURLRequest()
-//
-//            return URLSession.shared
-//                .dataTaskPublisher(for: url)
-//                .tryMap { output in
-//                    guard output.response is HTTPURLResponse else {
-//                        throw NetworkError.serverError(code: 0, error: "Server error")
-//                    }
-//                    return output.data
-//                }
-//                .decode(type: ToDo.self, decoder: JSONDecoder())
-//                .mapError { error in
-//                    return NetworkError.invalidJSON(String(describing: error))
-//                }
-//                .eraseToAnyPublisher()
-//        } catch {
-//            return Fail(error: NetworkError.badURL("Invalid URL!")).eraseToAnyPublisher()
-//        }
-//    }

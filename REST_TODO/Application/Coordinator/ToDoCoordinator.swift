@@ -50,7 +50,6 @@ final class ToDoCoordinator: Coordinator {
         vc.viewModel = DetailToDoViewModel(apiService: self.container.resolve(type: APIServiceProtocol.self)!)
         vc.delegate = self
         vc.viewModel.id = id
-        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(id)")
         vc.viewModel.currentUserAction = .edit
 
         let rootNavigationViewController = UINavigationController(rootViewController: vc)

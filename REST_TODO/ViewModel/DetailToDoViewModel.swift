@@ -55,6 +55,7 @@ extension DetailToDoViewModel {
         return output.eraseToAnyPublisher()
     }
 
+    /// 단일 ToDo 데이터 조회
     private func requestGETToDo() {
         guard let id = id else { return }
         let dto = ToDoIDDTO(id: id.description)
@@ -70,13 +71,16 @@ extension DetailToDoViewModel {
                     print("#### Finished \(completion)")
                 }
             } receiveValue: { [weak self] response in
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(response)")
                 guard let data = response.data else { return }
                 self?.output.send(.getToDo(todo: data))
             }
             .store(in: &subcriptions)
     }
 
+    /// ToDo 데이터 생성
+    /// - Parameters:
+    ///   - title: View's TextField Text
+    ///   - isDone: View's UISwitch isOn
     private func requestPOSTToDoAPI(title: String, isDone: Bool) {
         let dto = ToDoBodyDTO(title: title, is_Done: isDone)
         let api = POSTToDoAPI(dto: dto)

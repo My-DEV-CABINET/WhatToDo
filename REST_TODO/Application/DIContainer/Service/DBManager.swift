@@ -74,6 +74,7 @@ final class DBManager {
         return favorites
     }
 
+    // DB 데이터 삽입
     func insertFavorite(id: Int) -> Bool {
         let favorites = getAllFavorite()
 

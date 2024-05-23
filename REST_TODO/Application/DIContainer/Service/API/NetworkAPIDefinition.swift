@@ -19,6 +19,16 @@ protocol NetworkAPIDefinition {
     var requestInfo: RequestInfo<Parameter> { get }
 }
 
+enum Filter: String {
+    case createdAt = "created_at"
+    case updatedAt = "updated_at"
+}
+
+enum Order: String {
+    case desc
+    case asc
+}
+
 enum NetworkAPI {}
 
 extension NetworkAPI {

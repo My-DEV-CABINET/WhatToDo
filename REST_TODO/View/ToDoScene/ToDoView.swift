@@ -307,7 +307,7 @@ extension ToDoView {
 
         output.sink { [weak self] event in
             switch event {
-            case .showGETTodos(let todos):
+            case .showGETTodos:
                 activityIndicator.showActivityIndicator(text: "로딩 중")
 
                 DispatchQueue.main.async {
@@ -315,7 +315,7 @@ extension ToDoView {
                     activityIndicator.stopActivityIndicator()
                 }
 
-            case .showGETSearchToDosAPI(let todos):
+            case .showGETSearchToDosAPI:
                 activityIndicator.showActivityIndicator(text: "로딩 중")
 
                 DispatchQueue.main.async {
@@ -323,7 +323,7 @@ extension ToDoView {
                     activityIndicator.stopActivityIndicator()
                 }
 
-            case .scrolling(let todos):
+            case .scrolling:
                 activityIndicator.showActivityIndicator(text: "로딩 중")
 
                 self?.viewModel.toggleFetchingMore()
@@ -578,8 +578,6 @@ extension ToDoView: ToDoCellDelegate {
     }
 
     func didTapFavoriteBox(id: Int) {
-        print("#### Favorite ID: \(id)")
-
         let favorite = dbManager.fetchFavoriteByID(id: id)
 
         if favorite {
