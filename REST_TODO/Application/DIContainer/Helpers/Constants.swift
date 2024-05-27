@@ -20,10 +20,7 @@ struct Constants {
     static let applicationJson = "application/json"
     static let multipartFromData = "multipart/form-data"
     static let applicationXw3FormUrlencoded = "application/x-www-form-urlencoded"
-<<<<<<< HEAD
     
-=======
->>>>>>> 0ebe9d62ffd74106f7fecf81c5e66c90db4cbe9c
     static let xCsrfToken = "X-CSRF-TOKEN"
     static let token = "q4PSs9s42v2gUQlUCIfrjs0U2TlhgiTG6mF5iXxf"
 }
