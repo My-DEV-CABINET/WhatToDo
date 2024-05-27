@@ -422,6 +422,8 @@ extension ToDoView: UITableViewDataSource {
 
 extension ToDoView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         let key = viewModel.sortedSectionKeys[indexPath.section]
         let todo = viewModel.groupedTodos[key]?[indexPath.row]
 
