@@ -44,6 +44,7 @@ extension ToDoView {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        hideKeyboardWhenTappedAround()
         setupUI()
         bind()
         input.send(.requestGETTodos)
