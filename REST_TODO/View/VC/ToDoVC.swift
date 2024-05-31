@@ -32,3 +32,23 @@ extension ToDoVC {
         // ViewModel 이벤트 구독
     }
 }
+
+//MARK: - TableView DataSource 처리
+
+extension ToDoVC: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
+    }
+}
+
+//MARK: - TableView Delegate 처리
+
+extension ToDoVC: UITableViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        //
+    }
+}
