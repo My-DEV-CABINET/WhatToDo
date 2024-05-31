@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		4E2062B62C0423650065592C /* APICase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2062B52C0423650065592C /* APICase.swift */; };
 		4E2062B82C04423C0065592C /* Extension+UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2062B72C04423C0065592C /* Extension+UIViewController.swift */; };
+		4E27893C2C09ADB60002466B /* ToDo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E27893B2C09ADB60002466B /* ToDo.storyboard */; };
+		4E27893E2C09B6540002466B /* ToDoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E27893D2C09B6540002466B /* ToDoVC.swift */; };
+		4E2789422C09B66F0002466B /* DetailToDoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2789412C09B66F0002466B /* DetailToDoVC.swift */; };
+		4E2789472C09B76B0002466B /* DetailToDo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E2789462C09B76B0002466B /* DetailToDo.storyboard */; };
+		4E2789482C09BC9B0002466B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4EE6F09C2BF51A440043D833 /* LaunchScreen.storyboard */; };
 		4E28FB302BFC085200386215 /* Extension+URLRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E28FB2F2BFC085200386215 /* Extension+URLRequest.swift */; };
 		4E490E0C2BFE979E000665F7 /* ActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */; };
 		4E490E112BFEAE64000665F7 /* Favorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E490E102BFEAE64000665F7 /* Favorite.swift */; };
@@ -41,7 +46,6 @@
 		4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0932BF51A420043D833 /* SceneDelegate.swift */; };
 		4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE6F0952BF51A420043D833 /* ToDoView.swift */; };
 		4EE6F09B2BF51A440043D833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4EE6F09A2BF51A440043D833 /* Assets.xcassets */; };
-		4EE6F09E2BF51A440043D833 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 4EE6F09D2BF51A440043D833 /* Base */; };
 		4EFF4EBE2BF9B5B6006EC07C /* Extension+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFF4EBD2BF9B5B6006EC07C /* Extension+String.swift */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +62,10 @@
 /* Begin PBXFileReference section */
 		4E2062B52C0423650065592C /* APICase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APICase.swift; sourceTree = "<group>"; };
 		4E2062B72C04423C0065592C /* Extension+UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+UIViewController.swift"; sourceTree = "<group>"; };
+		4E27893B2C09ADB60002466B /* ToDo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ToDo.storyboard; sourceTree = "<group>"; };
+		4E27893D2C09B6540002466B /* ToDoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoVC.swift; sourceTree = "<group>"; };
+		4E2789412C09B66F0002466B /* DetailToDoVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailToDoVC.swift; sourceTree = "<group>"; };
+		4E2789462C09B76B0002466B /* DetailToDo.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = DetailToDo.storyboard; sourceTree = "<group>"; };
 		4E28FB2F2BFC085200386215 /* Extension+URLRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Extension+URLRequest.swift"; sourceTree = "<group>"; };
 		4E490E0B2BFE979E000665F7 /* ActivityIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicatorView.swift; sourceTree = "<group>"; };
 		4E490E102BFEAE64000665F7 /* Favorite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Favorite.swift; sourceTree = "<group>"; };
@@ -115,6 +123,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E2789432C09B67A0002466B /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				4E27893D2C09B6540002466B /* ToDoVC.swift */,
+				4E2789412C09B66F0002466B /* DetailToDoVC.swift */,
+			);
+			path = VC;
+			sourceTree = "<group>";
+		};
 		4E5979072BF7383D00A6951F /* Application */ = {
 			isa = PBXGroup;
 			children = (
@@ -137,7 +154,10 @@
 		4E59790B2BF738D900A6951F /* View */ = {
 			isa = PBXGroup;
 			children = (
+				4E27893B2C09ADB60002466B /* ToDo.storyboard */,
+				4E2789462C09B76B0002466B /* DetailToDo.storyboard */,
 				4E7C5D7E2BF8587000A4AE33 /* ToDoScene */,
+				4E2789432C09B67A0002466B /* VC */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -395,8 +415,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E2789482C09BC9B0002466B /* LaunchScreen.storyboard in Resources */,
+				4E27893C2C09ADB60002466B /* ToDo.storyboard in Resources */,
 				4EE6F09B2BF51A440043D833 /* Assets.xcassets in Resources */,
-				4EE6F09E2BF51A440043D833 /* Base in Resources */,
+				4E2789472C09B76B0002466B /* DetailToDo.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,7 +457,9 @@
 				4E7C5D8A2BF85D0D00A4AE33 /* UserAction.swift in Sources */,
 				4E490E0C2BFE979E000665F7 /* ActivityIndicatorView.swift in Sources */,
 				4E28FB302BFC085200386215 /* Extension+URLRequest.swift in Sources */,
+				4E27893E2C09B6540002466B /* ToDoVC.swift in Sources */,
 				4E8649522BF8FE790099DFB5 /* Constants.swift in Sources */,
+				4E2789422C09B66F0002466B /* DetailToDoVC.swift in Sources */,
 				4E8649312BF8CC620099DFB5 /* Coordinator.swift in Sources */,
 				4EE6F0942BF51A420043D833 /* SceneDelegate.swift in Sources */,
 				4E5979062BF7358D00A6951F /* ToDoCell.swift in Sources */,
@@ -644,6 +668,7 @@
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = ToDo;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -676,6 +701,7 @@
 				INFOPLIST_FILE = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = ToDo;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
