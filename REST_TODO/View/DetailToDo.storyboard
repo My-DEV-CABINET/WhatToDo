@@ -12,16 +12,16 @@
         <!--Detail To DoVC-->
         <scene sceneID="M97-f7-5uO">
             <objects>
-                <viewController id="m7v-XW-cSI" customClass="DetailToDoVC" customModule="REST_TODO" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetailToDoVC" id="m7v-XW-cSI" customClass="DetailToDoVC" customModule="REST_TODO" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="871-Ni-cyo">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="CBb-Do-dlG">
-                                <rect key="frame" x="32" y="91.000000000000028" width="329" height="351.66666666666674"/>
+                                <rect key="frame" x="32" y="135" width="329" height="351"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="할일 추가" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="drX-yr-KjF">
-                                        <rect key="frame" x="0.0" y="0.0" width="147" height="50.666666666666664"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="147" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="140" id="G6q-dg-mMT"/>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="V6P-DD-hW8"/>
@@ -31,7 +31,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" spacing="90" translatesAutoresizingMaskIntoConstraints="NO" id="M60-rL-x9M">
-                                        <rect key="frame" x="0.0" y="100.66666666666666" width="329" height="151"/>
+                                        <rect key="frame" x="0.0" y="100" width="329" height="151"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="EYQ-oo-SIx">
                                                 <rect key="frame" x="0.0" y="0.0" width="329" height="30"/>
@@ -50,7 +50,7 @@
                                                 </subviews>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="172" translatesAutoresizingMaskIntoConstraints="NO" id="yF1-Sj-mEZ">
-                                                <rect key="frame" x="0.0" y="120.00000000000003" width="329" height="31"/>
+                                                <rect key="frame" x="0.0" y="120" width="329" height="31"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="완료" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rqY-8u-XuN">
                                                         <rect key="frame" x="0.0" y="0.0" width="108" height="31"/>
@@ -69,12 +69,16 @@
                                         </constraints>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bAs-Re-uyt">
-                                        <rect key="frame" x="0.0" y="301.66666666666669" width="329" height="50"/>
+                                        <rect key="frame" x="0.0" y="301" width="329" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="50" id="Drb-wy-1B0"/>
                                         </constraints>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="filled" title="완료" cornerStyle="capsule"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="완료" cornerStyle="capsule">
+                                            <fontDescription key="titleFontDescription" type="system" pointSize="20"/>
+                                            <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </buttonConfiguration>
                                     </button>
                                 </subviews>
                                 <constraints>
@@ -84,16 +88,36 @@
                                     <constraint firstAttribute="trailing" secondItem="D65-fe-LOf" secondAttribute="trailing" id="yHk-mV-ZpO"/>
                                 </constraints>
                             </stackView>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lgp-Ng-QeY">
+                                <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                                <items>
+                                    <navigationItem title="할일 추가" id="J4J-xo-36H">
+                                        <barButtonItem key="leftBarButtonItem" title="닫기" id="Dr0-1S-7V1"/>
+                                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="Cq9-RE-f1a"/>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="poF-qs-Dui"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="poF-qs-Dui" firstAttribute="top" secondItem="lgp-Ng-QeY" secondAttribute="top" id="EFi-yR-bnS"/>
                             <constraint firstItem="poF-qs-Dui" firstAttribute="trailing" secondItem="CBb-Do-dlG" secondAttribute="trailing" constant="32" id="OeS-CW-Ouo"/>
+                            <constraint firstItem="lgp-Ng-QeY" firstAttribute="leading" secondItem="poF-qs-Dui" secondAttribute="leading" id="RFb-Da-SO9"/>
+                            <constraint firstItem="lgp-Ng-QeY" firstAttribute="centerX" secondItem="poF-qs-Dui" secondAttribute="centerX" id="Uye-sT-1yb"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="centerX" secondItem="poF-qs-Dui" secondAttribute="centerX" id="VKj-4c-RWn"/>
-                            <constraint firstItem="CBb-Do-dlG" firstAttribute="top" secondItem="poF-qs-Dui" secondAttribute="top" constant="32" id="aGK-c9-CCi"/>
+                            <constraint firstItem="CBb-Do-dlG" firstAttribute="top" secondItem="lgp-Ng-QeY" secondAttribute="bottom" constant="32" id="aGK-c9-CCi"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="leading" secondItem="poF-qs-Dui" secondAttribute="leading" constant="32" id="nSH-zc-hvI"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="confirmLabel" destination="rqY-8u-XuN" id="NDn-wx-3wR"/>
+                        <outlet property="isConfirmSwitch" destination="8j8-Yx-89v" id="Ceb-Ud-jCi"/>
+                        <outlet property="textField" destination="D65-fe-LOf" id="H1y-x7-hKa"/>
+                        <outlet property="todoButton" destination="bAs-Re-uyt" id="vFQ-od-hDC"/>
+                        <outlet property="todoLabel" destination="hLo-HG-e23" id="GLb-g2-LbZ"/>
+                        <outlet property="userActionLabel" destination="drX-yr-KjF" id="hzJ-sT-3MY"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RFY-OD-zRz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

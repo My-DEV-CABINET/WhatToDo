@@ -7,7 +7,22 @@
 
 import UIKit
 
-class DetailToDoVC: UIViewController {
+final class DetailToDoVC: UIViewController {
+    @IBOutlet weak var userActionLabel: UILabel!
+    @IBOutlet weak var todoLabel: UILabel!
+    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var confirmLabel: UILabel!
+    @IBOutlet weak var isConfirmSwitch: UISwitch!
+    @IBOutlet weak var todoButton: UIButton!
+    
+    private var viewModel = DetailToDoViewModel()
+    
+   
+}
+
+//MARK: - View Life Cycle 관련 모음
+
+extension DetailToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
     }

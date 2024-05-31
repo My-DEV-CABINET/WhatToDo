@@ -10,14 +10,14 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="137" id="6UH-L9-ZgB">
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="137" id="6UH-L9-ZgB" customClass="ToDoCell" customModule="REST_TODO" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="452" height="137"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="6UH-L9-ZgB" id="70I-y5-jAH">
                 <rect key="frame" x="0.0" y="0.0" width="452" height="137"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="MaC-NH-S4R">
+                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="MaC-NH-S4R">
                         <rect key="frame" x="12" y="12" width="428" height="113"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7H7-Po-QdH">
@@ -25,6 +25,7 @@
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="uL0-7x-0qY"/>
                                 </constraints>
+                                <color key="tintColor" systemColor="labelColor"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="checkmark.square.fill" catalog="system">
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="font">
@@ -33,31 +34,31 @@
                                 </buttonConfiguration>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="xKT-3K-fZh">
-                                <rect key="frame" x="50" y="12" width="328" height="89"/>
+                                <rect key="frame" x="55" y="12" width="323" height="89"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PPg-2e-Vay">
-                                        <rect key="frame" x="0.0" y="0.0" width="328" height="49"/>
-                                        <mutableString key="text">동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 </mutableString>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="323" height="49"/>
+                                        <string key="text">동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 </string>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="bottom" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="nJJ-Vr-ufR">
-                                        <rect key="frame" x="0.0" y="59" width="328" height="30"/>
+                                        <rect key="frame" x="0.0" y="59" width="323" height="30"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23:59 PM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wOc-FT-OLl">
-                                                <rect key="frame" x="0.0" y="9.6666666666666696" width="90" height="20.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="13" width="90" height="17"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="90" id="78w-kN-KS5"/>
                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="30" id="kYz-wx-rU4"/>
                                                 </constraints>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" systemColor="systemGrayColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="내가 본 것" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qyt-o2-19b">
-                                                <rect key="frame" x="100" y="9.6666666666666696" width="228" height="20.333333333333329"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <rect key="frame" x="100" y="13" width="223" height="17"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" systemColor="systemGrayColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -80,15 +81,17 @@
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="8C4-Ot-PgV"/>
                                 </constraints>
+                                <color key="tintColor" systemColor="systemYellowColor"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="star" catalog="system"/>
                             </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="ctC-rt-SuB" firstAttribute="leading" secondItem="xKT-3K-fZh" secondAttribute="trailing" id="2Oe-qY-BTd"/>
+                            <constraint firstItem="ctC-rt-SuB" firstAttribute="leading" secondItem="PPg-2e-Vay" secondAttribute="trailing" id="Mo1-Xk-mX3"/>
                             <constraint firstItem="xKT-3K-fZh" firstAttribute="top" secondItem="MaC-NH-S4R" secondAttribute="top" constant="12" id="Rj5-o7-01h"/>
                             <constraint firstAttribute="bottom" secondItem="xKT-3K-fZh" secondAttribute="bottom" constant="12" id="erx-D5-aYV"/>
-                            <constraint firstItem="xKT-3K-fZh" firstAttribute="leading" secondItem="7H7-Po-QdH" secondAttribute="trailing" id="vDA-68-xoC"/>
+                            <constraint firstItem="xKT-3K-fZh" firstAttribute="leading" secondItem="7H7-Po-QdH" secondAttribute="trailing" constant="5" id="vDA-68-xoC"/>
                         </constraints>
                     </stackView>
                 </subviews>
@@ -99,14 +102,27 @@
                     <constraint firstItem="MaC-NH-S4R" firstAttribute="leading" secondItem="70I-y5-jAH" secondAttribute="leading" constant="12" id="nfC-Ru-aac"/>
                 </constraints>
             </tableViewCellContentView>
+            <connections>
+                <outlet property="checkButton" destination="7H7-Po-QdH" id="n8C-Ak-9OH"/>
+                <outlet property="dateLabel" destination="wOc-FT-OLl" id="nQy-Ws-LPL"/>
+                <outlet property="favoriteButton" destination="ctC-rt-SuB" id="DsC-ax-I9e"/>
+                <outlet property="seenLabel" destination="Qyt-o2-19b" id="tPk-i7-2hi"/>
+                <outlet property="titleLabel" destination="PPg-2e-Vay" id="dwQ-JE-MJP"/>
+            </connections>
             <point key="canvasLocation" x="543.51145038167942" y="36.971830985915496"/>
         </tableViewCell>
     </objects>
     <resources>
         <image name="checkmark.square.fill" catalog="system" width="128" height="114"/>
         <image name="star" catalog="system" width="128" height="116"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemYellowColor">
+            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

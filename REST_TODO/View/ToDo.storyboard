@@ -28,13 +28,13 @@
                                     <constraint firstAttribute="height" constant="50" id="AH0-4F-jvB"/>
                                     <constraint firstAttribute="width" constant="50" id="Hf7-Ol-DaV"/>
                                 </constraints>
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" cornerStyle="capsule">
-                                    <imageReference key="image" image="plus" catalog="system" symbolScale="large" variableValue="0.80000000000000004"/>
+                                    <imageReference key="image" image="plus" catalog="system" symbolScale="large" renderingMode="template" variableValue="0.80000000000000004"/>
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="font">
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     </preferredSymbolConfiguration>
+                                    <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                             </button>
                         </subviews>
@@ -53,6 +53,7 @@
                         <barButtonItem key="rightBarButtonItem" title="완료 숨기기" id="fpf-rR-CP9"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>
                 </viewController>
