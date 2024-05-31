@@ -1,0 +1,22 @@
+PODS:
+  - RxSwift (6.7.1)
+  - sqlite3 (3.46.0):
+    - sqlite3/common (= 3.46.0)
+  - sqlite3/common (3.46.0)
+
+DEPENDENCIES:
+  - RxSwift (= 6.7.1)
+  - sqlite3
+
+SPEC REPOS:
+  trunk:
+    - RxSwift
+    - sqlite3
+
+SPEC CHECKSUMS:
+  RxSwift: b9a93a26031785159e11abd40d1a55bcb8057e52
+  sqlite3: 154b084339ede06960a5b3c8160066adc9176b7d
+
+PODFILE CHECKSUM: 3703f53ac2c9fd1414e85ee634af7e2d3ece4e6b
+
+COCOAPODS: 1.15.2

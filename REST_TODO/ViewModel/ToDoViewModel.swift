@@ -6,10 +6,12 @@
 ////
 //
 //import Combine
+import RxSwift
+
 import Foundation
 
 final class ToDoViewModel {
-    //
+    private var disposeBag = DisposeBag()
 }
 
 //

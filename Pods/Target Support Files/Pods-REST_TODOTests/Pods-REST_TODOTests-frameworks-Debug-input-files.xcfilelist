@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/Pods-REST_TODOTests/Pods-REST_TODOTests-frameworks.sh
+${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework
+${BUILT_PRODUCTS_DIR}/sqlite3/sqlite3.framework
