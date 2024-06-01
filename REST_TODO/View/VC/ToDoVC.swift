@@ -35,7 +35,7 @@ extension ToDoVC {
 
 extension ToDoVC {
     private func setupUI() {
-        view.backgroundColor = .systemBlue
+        view.backgroundColor = .systemGray
         registerCell()
         confirmTableView()
         confirmAddButton()

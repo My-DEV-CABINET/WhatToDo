@@ -9,6 +9,7 @@ import UIKit
 
 final class DetailToDoVC: UIViewController {
     @IBOutlet weak var userActionLabel: UILabel!
+    @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var todoLabel: UILabel!
     @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var confirmLabel: UILabel!
@@ -49,7 +50,8 @@ extension DetailToDoVC {
 extension DetailToDoVC {
     private func confirmBackButton() {
         let backButton = UIBarButtonItem()
-        backButton.image = UIImage(systemName: "arrow.backward")
+        backButton.tintColor = .black
+        backButton.title = "닫기"
         backButton.target = self
         backButton.action = #selector(didTapBackButton)
 
@@ -62,6 +64,7 @@ extension DetailToDoVC {
 
     private func confirmEditButton() {
         let editButton = UIBarButtonItem()
+        editButton.tintColor = .black
         editButton.title = "Edit"
         editButton.target = self
 

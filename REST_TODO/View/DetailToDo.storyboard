@@ -111,12 +111,25 @@
                                     <constraint firstAttribute="trailing" secondItem="D65-fe-LOf" secondAttribute="trailing" id="yHk-mV-ZpO"/>
                                 </constraints>
                             </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="6글자 이상 입력해주세요.(공백 제외)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-Bm-TUP">
+                                <rect key="frame" x="130.33333333333334" y="239" width="176.00000000000003" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="L3a-ox-Qbx"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Yo7-0X-CK9"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="200" id="ajW-hr-wT4"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="poF-qs-Dui"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="j9M-Bm-TUP" firstAttribute="leading" secondItem="D65-fe-LOf" secondAttribute="leading" id="0g1-Hb-N77"/>
                             <constraint firstItem="poF-qs-Dui" firstAttribute="trailing" secondItem="CBb-Do-dlG" secondAttribute="trailing" constant="32" id="OeS-CW-Ouo"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="centerX" secondItem="poF-qs-Dui" secondAttribute="centerX" id="VKj-4c-RWn"/>
+                            <constraint firstItem="j9M-Bm-TUP" firstAttribute="top" secondItem="D65-fe-LOf" secondAttribute="bottom" constant="20" id="duZ-GQ-G9N"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="leading" secondItem="poF-qs-Dui" secondAttribute="leading" constant="32" id="nSH-zc-hvI"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="top" secondItem="poF-qs-Dui" secondAttribute="top" constant="32" id="wpd-87-HJU"/>
                         </constraints>
@@ -129,6 +142,7 @@
                         <outlet property="textField" destination="D65-fe-LOf" id="H1y-x7-hKa"/>
                         <outlet property="todoLabel" destination="hLo-HG-e23" id="GLb-g2-LbZ"/>
                         <outlet property="userActionLabel" destination="drX-yr-KjF" id="hzJ-sT-3MY"/>
+                        <outlet property="warningLabel" destination="j9M-Bm-TUP" id="T3i-5c-jc9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RFY-OD-zRz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -141,7 +155,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
