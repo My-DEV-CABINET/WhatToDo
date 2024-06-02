@@ -39,7 +39,9 @@ extension ToDoVC {
         registerCell()
         confirmTableView()
         confirmAddButton()
-//        bind()
+
+        /// Binding
+        bind()
     }
 
     private func confirmTableView() {
@@ -47,24 +49,30 @@ extension ToDoVC {
         tableView.delegate = self
     }
 
+    /// Xib 셀 등록
     private func registerCell() {
         let todoCell = UINib(nibName: Identifier.todoCell.rawValue, bundle: nil)
         tableView.register(todoCell, forCellReuseIdentifier: Identifier.todoCell.rawValue)
     }
 
+    /// Floatting 버튼 구성 및 화면 이동 로직
     private func confirmAddButton() {
         addButton.addAction(UIAction(handler: { [weak self] _ in
 
-            let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-            let vc = sb.instantiateViewController(identifier: "DetailToDoVC")
-            let navigationVC = UINavigationController(rootViewController: vc)
-            self?.present(navigationVC, animated: true)
+            self?.pushDetailVC()
 
         }), for: .touchUpInside)
     }
+
+    private func pushDetailVC() {
+        let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
+        let vc = sb.instantiateViewController(identifier: "DetailToDoVC")
+        let navigationVC = UINavigationController(rootViewController: vc)
+        present(navigationVC, animated: true)
+    }
 }
 
-// MARK: - ViewModel Binding 관련 처리 메서드 모음
+// MARK: - ViewModel Rx Binding 관련 처리 메서드 모음
 
 extension ToDoVC {
     private func bind() {

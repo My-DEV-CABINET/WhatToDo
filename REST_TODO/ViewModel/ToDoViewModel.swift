@@ -5,7 +5,7 @@
 ////  Created by 준우의 MacBook 16 on 5/18/24.
 ////
 //
-//import Combine
+// import Combine
 import RxSwift
 
 import Foundation
@@ -15,7 +15,7 @@ final class ToDoViewModel {
 }
 
 //
-//final class ToDoViewModel: ViewModelType {
+// final class ToDoViewModel: ViewModelType {
 //    let apiService: APIServiceProtocol
 //
 //    init(apiService: APIServiceProtocol) {
@@ -66,11 +66,11 @@ final class ToDoViewModel {
 //    var sortedSectionKeys: [String] {
 //        return groupedTodos.keys.sorted(by: >)
 //    }
-//}
+// }
 //
 //// MARK: - API 및 Output
 //
-//extension ToDoViewModel {
+// extension ToDoViewModel {
 //    /// Input -> Output
 //    /// - Parameter input: Input Publisher
 //    /// - Returns: Output Publisher
@@ -299,11 +299,11 @@ final class ToDoViewModel {
 //            }
 //            .store(in: &subcriptions)
 //    }
-//}
+// }
 //
 //// MARK: - ViewModel's Origin Method
 //
-//extension ToDoViewModel {
+// extension ToDoViewModel {
 //    func toggleIsTapped() {
 //        isTapped.toggle()
 //        output.send(.tapFloattingButton(isTapped: isTapped))
@@ -340,4 +340,4 @@ final class ToDoViewModel {
 //    func resetIsHide() {
 //        isHide = false
 //    }
-//}
+// }

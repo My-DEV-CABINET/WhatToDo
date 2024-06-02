@@ -5,14 +5,33 @@
 ////  Created by 준우의 MacBook 16 on 5/21/24.
 ////
 //
-//import Combine
+// import Combine
+import RxCocoa
+import RxSwift
+
 import Foundation
 
 final class DetailToDoViewModel {
-    //
+    var disposeBag = DisposeBag()
+
+    let textInput: BehaviorRelay<String> = BehaviorRelay(value: "")
+    let editButtonTap = PublishRelay<Void>()
+
+    var textValid: Driver<Bool> {
+        return textInput
+            .map { $0.count > 5 }
+            .asDriver(onErrorJustReturn: false)
+    }
+
+    var cancelButtonIsHidden: Driver<Bool> {
+        return editButtonTap
+            .scan(false) { isHidden, _ in !isHidden }
+            .asDriver(onErrorJustReturn: false)
+    }
 }
+
 //
-//final class DetailToDoViewModel: ViewModelType {
+// final class DetailToDoViewModel: ViewModelType {
 //    let apiService: APIServiceProtocol
 //
 //    init(apiService: APIServiceProtocol) {
@@ -36,11 +55,11 @@ final class DetailToDoViewModel {
 //
 //    var id: Int?
 //    var currentUserAction: UserAction = .add
-//}
+// }
 //
 //// MARK: - API 및 Output
 //
-//extension DetailToDoViewModel {
+// extension DetailToDoViewModel {
 //    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
 //        input.sink { [weak self] event in
 //            switch event {
@@ -129,4 +148,4 @@ final class DetailToDoViewModel {
 //            }
 //            .store(in: &subcriptions)
 //    }
-//}
+// }
