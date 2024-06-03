@@ -66,7 +66,7 @@ extension ToDoVC {
 
     private func pushDetailVC() {
         let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-        let vc = sb.instantiateViewController(identifier: "DetailToDoVC")
+        guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
     }

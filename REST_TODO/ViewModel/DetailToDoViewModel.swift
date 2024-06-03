@@ -13,7 +13,8 @@ import Foundation
 
 final class DetailToDoViewModel {
     var disposeBag = DisposeBag()
-
+    
+    var userAction: UserAction = .edit
     let textInput: BehaviorRelay<String> = BehaviorRelay(value: "")
     let editButtonTap = PublishRelay<Void>()
 

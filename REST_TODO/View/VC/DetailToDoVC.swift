@@ -15,6 +15,7 @@ final class DetailToDoVC: UIViewController {
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var todoLabel: UILabel!
     @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var taskLabel: UILabel!
     @IBOutlet weak var confirmLabel: UILabel!
     @IBOutlet weak var isConfirmSwitch: UISwitch!
     @IBOutlet weak var confirmButton: UIButton!
@@ -23,7 +24,7 @@ final class DetailToDoVC: UIViewController {
     private var backButton: UIBarButtonItem!
     private var editButton: UIBarButtonItem!
 
-    private var viewModel: DetailToDoViewModel!
+    var viewModel: DetailToDoViewModel!
 }
 
 // MARK: - View Life Cycle 관련 모음
@@ -31,14 +32,10 @@ final class DetailToDoVC: UIViewController {
 extension DetailToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "할일 추가"
-        navigationController?.navigationBar.backgroundColor = .systemGray6
-
-        cancelButton.isHidden = true
-
         setupUI()
-
         bind()
+
+        configure(action: viewModel.userAction)
     }
 }
 
@@ -46,13 +43,26 @@ extension DetailToDoVC {
 
 extension DetailToDoVC {
     private func setupUI() {
+        confirmNavigationBar()
         confirmViewMoldel()
+
+        confirmConfirmButton()
+        confirmCancelButton()
 
         confirmBackButton()
         confirmEditButton()
 
         confirmTextField()
-        confirmConfirmButton()
+    }
+
+    func configure(action: UserAction) {
+        if action == .add {
+            editButton.isHidden = true
+        } else {
+            textField.layer.opacity = 0
+            taskLabel.layer.opacity = 1
+            warningLabel.layer.opacity = 0
+        }
     }
 }
 
@@ -75,17 +85,17 @@ extension DetailToDoVC {
             }
             .bind(to: textField.rx.text)
             .disposed(by: viewModel.disposeBag)
-        
+
         // View -> ViewModel 텍스트 입력 내용 전송
         textField.rx.text.orEmpty
             .bind(to: viewModel.textInput)
             .disposed(by: viewModel.disposeBag)
-        
+
         // 6글자 미만시, WarningLabel 표시
         viewModel.textValid
             .drive(warningLabel.rx.isHidden)
             .disposed(by: viewModel.disposeBag)
-        
+
         // 6글자 미만시, ConfirmButton 비활성화
         viewModel.textValid
             .drive(confirmButton.rx.isEnabled)
@@ -95,17 +105,17 @@ extension DetailToDoVC {
         editButton.rx.tap
             .bind(to: viewModel.editButtonTap)
             .disposed(by: viewModel.disposeBag)
-        
+
         // CancelButton 클릭 이벤트 전달
         cancelButton.rx.tap
             .bind(to: viewModel.editButtonTap)
             .disposed(by: viewModel.disposeBag)
-        
+
         // Edit 버튼 클릭시, Edit 버튼 숨김 처리
         viewModel.cancelButtonIsHidden
             .drive(editButton.rx.isHidden)
             .disposed(by: viewModel.disposeBag)
-        
+
         // Cancel 버튼 클릭시, Cancel 버튼 숨김 처리
         viewModel.cancelButtonIsHidden
             .drive { result in
@@ -121,12 +131,37 @@ extension DetailToDoVC {
         viewModel.cancelButtonIsHidden
             .drive { result in
                 if result {
-                    self.textField.resignFirstResponder()
-                } else {
                     self.textField.becomeFirstResponder()
+
+                } else {
+                    self.textField.resignFirstResponder()
                 }
             }
             .disposed(by: viewModel.disposeBag)
+
+        // Edit, Cancel 버튼 클릭시, TextField, TaskLabel 숨김 활성화/비활성화
+        viewModel.cancelButtonIsHidden
+            .drive { result in
+                if result {
+                    self.taskLabel.layer.opacity = 0
+                    self.textField.layer.opacity = 1
+                    self.warningLabel.layer.opacity = 1
+                } else {
+                    self.taskLabel.layer.opacity = 1
+                    self.textField.layer.opacity = 0
+                    self.warningLabel.layer.opacity = 0
+                }
+            }
+            .disposed(by: viewModel.disposeBag)
+    }
+}
+
+// MARK: - Navigation 관련 모음
+
+extension DetailToDoVC {
+    private func confirmNavigationBar() {
+        navigationItem.title = "할일 추가"
+        navigationController?.navigationBar.backgroundColor = .systemGray6
     }
 }
 
@@ -168,12 +203,16 @@ extension DetailToDoVC {
     }
 }
 
-// MARK: - Confirm Button
+// MARK: - Confirm / Cancel Button
 
 extension DetailToDoVC {
     private func confirmConfirmButton() {
         confirmButton.addAction(UIAction(handler: { [weak self] _ in
             self?.navigationController?.dismiss(animated: true)
         }), for: .touchUpInside)
+    }
+
+    private func confirmCancelButton() {
+        cancelButton.isHidden = true
     }
 }
