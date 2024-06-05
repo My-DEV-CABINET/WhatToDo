@@ -11,16 +11,24 @@ import RxSwift
 import UIKit
 
 final class DetailToDoVC: UIViewController {
+    /// Label
     @IBOutlet weak var userActionLabel: UILabel!
     @IBOutlet weak var warningLabel: UILabel!
     @IBOutlet weak var todoLabel: UILabel!
-    @IBOutlet weak var textField: UITextField!
     @IBOutlet weak var taskLabel: UILabel!
     @IBOutlet weak var confirmLabel: UILabel!
-    @IBOutlet weak var isConfirmSwitch: UISwitch!
+
+    /// TextField
+    @IBOutlet weak var textField: UITextField!
+
+    /// Button
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
 
+    /// Switch
+    @IBOutlet weak var isConfirmSwitch: UISwitch!
+
+    /// BarButtonItem
     private var backButton: UIBarButtonItem!
     private var editButton: UIBarButtonItem!
 
@@ -33,8 +41,7 @@ extension DetailToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        bind()
-
+        uiBind()
         configure(action: viewModel.userAction)
     }
 }
@@ -46,13 +53,13 @@ extension DetailToDoVC {
         confirmNavigationBar()
         confirmViewMoldel()
 
+        confirmTextField()
+
         confirmConfirmButton()
         confirmCancelButton()
 
         confirmBackButton()
         confirmEditButton()
-
-        confirmTextField()
     }
 
     func configure(action: UserAction) {
@@ -73,7 +80,7 @@ extension DetailToDoVC {
         viewModel = DetailToDoViewModel()
     }
 
-    private func bind() {
+    private func uiBind() {
         // 맨 처음 띄어쓰기 방지, 두번째부터는 띄어쓰기 허용
         textField.rx.text.orEmpty.asObservable()
             .scan("") { lastValue, newValue in
@@ -139,7 +146,7 @@ extension DetailToDoVC {
             }
             .disposed(by: viewModel.disposeBag)
 
-        // Edit, Cancel 버튼 클릭시, TextField, TaskLabel 숨김 활성화/비활성화
+        // Edit, Cancel 버튼 클릭시, TextField, TaskLabel 숨김 활성화/비활성화 처리
         viewModel.cancelButtonIsHidden
             .drive { result in
                 if result {

@@ -5,10 +5,32 @@
 //  Created by 준우의 MacBook 16 on 5/31/24.
 //
 
+import RxDataSources
+import RxSwift
+
 import UIKit
 
 enum Identifier: String {
     case todoCell = "ToDoCell"
+}
+
+struct SectionOfCustomData {
+    var header: String
+    var items: [ToDoData]
+
+    init(header: String, items: [ToDoData]) {
+        self.header = header
+        self.items = items
+    }
+}
+
+extension SectionOfCustomData: SectionModelType {
+    typealias Item = ToDoData
+
+    init(original: SectionOfCustomData, items: [Item]) {
+        self = original
+        self.items = items
+    }
 }
 
 final class ToDoVC: UIViewController {
@@ -16,6 +38,31 @@ final class ToDoVC: UIViewController {
     @IBOutlet weak var addButton: UIButton!
 
     private var viewModel = ToDoViewModel()
+
+    typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
+
+    let dataSource: ToDoSectionDataSource = {
+        let db = ToDoSectionDataSource(
+            configureCell: { datasource, tableView, indexPath, item in
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
+                cell.configure(data: item)
+                return cell
+            })
+
+        db.titleForHeaderInSection = { dataSource, index in
+            return dataSource.sectionModels[index].header
+        }
+
+        db.canEditRowAtIndexPath = { dataSource, indexPath in
+            return true
+        }
+
+        db.canMoveRowAtIndexPath = { dataSource, indexPath in
+            return true
+        }
+
+        return db
+    }()
 
     deinit {
         print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: TodoVC deinitialize")
@@ -28,6 +75,8 @@ extension ToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+
+        viewModel.requestGETTodos()
     }
 }
 
@@ -37,16 +86,10 @@ extension ToDoVC {
     private func setupUI() {
         view.backgroundColor = .systemGray
         registerCell()
-        confirmTableView()
         confirmAddButton()
 
         /// Binding
         bind()
-    }
-
-    private func confirmTableView() {
-        tableView.dataSource = self
-        tableView.delegate = self
     }
 
     /// Xib 셀 등록
@@ -58,9 +101,7 @@ extension ToDoVC {
     /// Floatting 버튼 구성 및 화면 이동 로직
     private func confirmAddButton() {
         addButton.addAction(UIAction(handler: { [weak self] _ in
-
             self?.pushDetailVC()
-
         }), for: .touchUpInside)
     }
 
@@ -77,27 +118,43 @@ extension ToDoVC {
 extension ToDoVC {
     private func bind() {
         // ViewModel 이벤트 구독
-    }
-}
+        tableView.rx.itemDeleted
+            .observe(on: MainScheduler.asyncInstance)
+            .withUnretained(self)
+            .bind { section, indexPath in
+                let currentSection = section.dataSource.sectionModels[indexPath.section]
+                let currentItem = currentSection.items[indexPath.row]
+                print("###&& \(currentItem)")
+                self.viewModel.removeTodo(data: currentItem)
+            }
+            .disposed(by: viewModel.disposeBag)
 
-// MARK: - TableView DataSource 처리
+        viewModel.todosSubject
+            .map { todos in
+                // CreatedAt 기준으로 Dictionary 생성
+                let groupedDictionary = Dictionary(grouping: todos) { todo in
+                    return todo.createdAt?.dateFormatterForDate() ?? ""
+                }
 
-extension ToDoVC: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
-    }
+                // 날짜 정렬
+                let sortedKeys = groupedDictionary.keys.sorted(by: >)
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
+                // SectionOfCustomData 생성
+                return sortedKeys.map { key in
+                    SectionOfCustomData(header: key, items: groupedDictionary[key] ?? [])
+                }
+            }
+            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: viewModel.disposeBag)
 
-        return cell
-    }
-}
+        viewModel.todosSubject
+            .subscribe { todos in
+                print("###& \(#line) \(todos)")
 
-// MARK: - TableView Delegate 처리
-
-extension ToDoVC: UITableViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            }
+            .disposed(by: viewModel.disposeBag)
     }
 }

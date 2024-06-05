@@ -7,33 +7,53 @@
 //
 import UIKit
 //
-//enum Identifier: String {
+// enum Identifier: String {
 //    case todoCell = "ToDoCell"
-//}
+// }
 //
 
 final class ToDoCell: UITableViewCell {
-    @IBOutlet weak var checkButton: UIButton!
-    @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var seenLabel: UILabel!
+    
+    @IBOutlet weak var checkButton: UIButton!
+    @IBOutlet weak var favoriteButton: UIButton!
+    
+    // 셀 나타날 때 호출
+    override func prepareForReuse() {
+        setupUI()
+    }
+    
+    // 셀 초기화시 호출
+    override func awakeFromNib() {
+        //
+    }
     
     private func setupUI() {
         //
     }
     
-    func configure() {
-        //
+    func configure(data: ToDoData) {
+        guard let isDone = data.isDone else { return }
+        
+        titleLabel.text = data.title
+        dateLabel.text = data.createdAt?.dateFormatterForTime()
+        
+        if isDone {
+            checkButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .normal)
+        } else {
+            checkButton.setImage(UIImage(systemName: "square"), for: .normal)
+        }
     }
 }
 
-//protocol ToDoCellDelegate {
+// protocol ToDoCellDelegate {
 //    func didTapCheckBox(todo: ToDoData)
 //    func didTapFavoriteBox(id: Int)
-//}
+// }
 //
-//final class ToDoCell: UITableViewCell {
+// final class ToDoCell: UITableViewCell {
 //    static let identifier = Identifier.todoCell.rawValue
 //
 //    private var todo: ToDoData?
@@ -53,11 +73,11 @@ final class ToDoCell: UITableViewCell {
 //    required init?(coder: NSCoder) {
 //        fatalError("init(coder:) has not been implemented")
 //    }
-//}
+// }
 //
 //// MARK: - Setting ToDoCell
 //
-//extension ToDoCell {
+// extension ToDoCell {
 //    private func setupUI() {
 //        addView()
 //
@@ -172,4 +192,4 @@ final class ToDoCell: UITableViewCell {
 //            favoriteButton.setImage(favoriteImage, for: .normal)
 //        }
 //    }
-//}
+// }

@@ -8,6 +8,7 @@ target 'REST_TODO' do
   pod 'RxCocoa', '6.7.1'
   pod 'sqlite3'
   pod 'Alamofire'
+  pod 'RxDataSources', '~> 5.0'
 
   target 'REST_TODOTests' do
     inherit! :search_paths
@@ -16,6 +17,7 @@ target 'REST_TODO' do
     pod 'RxCocoa', '6.7.1'
     pod 'sqlite3'
     pod 'Alamofire'
+    pod 'RxDataSources', '~> 5.0'
   end
 
 end

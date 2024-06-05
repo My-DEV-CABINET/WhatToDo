@@ -16,6 +16,13 @@ struct ToDoIDDTO: Codable {
     let id: String
 }
 
+struct ToDoDTO: Codable {
+    let page: String
+    let filter: String
+    let orderBy: String
+    let perPage: String
+}
+
 struct ToDoQueryDTO: Codable {
     let query: String
     let page: String

@@ -6,12 +6,96 @@
 ////
 //
 // import Combine
+import Alamofire
+import RxCocoa
+import RxRelay
 import RxSwift
 
 import Foundation
 
 final class ToDoViewModel {
-    private var disposeBag = DisposeBag()
+    var disposeBag = DisposeBag()
+    let apiService = APIService()
+
+    var todosSubject = BehaviorSubject<[ToDoData]>(value: [])
+
+    private(set) var todos: [ToDoData]?
+
+    private var page = 1
+    private var filter = Filter.createdAt.rawValue
+    private var orderBy = Order.desc.rawValue
+    private var perPage = 10
+
+    /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
+    func requestGETTodos() {
+        let url = "https://phplaravel-574671-2962113.cloudwaysapps.com/api/v2/todos"
+        let parameters = ToDoDTO(page: page.description, filter: filter, orderBy: orderBy, perPage: perPage.description)
+        let headers: HTTPHeaders = [
+            .accept("\(Constants.applicationJson)")
+        ]
+
+        _ = AF.request(
+            url,
+            method: .get,
+            parameters: parameters,
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate()
+        // curl 표시
+        .cURLDescription { description in
+            print("curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDos.self) { response in
+            guard let data = response.value?.data else { return }
+            self.todos = data
+            self.todosSubject.onNext(data)
+        }
+        .response
+    }
+
+    /// Todo 데이터 삭제
+    func removeTodo(data: ToDoData) {
+        guard let id = data.id else { return }
+        let url = "https://phplaravel-574671-2962113.cloudwaysapps.com/api/v2/todos/\(id)"
+        let headers: HTTPHeaders = [
+            .accept("\(Constants.applicationJson)")
+        ]
+
+        _ = AF.request(
+            url,
+            method: .delete,
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .validate()
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate()
+        // curl 표시
+        .cURLDescription { description in
+            print("curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDos.self) { response in
+            if let index = self.todos?.firstIndex(where: { $0.id == data.id }) {
+                print("### \(index)")
+                self.todos?.remove(at: index)
+                print("### \(self.todos?.count) 처리됨? - 2")
+                self.todosSubject.onNext(self.todos ?? [])
+            }
+        }
+        .response
+    }
 }
 
 //
