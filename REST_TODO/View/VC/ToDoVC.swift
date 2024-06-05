@@ -75,7 +75,6 @@ extension ToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-
         viewModel.requestGETTodos()
     }
 }
@@ -84,7 +83,7 @@ extension ToDoVC {
 
 extension ToDoVC {
     private func setupUI() {
-        view.backgroundColor = .systemGray
+        view.backgroundColor = .white
         registerCell()
         confirmAddButton()
 
@@ -101,13 +100,17 @@ extension ToDoVC {
     /// Floatting 버튼 구성 및 화면 이동 로직
     private func confirmAddButton() {
         addButton.addAction(UIAction(handler: { [weak self] _ in
-            self?.pushDetailVC()
+            guard let self = self else { return }
+            pushDetailVC()
         }), for: .touchUpInside)
     }
 
+    /// DetailVC 로 화면 이동 처리
     private func pushDetailVC() {
         let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
+        vc.viewModel = DetailToDoViewModel()
+        vc.viewModel.userAction = .add
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
     }
@@ -117,18 +120,7 @@ extension ToDoVC {
 
 extension ToDoVC {
     private func bind() {
-        // ViewModel 이벤트 구독
-        tableView.rx.itemDeleted
-            .observe(on: MainScheduler.asyncInstance)
-            .withUnretained(self)
-            .bind { section, indexPath in
-                let currentSection = section.dataSource.sectionModels[indexPath.section]
-                let currentItem = currentSection.items[indexPath.row]
-                print("###&& \(currentItem)")
-                self.viewModel.removeTodo(data: currentItem)
-            }
-            .disposed(by: viewModel.disposeBag)
-
+        // RxDataSource에 데이터 주입
         viewModel.todosSubject
             .map { todos in
                 // CreatedAt 기준으로 Dictionary 생성
@@ -147,10 +139,39 @@ extension ToDoVC {
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
 
+        // TableView Cell 선택
+        tableView.rx.itemSelected
+            .observe(on: MainScheduler.asyncInstance)
+            .bind { indexPath in
+                let currentSection = self.dataSource.sectionModels[indexPath.section]
+                let currentItem = currentSection.items[indexPath.row]
+
+                let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
+                guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
+                vc.viewModel = DetailToDoViewModel()
+                vc.viewModel.todo = currentItem
+                vc.viewModel.userAction = .edit
+                let navigationVC = UINavigationController(rootViewController: vc)
+                self.present(navigationVC, animated: true)
+
+                self.tableView.deselectRow(at: indexPath, animated: true)
+            }
+            .disposed(by: viewModel.disposeBag)
+
+        // TableView Cell 삭제
+        tableView.rx.itemDeleted
+            .observe(on: MainScheduler.asyncInstance)
+            .withUnretained(self)
+            .bind { section, indexPath in
+                let currentSection = section.dataSource.sectionModels[indexPath.section]
+                let currentItem = currentSection.items[indexPath.row]
+                self.viewModel.removeTodo(data: currentItem)
+            }
+            .disposed(by: viewModel.disposeBag)
+
+        // TodoSubject 에 이벤트 발생시, TableView Reload
         viewModel.todosSubject
             .subscribe { todos in
-                print("###& \(#line) \(todos)")
-
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }

@@ -42,6 +42,10 @@ extension DetailToDoVC {
         super.viewDidLoad()
         setupUI()
         uiBind()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         configure(action: viewModel.userAction)
     }
 }
@@ -51,9 +55,9 @@ extension DetailToDoVC {
 extension DetailToDoVC {
     private func setupUI() {
         confirmNavigationBar()
-        confirmViewMoldel()
 
-        confirmTextField()
+//        confirmTextField()
+        confirmTaskLabel()
 
         confirmConfirmButton()
         confirmCancelButton()
@@ -64,11 +68,30 @@ extension DetailToDoVC {
 
     func configure(action: UserAction) {
         if action == .add {
+            userActionLabel.text = "할일 추가"
+
             editButton.isHidden = true
+            taskLabel.isHidden = true
+            textField.isHidden = false
+//            textField.layer.opacity = 1
+//            taskLabel.layer.opacity = 0
+//            warningLabel.layer.opacity = 1
+
+            textField.becomeFirstResponder()
         } else {
-            textField.layer.opacity = 0
-            taskLabel.layer.opacity = 1
-            warningLabel.layer.opacity = 0
+            guard let todo = viewModel.todo else { return }
+            guard let isDone = todo.isDone else { return }
+            userActionLabel.text = "할일 수정"
+
+            taskLabel.text = todo.title
+            isConfirmSwitch.isOn = isDone
+
+            taskLabel.isHidden = false
+            textField.isHidden = true
+            warningLabel.isHidden = true
+//            textField.layer.opacity = 0
+//            taskLabel.layer.opacity = 1
+//            warningLabel.layer.opacity = 0
         }
     }
 }
@@ -76,10 +99,6 @@ extension DetailToDoVC {
 // MARK: - ViewModel Rx Binding 관련 모음
 
 extension DetailToDoVC {
-    private func confirmViewMoldel() {
-        viewModel = DetailToDoViewModel()
-    }
-
     private func uiBind() {
         // 맨 처음 띄어쓰기 방지, 두번째부터는 띄어쓰기 허용
         textField.rx.text.orEmpty.asObservable()
@@ -148,17 +167,23 @@ extension DetailToDoVC {
 
         // Edit, Cancel 버튼 클릭시, TextField, TaskLabel 숨김 활성화/비활성화 처리
         viewModel.cancelButtonIsHidden
-            .drive { result in
-                if result {
-                    self.taskLabel.layer.opacity = 0
-                    self.textField.layer.opacity = 1
-                    self.warningLabel.layer.opacity = 1
-                } else {
-                    self.taskLabel.layer.opacity = 1
-                    self.textField.layer.opacity = 0
-                    self.warningLabel.layer.opacity = 0
+            .drive(onNext: { [weak self] result in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    if result {
+                        self.taskLabel.isHidden = true
+                        self.textField.isHidden = false
+                        self.warningLabel.isHidden = false
+                    } else {
+                        // TextField 초기화
+                        self.textField.text = ""
+
+                        self.textField.isHidden = true
+                        self.warningLabel.isHidden = true
+                        self.taskLabel.isHidden = false
+                    }
                 }
-            }
+            })
             .disposed(by: viewModel.disposeBag)
     }
 }
@@ -199,14 +224,18 @@ extension DetailToDoVC {
     }
 }
 
-// MARK: - TextField 관련 모음
+// MARK: - TextField & Label 관련 모음
 
 extension DetailToDoVC {
-    private func confirmTextField() {
-        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16.0, height: 0))
-        textField.leftViewMode = .always
-
-        textField.underlined(viewSize: textField.bounds.width, color: UIColor.systemGray5)
+//    private func confirmTextField() {
+//        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 4, height: 0))
+//        textField.leftViewMode = .always
+//
+//        textField.underlined(viewSize: textField.frame.width, color: UIColor.systemGray5)
+//    }
+    
+    private func confirmTaskLabel() {
+        taskLabel.adjustsFontSizeToFitWidth = true
     }
 }
 
