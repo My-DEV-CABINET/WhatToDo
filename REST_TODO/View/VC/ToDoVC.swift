@@ -37,8 +37,7 @@ extension SectionOfCustomData: SectionModelType {
 final class ToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
-
-    var count = 1
+    @IBOutlet weak var searchbar: UISearchBar!
 
     private var viewModel = ToDoViewModel()
 
@@ -88,6 +87,8 @@ extension ToDoVC {
     private func setupUI() {
         view.backgroundColor = .white
         registerCell()
+        confirmTableView()
+        confirmSearchBar()
         confirmAddButton()
 
         /// Binding
@@ -121,6 +122,17 @@ extension ToDoVC {
 
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
+    }
+
+    private func confirmTableView() {
+        tableView.backgroundColor = .systemGray6
+        tableView.separatorStyle = .singleLine
+        tableView.indicatorStyle = .default
+    }
+
+    private func confirmSearchBar() {
+        searchbar.delegate = self
+        searchbar.setShowsCancelButton(true, animated: true)
     }
 }
 
@@ -192,5 +204,38 @@ extension ToDoVC {
                 self?.tableView.reloadData()
             })
             .disposed(by: viewModel.disposeBag)
+
+        // SearchBar 입력 이벤트 처리
+        searchbar.rx.text.orEmpty
+            .asDriver()
+            .debounce(.seconds(1))
+            .drive(onNext: { text in
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(text)")
+                self.viewModel.searchTodo(query: text)
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        // SearchBar 취소 이벤트 처리
+        searchbar.rx.cancelButtonClicked
+            .asDriver()
+            .drive(onNext: {
+                self.searchbar.text = ""
+                self.viewModel.requestGETTodos()
+                self.searchbar.resignFirstResponder()
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        // TableView 스크롤 이벤트 처리
+        tableView.rx.didScroll
+            .asDriver()
+            .map { self.tableView.contentOffset }
+            .drive(onNext: { event in
+                print("#### \(event.y) :: \(self.tableView.frame.height * 0.8)")
+            })
+            .disposed(by: viewModel.disposeBag)
     }
 }
+
+// MARK: - SearchBar Delegate 관련 모음
+
+extension ToDoVC: UISearchBarDelegate {}

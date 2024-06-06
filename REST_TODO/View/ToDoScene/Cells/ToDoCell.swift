@@ -20,6 +20,8 @@ final class ToDoCell: UITableViewCell {
     @IBOutlet weak var checkButton: UIButton!
     @IBOutlet weak var favoriteButton: UIButton!
     
+    var data: ToDoData?
+    
     // 셀 나타날 때 호출
     override func prepareForReuse() {
         setupUI()

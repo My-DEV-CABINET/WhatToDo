@@ -18,9 +18,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TableView" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Vvj-Wd-D0p">
-                                <rect key="frame" x="0.0" y="103" width="393" height="715"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TableView" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Vvj-Wd-D0p">
+                                <rect key="frame" x="0.0" y="159" width="393" height="659"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G25-Jr-iYu">
                                 <rect key="frame" x="313" y="738" width="50" height="50"/>
@@ -37,16 +36,26 @@
                                     <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                             </button>
+                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="ckS-w5-fD0">
+                                <rect key="frame" x="0.0" y="103" width="393" height="56"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="Y6W-OH-hqX" id="wb4-Kd-CyW"/>
+                                </connections>
+                            </searchBar>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="ckS-w5-fD0" firstAttribute="centerX" secondItem="vDu-zF-Fre" secondAttribute="centerX" id="0n0-7q-x4v"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Vvj-Wd-D0p" secondAttribute="trailing" id="4j0-0e-zLk"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="G25-Jr-iYu" secondAttribute="trailing" constant="30" id="9p0-RD-qpz"/>
                             <constraint firstItem="G25-Jr-iYu" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-30" id="HMB-Vs-td9"/>
-                            <constraint firstItem="Vvj-Wd-D0p" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="MEg-R0-C4P"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="Vvj-Wd-D0p" secondAttribute="bottom" id="Rqe-4A-PyU"/>
+                            <constraint firstItem="ckS-w5-fD0" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="dai-GV-2b4"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="n5N-5e-z7m"/>
+                            <constraint firstItem="ckS-w5-fD0" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="oxP-Av-MVI"/>
+                            <constraint firstItem="Vvj-Wd-D0p" firstAttribute="top" secondItem="ckS-w5-fD0" secondAttribute="bottom" id="sJ7-oR-89H"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="REST_TODO" id="HHv-HE-4Pi">
@@ -54,6 +63,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
+                        <outlet property="searchbar" destination="ckS-w5-fD0" id="jDV-1d-qSr"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>
                 </viewController>

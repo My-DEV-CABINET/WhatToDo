@@ -14,12 +14,12 @@ import RxSwift
 import Foundation
 
 final class ToDoViewModel {
-    var disposeBag = DisposeBag()
-
     var todosSubject = BehaviorSubject<[ToDoData]>(value: [])
+    var disposeBag = DisposeBag()
 
     private(set) var todos: [ToDoData]?
 
+    /// API Query
     private var page = 1
     private var filter = Filter.createdAt.rawValue
     private var orderBy = Order.desc.rawValue
@@ -58,6 +58,53 @@ final class ToDoViewModel {
                 guard let data = value.data else { return }
                 self.todos = data
                 print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(data)")
+                self.todosSubject.onNext(data)
+            case .failure(let error):
+                print("#### Error: \(error)")
+            }
+        }
+    }
+
+    /// Todo 데이터 검색
+    func searchTodo(query: String) {
+        let url = Constants.scheme + Constants.host + Constants.searchPath
+        let headers: HTTPHeaders = [
+            Constants.accept: Constants.applicationJson
+        ]
+        let parameters: [String: String] = [
+            "query": query,
+            "filter": filter,
+            "order_by": orderBy,
+            "page": page.description,
+            "per_page": perPage.description
+        ]
+
+        AF.request(
+            url,
+            method: .get,
+            parameters: parameters,
+            encoder: URLEncodedFormParameterEncoder(destination: .queryString),
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate()
+        // curl 표시
+        .cURLDescription { description in
+            print("curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDos.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let value):
+                guard let data = value.data else { return }
+                self.todos = data
+                print("#### 함수명: \(#function), Line: \(#line), 출력 Log: \(data)")
                 self.todosSubject.onNext(data)
             case .failure(let error):
                 print("#### Error: \(error)")
