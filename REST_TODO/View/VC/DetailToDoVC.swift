@@ -35,6 +35,7 @@ final class DetailToDoVC: UIViewController {
     var viewModel: DetailToDoViewModel!
 
     var eventHandler: ((Bool) -> Void)?
+    var dismissHandler: ((Bool) -> Void)?
 }
 
 // MARK: - View Life Cycle 관련 모음
@@ -219,11 +220,12 @@ extension DetailToDoVC {
                         viewModel.previousText = text
                         viewModel.createTodo(title: text, isDone: isDone) { success in
                             if success {
+                                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.eventHandler)")
                                 self.eventHandler?(true)
                                 self.navigationController?.dismiss(animated: true)
                             } else {
                                 // 오류 처리
-                                print("할 일 추가 실패")
+                                print("#### 할 일 추가 실패")
                             }
                         }
                     }
@@ -232,7 +234,19 @@ extension DetailToDoVC {
                     if tag == 1 {
                         // Confirm Button
                         guard let text = self.textField.text else { return }
-                        viewModel.previousText = text
+                        let isDone = self.isConfirmSwitch.isOn
+
+                        viewModel.editTodo(title: text, isDone: isDone) { success in
+                            if success {
+                                self.viewModel.previousText = text
+                                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.eventHandler)")
+                                self.eventHandler?(true)
+                                self.navigationController?.dismiss(animated: true)
+                            } else {
+                                // 오류 처리
+                                print("#### 할 일 업데이트 실패")
+                            }
+                        }
 
                     } else {
                         // Cancel Button

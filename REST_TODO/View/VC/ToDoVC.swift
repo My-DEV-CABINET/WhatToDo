@@ -38,6 +38,8 @@ final class ToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
 
+    var count = 1
+
     private var viewModel = ToDoViewModel()
 
     typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
@@ -113,9 +115,8 @@ extension ToDoVC {
         vc.viewModel = DetailToDoViewModel()
         vc.viewModel.userAction = .add
 
-        vc.eventHandler = { [weak self] b in
-            guard let self = self else { return }
-            self.viewModel.requestGETTodos()
+        vc.eventHandler = { [weak self] _ in
+            self?.viewModel.requestGETTodos()
         }
 
         let navigationVC = UINavigationController(rootViewController: vc)
@@ -160,6 +161,10 @@ extension ToDoVC {
                 vc.viewModel = DetailToDoViewModel()
                 vc.viewModel.todo = currentItem
                 vc.viewModel.userAction = .edit
+
+                vc.eventHandler = { [weak self] _ in
+                    self?.viewModel.requestGETTodos()
+                }
 
                 let navigationVC = UINavigationController(rootViewController: vc)
                 self.present(navigationVC, animated: true)
