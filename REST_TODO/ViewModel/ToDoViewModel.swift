@@ -15,7 +15,6 @@ import Foundation
 
 final class ToDoViewModel {
     var disposeBag = DisposeBag()
-    let apiService = APIService()
 
     var todosSubject = BehaviorSubject<[ToDoData]>(value: [])
 
@@ -28,13 +27,13 @@ final class ToDoViewModel {
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
     func requestGETTodos() {
-        let url = "https://phplaravel-574671-2962113.cloudwaysapps.com/api/v2/todos"
+        let url = Constants.scheme + Constants.host + Constants.path
         let parameters = ToDoDTO(page: page.description, filter: filter, orderBy: orderBy, perPage: perPage.description)
         let headers: HTTPHeaders = [
             .accept("\(Constants.applicationJson)")
         ]
 
-        _ = AF.request(
+        AF.request(
             url,
             method: .get,
             parameters: parameters,
@@ -52,12 +51,18 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self) { response in
-            guard let data = response.value?.data else { return }
-            self.todos = data
-            self.todosSubject.onNext(data)
+        .responseDecodable(of: ToDos.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let value):
+                guard let data = value.data else { return }
+                self.todos = data
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(data)")
+                self.todosSubject.onNext(data)
+            case .failure(let error):
+                print("#### Error: \(error)")
+            }
         }
-        .response
     }
 
     /// Todo 데이터 삭제
@@ -68,7 +73,7 @@ final class ToDoViewModel {
             .accept("\(Constants.applicationJson)")
         ]
 
-        _ = AF.request(
+        AF.request(
             url,
             method: .delete,
             headers: headers,
@@ -86,15 +91,18 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self) { response in
-            if let index = self.todos?.firstIndex(where: { $0.id == data.id }) {
-                print("### \(index)")
-                self.todos?.remove(at: index)
-                print("### \(self.todos?.count) 처리됨? - 2")
+        .responseDecodable(of: ToDos.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success:
+                if let index = self.todos?.firstIndex(where: { $0.id == data.id }) {
+                    self.todos?.remove(at: index)
+                }
                 self.todosSubject.onNext(self.todos ?? [])
+            case .failure(let error):
+                print("Error: \(error)")
             }
         }
-        .response
     }
 }
 

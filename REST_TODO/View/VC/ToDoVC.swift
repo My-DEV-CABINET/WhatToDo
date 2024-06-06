@@ -5,6 +5,7 @@
 //  Created by 준우의 MacBook 16 on 5/31/24.
 //
 
+/// Rx
 import RxDataSources
 import RxSwift
 
@@ -111,6 +112,12 @@ extension ToDoVC {
         guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
         vc.viewModel = DetailToDoViewModel()
         vc.viewModel.userAction = .add
+
+        vc.eventHandler = { [weak self] b in
+            guard let self = self else { return }
+            self.viewModel.requestGETTodos()
+        }
+
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
     }
@@ -142,7 +149,9 @@ extension ToDoVC {
         // TableView Cell 선택
         tableView.rx.itemSelected
             .observe(on: MainScheduler.asyncInstance)
-            .bind { indexPath in
+            .bind { [weak self] indexPath in
+                guard let self = self else { return }
+
                 let currentSection = self.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
 
@@ -151,6 +160,7 @@ extension ToDoVC {
                 vc.viewModel = DetailToDoViewModel()
                 vc.viewModel.todo = currentItem
                 vc.viewModel.userAction = .edit
+
                 let navigationVC = UINavigationController(rootViewController: vc)
                 self.present(navigationVC, animated: true)
 
@@ -166,16 +176,16 @@ extension ToDoVC {
                 let currentSection = section.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
                 self.viewModel.removeTodo(data: currentItem)
+                self.viewModel.requestGETTodos()
             }
             .disposed(by: viewModel.disposeBag)
 
         // TodoSubject 에 이벤트 발생시, TableView Reload
         viewModel.todosSubject
-            .subscribe { todos in
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
-            }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.tableView.reloadData()
+            })
             .disposed(by: viewModel.disposeBag)
     }
 }

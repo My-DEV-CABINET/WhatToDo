@@ -5,31 +5,83 @@
 ////  Created by 준우의 MacBook 16 on 5/21/24.
 ////
 //
-// import Combine
+
+/// Rx
 import RxCocoa
 import RxSwift
 
+/// Network
+import Alamofire
+
+/// Apple
 import Foundation
 
 final class DetailToDoViewModel {
     var disposeBag = DisposeBag()
 
     var todo: ToDoData?
-
     var userAction: UserAction = .edit
-    let textInput: BehaviorRelay<String> = BehaviorRelay(value: "")
-    let editButtonTap = PublishRelay<Void>()
+    var previousText = ""
 
-    var textValid: Driver<Bool> {
-        return textInput
+    let textInputRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
+    let buttonTapRelay = PublishRelay<Int>()
+    let editTapRelay = PublishRelay<Void>()
+
+    var textValidDriver: Driver<Bool> {
+        return textInputRelay
             .map { $0.count > 5 }
             .asDriver(onErrorJustReturn: false)
     }
 
-    var cancelButtonIsHidden: Driver<Bool> {
-        return editButtonTap
+    var isHiddenValid: Driver<Bool> {
+        return editTapRelay
+            .filter { self.userAction == .edit }
             .scan(false) { isHidden, _ in !isHidden }
             .asDriver(onErrorJustReturn: false)
+    }
+
+    func createTodo(title: String, isDone: Bool, completion: @escaping (Bool) -> Void) {
+        // POST
+        let url = Constants.scheme + Constants.host + Constants.postPath
+        let headers: HTTPHeaders = [Constants.accept: Constants.applicationJson, Constants.contentType: Constants.applicationJson]
+        let parameters: [String: String] = [
+            "title": title,
+            "is_done": isDone.description
+        ]
+
+        AF.request(
+            url,
+            method: .post,
+            parameters: parameters,
+            encoder: JSONParameterEncoder.default,
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate()
+        // curl 표시
+        .cURLDescription { description in
+            print("curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDo.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success:
+                completion(true)
+            case .failure(let error):
+                print("Error: \(error)")
+                completion(false)
+            }
+        }
+    }
+
+    func editTodo(title: String, isDone: Bool) {
+        // PUT
     }
 }
 
