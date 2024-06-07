@@ -44,7 +44,7 @@ extension DetailToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        uiBind()
+        bind()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -107,7 +107,7 @@ extension DetailToDoVC {
 // MARK: - ViewModel Rx Binding 관련 모음
 
 extension DetailToDoVC {
-    private func uiBind() {
+    private func bind() {
         // 맨 처음 띄어쓰기 방지, 두번째부터는 띄어쓰기 허용
         textField.rx.text.orEmpty.asObservable()
             .scan("") { lastValue, newValue in
@@ -182,15 +182,16 @@ extension DetailToDoVC {
 
                 if result {
                     // 편집 시작
-                    self.textField.text = ""
                     self.textField.becomeFirstResponder()
+                    self.textField.text = viewModel.previousText
+                    self.viewModel.textInputRelay.accept(viewModel.previousText)
 
                     self.isConfirmSwitch.isEnabled = true
                     self.taskLabel.isHidden = true
 
                     self.cancelButton.isHidden = false
                     self.textField.isHidden = false
-                    self.warningLabel.isHidden = false
+                    self.warningLabel.isHidden = true
                     self.confirmButton.isHidden = false
 
                 } else {

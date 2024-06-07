@@ -38,9 +38,10 @@ extension SectionOfCustomData: SectionModelType {
 final class ToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var searchbar: UISearchBar!
+    @IBOutlet weak var hiddenButton: UIBarButtonItem!
 
     private var viewModel = ToDoViewModel()
+    private var searchVC: UISearchController!
 
     typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
 
@@ -89,7 +90,7 @@ extension ToDoVC {
         view.backgroundColor = .white
         registerCell()
         confirmTableView()
-        confirmSearchBar()
+        confirmSearchVC()
         confirmAddButton()
 
         /// Binding
@@ -134,9 +135,14 @@ extension ToDoVC {
         tableView.indicatorStyle = .default
     }
 
-    private func confirmSearchBar() {
-        searchbar.delegate = self
-        searchbar.setShowsCancelButton(true, animated: true)
+    private func confirmSearchVC() {
+        searchVC = UISearchController()
+        searchVC.obscuresBackgroundDuringPresentation = false
+        searchVC.hidesNavigationBarDuringPresentation = true
+        searchVC.automaticallyShowsCancelButton = true
+        searchVC.searchResultsUpdater = nil
+
+        navigationItem.searchController = searchVC
     }
 }
 
@@ -210,7 +216,7 @@ extension ToDoVC {
             .disposed(by: viewModel.disposeBag)
 
         // SearchBar 입력 이벤트 처리
-        searchbar.rx.text.orEmpty
+        searchVC.searchBar.rx.text.orEmpty
             .asDriver()
             .debounce(.seconds(1))
             .drive(onNext: { text in
@@ -220,12 +226,12 @@ extension ToDoVC {
             .disposed(by: viewModel.disposeBag)
 
         // SearchBar 취소 이벤트 처리
-        searchbar.rx.cancelButtonClicked
+        searchVC.searchBar.rx.cancelButtonClicked
             .asDriver()
             .drive(onNext: {
-                self.searchbar.text = ""
+                self.searchVC.searchBar.text = ""
                 self.viewModel.requestGETTodos()
-                self.searchbar.resignFirstResponder()
+                self.searchVC.searchBar.resignFirstResponder()
             })
             .disposed(by: viewModel.disposeBag)
 
@@ -251,15 +257,35 @@ extension ToDoVC {
         viewModel.validPagination
             .drive(onNext: { valid in
                 if valid == true, self.viewModel.paginationRelay.value == true {
-                    self.viewModel.requestMoreTodos {
-                        self.viewModel.paginationRelay.accept(false)
+                    if self.searchVC.isActive == true {
+                        // 서치바 동작 상태일 때
+                        guard let text = self.searchVC.searchBar.text else { return }
+                        self.viewModel.requestMoreQueryTodos(query: text) {
+                            self.viewModel.paginationRelay.accept(false)
+                        }
+                    } else {
+                        // 서치바 동작 상태 아닐 때
+                        self.viewModel.requestMoreTodos {
+                            self.viewModel.paginationRelay.accept(false)
+                        }
                     }
                 }
             })
             .disposed(by: viewModel.disposeBag)
+
+        // 완료 보이기 이벤트 전달
+        hiddenButton.rx.tap
+            .debug()
+            .bind { [weak self] in
+                self?.viewModel.hiddenRelay.accept(true)
+            }
+            .disposed(by: viewModel.disposeBag)
+
+        // 완료 보이기 여부에 따라서 버튼명 변경
+        viewModel.validHidden
+            .drive(onNext: { [weak self] title in
+                self?.hiddenButton.title = title
+            })
+            .disposed(by: viewModel.disposeBag)
     }
 }
-
-// MARK: - SearchBar Delegate 관련 모음
-
-extension ToDoVC: UISearchBarDelegate {}

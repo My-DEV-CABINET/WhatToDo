@@ -18,20 +18,38 @@ final class ToDoViewModel {
     var disposeBag = DisposeBag()
 
     private(set) var todos: [ToDoData] = []
+    private let utilityQueue = DispatchQueue.global(qos: .utility)
+
+    var isHidden: Bool = true
 
     /// API Query
     private var page = 1
     private var filter = Filter.createdAt.rawValue
     private var orderBy = Order.desc.rawValue
     private var perPage = 10
+    private var isDone: Bool? // 완료 여부
 
     /// 페이지네이션 이벤트 처리
     var paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
+    /// 완료 숨기기 버튼 이벤트 처리
+    var hiddenRelay: PublishRelay<Bool> = .init()
+
+    /// 페이지네이션 이벤트 유효성 검사
     var validPagination: Driver<Bool> {
         return paginationRelay
             .distinctUntilChanged()
             .asDriver(onErrorJustReturn: false)
+    }
+
+    /// 완료 숨기기 이벤트 유효성 검사
+    var validHidden: Driver<String> {
+        return hiddenRelay
+            .scan(false) { isHidden, _ in !isHidden }
+            .map { isHidden in
+                return isHidden ? "완료 보이기" : "완료 숨기기"
+            }
+            .asDriver(onErrorJustReturn: "완료 숨기기")
     }
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
@@ -60,7 +78,7 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self) { [weak self] response in
+        .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success(let value):
@@ -107,7 +125,7 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self) { [weak self] response in
+        .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success(let value):
@@ -147,7 +165,7 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self) { [weak self] response in
+        .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success:
@@ -187,7 +205,7 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self) { [weak self] response in
+        .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success(let value):
@@ -197,6 +215,57 @@ final class ToDoViewModel {
                 completion()
             case .failure(let error):
                 print("#### Error: \(error)")
+                if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
+                    print("#### Response Data: \(jsonString)")
+                }
+            }
+        }
+    }
+
+    // 검색 데이터 추가 요청
+    func requestMoreQueryTodos(query: String, completion: @escaping () -> Void) {
+        let url = Constants.scheme + Constants.host + Constants.searchPath
+        let headers: HTTPHeaders = [
+            Constants.accept: Constants.applicationJson
+        ]
+        let parameters: [String: String] = [
+            "query": query,
+            "filter": filter,
+            "order_by": orderBy,
+            "page": page.description,
+            "per_page": perPage.description
+        ]
+
+        AF.request(
+            url,
+            method: .get,
+            parameters: parameters,
+            encoder: URLEncodedFormParameterEncoder(destination: .queryString),
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate(statusCode: 200 ..< 500)
+        // curl 표시
+        .cURLDescription { description in
+            print("#### curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("#### 전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let value):
+                guard let data = value.data else { return }
+                self.todos += data
+                self.todosSubject.onNext(self.todos)
+                completion()
+            case .failure(let error):
+                print("#### Error: \(error)")
+
                 if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
                     print("#### Response Data: \(jsonString)")
                 }
