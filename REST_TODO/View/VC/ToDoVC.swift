@@ -9,6 +9,7 @@
 import RxDataSources
 import RxSwift
 
+/// Apple
 import UIKit
 
 enum Identifier: String {
@@ -117,7 +118,9 @@ extension ToDoVC {
         vc.viewModel.userAction = .add
 
         vc.eventHandler = { [weak self] _ in
+            self?.viewModel.resetPage()
             self?.viewModel.requestGETTodos()
+            self?.tableView.setContentOffset(.zero, animated: true)
         }
 
         let navigationVC = UINavigationController(rootViewController: vc)
@@ -125,6 +128,7 @@ extension ToDoVC {
     }
 
     private func confirmTableView() {
+        tableView.bounces = false
         tableView.backgroundColor = .systemGray6
         tableView.separatorStyle = .singleLine
         tableView.indicatorStyle = .default
@@ -225,12 +229,32 @@ extension ToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
 
-        // TableView 스크롤 이벤트 처리
+        // 스크롤 이벤트 처리
         tableView.rx.didScroll
             .asDriver()
-            .map { self.tableView.contentOffset }
-            .drive(onNext: { event in
-                print("#### \(event.y) :: \(self.tableView.frame.height * 0.8)")
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                let currentOffset = self.tableView.contentOffset.y
+                let tableViewHeight = self.tableView.frame.size.height
+                let contentHeight = self.tableView.contentSize.height
+
+                let paginationOffset = (contentHeight - tableViewHeight - 100) * 0.75
+
+                if currentOffset > paginationOffset, self.viewModel.paginationRelay.value == false {
+                    self.viewModel.increasePage()
+                    self.viewModel.paginationRelay.accept(true)
+                }
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        // 페이지네이션 처리
+        viewModel.validPagination
+            .drive(onNext: { valid in
+                if valid == true, self.viewModel.paginationRelay.value == true {
+                    self.viewModel.requestMoreTodos {
+                        self.viewModel.paginationRelay.accept(false)
+                    }
+                }
             })
             .disposed(by: viewModel.disposeBag)
     }

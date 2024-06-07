@@ -17,13 +17,22 @@ final class ToDoViewModel {
     var todosSubject = BehaviorSubject<[ToDoData]>(value: [])
     var disposeBag = DisposeBag()
 
-    private(set) var todos: [ToDoData]?
+    private(set) var todos: [ToDoData] = []
 
     /// API Query
     private var page = 1
     private var filter = Filter.createdAt.rawValue
     private var orderBy = Order.desc.rawValue
     private var perPage = 10
+
+    /// 페이지네이션 이벤트 처리
+    var paginationRelay: BehaviorRelay<Bool> = .init(value: false)
+
+    var validPagination: Driver<Bool> {
+        return paginationRelay
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: false)
+    }
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
     func requestGETTodos() {
@@ -42,14 +51,14 @@ final class ToDoViewModel {
         )
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
-        .validate()
+        .validate(statusCode: 200 ..< 500)
         // curl 표시
         .cURLDescription { description in
-            print("curl -v : \(description)")
+            print("#### curl -v : \(description)")
         }
         // 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
-            print("전체 URL은 \(request)")
+            print("#### 전체 URL은 \(request)")
         }
         .responseDecodable(of: ToDos.self) { [weak self] response in
             guard let self = self else { return }
@@ -57,7 +66,6 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos = data
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(data)")
                 self.todosSubject.onNext(data)
             case .failure(let error):
                 print("#### Error: \(error)")
@@ -67,6 +75,7 @@ final class ToDoViewModel {
 
     /// Todo 데이터 검색
     func searchTodo(query: String) {
+        resetPage()
         let url = Constants.scheme + Constants.host + Constants.searchPath
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
@@ -142,14 +151,69 @@ final class ToDoViewModel {
             guard let self = self else { return }
             switch response.result {
             case .success:
-                if let index = self.todos?.firstIndex(where: { $0.id == data.id }) {
-                    self.todos?.remove(at: index)
+                if let index = self.todos.firstIndex(where: { $0.id == data.id }) {
+                    self.todos.remove(at: index)
                 }
-                self.todosSubject.onNext(self.todos ?? [])
+
             case .failure(let error):
                 print("Error: \(error)")
             }
         }
+    }
+
+    // Todos 데이터 추가 요청
+    func requestMoreTodos(completion: @escaping () -> Void) {
+        let url = Constants.scheme + Constants.host + Constants.path
+        let parameters = ToDoDTO(page: page.description, filter: filter, orderBy: orderBy, perPage: perPage.description)
+        let headers: HTTPHeaders = [
+            .accept("\(Constants.applicationJson)")
+        ]
+
+        AF.request(
+            url,
+            method: .get,
+            parameters: parameters,
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate(statusCode: 200 ..< 500)
+        // curl 표시
+        .cURLDescription { description in
+            print("#### curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("#### 전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDos.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let value):
+                guard let data = value.data else { return }
+                self.todos += data
+                self.todosSubject.onNext(self.todos)
+                completion()
+            case .failure(let error):
+                print("#### Error: \(error)")
+                if let data = response.data, let jsonString = String(data: data, encoding: .utf8) {
+                    print("#### Response Data: \(jsonString)")
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Pagination 처리 모음
+
+extension ToDoViewModel {
+    func increasePage() {
+        page += 1
+    }
+
+    func resetPage() {
+        page = 1
     }
 }
 
