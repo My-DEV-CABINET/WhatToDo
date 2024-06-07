@@ -33,7 +33,7 @@ final class ToDoViewModel {
     var paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 완료 숨기기 버튼 이벤트 처리
-    var hiddenRelay: PublishRelay<Bool> = .init()
+    var hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 페이지네이션 이벤트 유효성 검사
     var validPagination: Driver<Bool> {
@@ -45,17 +45,38 @@ final class ToDoViewModel {
     /// 완료 숨기기 이벤트 유효성 검사
     var validHidden: Driver<String> {
         return hiddenRelay
+            .distinctUntilChanged()
             .scan(false) { isHidden, _ in !isHidden }
             .map { isHidden in
-                return isHidden ? "완료 보이기" : "완료 숨기기"
+                return isHidden ? "완료 숨기기" : "완료 보이기"
             }
             .asDriver(onErrorJustReturn: "완료 숨기기")
     }
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
-    func requestGETTodos() {
+    func requestGETTodos(completion: @escaping () -> Void?) {
         let url = Constants.scheme + Constants.host + Constants.path
-        let parameters = ToDoDTO(page: page.description, filter: filter, orderBy: orderBy, perPage: perPage.description)
+        var parameters: [String: String] = [:]
+
+        if hiddenRelay.value == false {
+            /// 완료 여부 보이기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "per_page": perPage.description
+            ]
+        } else {
+            /// 완료 여부 숨기기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": false.description,
+                "per_page": perPage.description
+            ]
+        }
+
         let headers: HTTPHeaders = [
             .accept("\(Constants.applicationJson)")
         ]
@@ -64,6 +85,7 @@ final class ToDoViewModel {
             url,
             method: .get,
             parameters: parameters,
+            encoder: URLEncodedFormParameterEncoder(destination: .queryString),
             headers: headers,
             interceptor: .retryPolicy
         )
@@ -85,6 +107,7 @@ final class ToDoViewModel {
                 guard let data = value.data else { return }
                 self.todos = data
                 self.todosSubject.onNext(data)
+                completion()
             case .failure(let error):
                 print("#### Error: \(error)")
             }
@@ -98,13 +121,28 @@ final class ToDoViewModel {
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
         ]
-        let parameters: [String: String] = [
-            "query": query,
-            "filter": filter,
-            "order_by": orderBy,
-            "page": page.description,
-            "per_page": perPage.description
-        ]
+        var parameters: [String: String] = [:]
+
+        if hiddenRelay.value == false {
+            /// 완료 여부 보이기
+            parameters = [
+                "query": query,
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "per_page": perPage.description
+            ]
+        } else {
+            /// 완료 여부 숨기기
+            parameters = [
+                "query": query,
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": false.description,
+                "per_page": perPage.description
+            ]
+        }
 
         AF.request(
             url,
@@ -127,6 +165,7 @@ final class ToDoViewModel {
         }
         .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
+
             switch response.result {
             case .success(let value):
                 guard let data = value.data else { return }
@@ -182,7 +221,26 @@ final class ToDoViewModel {
     // Todos 데이터 추가 요청
     func requestMoreTodos(completion: @escaping () -> Void) {
         let url = Constants.scheme + Constants.host + Constants.path
-        let parameters = ToDoDTO(page: page.description, filter: filter, orderBy: orderBy, perPage: perPage.description)
+        var parameters: [String: String] = [:]
+
+        if hiddenRelay.value == false {
+            /// 완료 여부 보이기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "per_page": perPage.description
+            ]
+        } else {
+            /// 완료 여부 숨기기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": false.description,
+                "per_page": perPage.description
+            ]
+        }
         let headers: HTTPHeaders = [
             .accept("\(Constants.applicationJson)")
         ]
@@ -191,6 +249,7 @@ final class ToDoViewModel {
             url,
             method: .get,
             parameters: parameters,
+            encoder: URLEncodedFormParameterEncoder(destination: .queryString),
             headers: headers,
             interceptor: .retryPolicy
         )
@@ -228,13 +287,26 @@ final class ToDoViewModel {
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
         ]
-        let parameters: [String: String] = [
-            "query": query,
-            "filter": filter,
-            "order_by": orderBy,
-            "page": page.description,
-            "per_page": perPage.description
-        ]
+        var parameters: [String: String] = [:]
+
+        if hiddenRelay.value == false {
+            /// 완료 여부 보이기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "per_page": perPage.description
+            ]
+        } else {
+            /// 완료 여부 숨기기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": false.description,
+                "per_page": perPage.description
+            ]
+        }
 
         AF.request(
             url,

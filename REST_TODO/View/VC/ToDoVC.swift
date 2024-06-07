@@ -42,6 +42,7 @@ final class ToDoVC: UIViewController {
 
     private var viewModel = ToDoViewModel()
     private var searchVC: UISearchController!
+    private var refreshControl: UIRefreshControl!
 
     typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
 
@@ -79,7 +80,7 @@ extension ToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        viewModel.requestGETTodos()
+        viewModel.requestGETTodos(completion: {})
     }
 }
 
@@ -90,6 +91,7 @@ extension ToDoVC {
         view.backgroundColor = .white
         registerCell()
         confirmTableView()
+        confirmRefreshControl()
         confirmSearchVC()
         confirmAddButton()
 
@@ -120,7 +122,7 @@ extension ToDoVC {
 
         vc.eventHandler = { [weak self] _ in
             self?.viewModel.resetPage()
-            self?.viewModel.requestGETTodos()
+            self?.viewModel.requestGETTodos(completion: {})
             self?.tableView.setContentOffset(.zero, animated: true)
         }
 
@@ -129,19 +131,25 @@ extension ToDoVC {
     }
 
     private func confirmTableView() {
-        tableView.bounces = false
+        tableView.bounces = true
         tableView.backgroundColor = .systemGray6
         tableView.separatorStyle = .singleLine
         tableView.indicatorStyle = .default
     }
 
-    private func confirmSearchVC() {
-        searchVC = UISearchController()
-        searchVC.obscuresBackgroundDuringPresentation = false
-        searchVC.hidesNavigationBarDuringPresentation = true
-        searchVC.automaticallyShowsCancelButton = true
-        searchVC.searchResultsUpdater = nil
+    private func confirmRefreshControl() {
+        refreshControl = UIRefreshControl()
 
+        tableView.refreshControl = refreshControl
+    }
+
+    private func confirmSearchVC() {
+        searchVC = UISearchController(searchResultsController: nil)
+        searchVC.obscuresBackgroundDuringPresentation = false
+        searchVC.hidesNavigationBarDuringPresentation = false
+        searchVC.automaticallyShowsCancelButton = true
+
+        navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.searchController = searchVC
     }
 }
@@ -185,7 +193,7 @@ extension ToDoVC {
                 vc.viewModel.userAction = .edit
 
                 vc.eventHandler = { [weak self] _ in
-                    self?.viewModel.requestGETTodos()
+                    self?.viewModel.requestGETTodos(completion: {})
                 }
 
                 let navigationVC = UINavigationController(rootViewController: vc)
@@ -203,7 +211,7 @@ extension ToDoVC {
                 let currentSection = section.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
                 self.viewModel.removeTodo(data: currentItem)
-                self.viewModel.requestGETTodos()
+                self.viewModel.requestGETTodos(completion: {})
             }
             .disposed(by: viewModel.disposeBag)
 
@@ -215,10 +223,23 @@ extension ToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
 
+        // TableView RefreshControl 이벤트 처리
+        refreshControl.rx.controlEvent(.valueChanged)
+            .subscribe(onNext: { [weak self] _ in
+                self?.viewModel.resetPage()
+                self?.viewModel.requestGETTodos(completion: {
+                    DispatchQueue.main.async {
+                        self?.refreshControl.endRefreshing()
+                    }
+                })
+            })
+            .disposed(by: viewModel.disposeBag)
+
         // SearchBar 입력 이벤트 처리
         searchVC.searchBar.rx.text.orEmpty
             .asDriver()
             .debounce(.seconds(1))
+            .filter { $0.isEmpty == false }
             .drive(onNext: { text in
                 print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(text)")
                 self.viewModel.searchTodo(query: text)
@@ -230,7 +251,7 @@ extension ToDoVC {
             .asDriver()
             .drive(onNext: {
                 self.searchVC.searchBar.text = ""
-                self.viewModel.requestGETTodos()
+                self.viewModel.requestGETTodos(completion: {})
                 self.searchVC.searchBar.resignFirstResponder()
             })
             .disposed(by: viewModel.disposeBag)
@@ -277,14 +298,23 @@ extension ToDoVC {
         hiddenButton.rx.tap
             .debug()
             .bind { [weak self] in
-                self?.viewModel.hiddenRelay.accept(true)
+                let isHidden = self?.viewModel.hiddenRelay.value
+                self?.viewModel.hiddenRelay.accept(!(isHidden ?? false))
             }
             .disposed(by: viewModel.disposeBag)
 
-        // 완료 보이기 여부에 따라서 버튼명 변경
+        // 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
         viewModel.validHidden
+            .debug()
             .drive(onNext: { [weak self] title in
-                self?.hiddenButton.title = title
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(title)")
+                UIView.animate(withDuration: 1) {
+                    self?.hiddenButton.title = title
+                }
+
+                self?.viewModel.resetPage()
+                self?.viewModel.requestGETTodos(completion: {})
+
             })
             .disposed(by: viewModel.disposeBag)
     }

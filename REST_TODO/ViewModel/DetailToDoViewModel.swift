@@ -23,6 +23,8 @@ final class DetailToDoViewModel {
     var userAction: UserAction = .edit
     var previousText = ""
 
+    private let utilityQueue = DispatchQueue.global(qos: .utility)
+
     let textInputRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
     let buttonTapRelay = PublishRelay<Int>()
     let editTapRelay = PublishRelay<Void>()
@@ -59,16 +61,16 @@ final class DetailToDoViewModel {
         )
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
-        .validate()
+        .validate(statusCode: 200 ..< 500)
         // curl 표시
         .cURLDescription { description in
-            print("curl -v : \(description)")
+            print("#### curl -v : \(description)")
         }
         // 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
-            print("전체 URL은 \(request)")
+            print("#### 전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDo.self) { [weak self] response in
+        .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success:
@@ -103,7 +105,7 @@ final class DetailToDoViewModel {
         )
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
-        .validate()
+        .validate(statusCode: 200 ..< 500)
         // curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
@@ -112,7 +114,7 @@ final class DetailToDoViewModel {
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDo.self) { [weak self] response in
+        .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success:

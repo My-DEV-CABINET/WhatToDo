@@ -222,7 +222,10 @@ extension DetailToDoVC {
                         viewModel.createTodo(title: text, isDone: isDone) { success in
                             if success {
                                 self.eventHandler?(true)
-                                self.navigationController?.dismiss(animated: true)
+
+                                DispatchQueue.main.async {
+                                    self.navigationController?.dismiss(animated: true)
+                                }
                             } else {
                                 // 오류 처리
                                 print("#### 할 일 추가 실패")
