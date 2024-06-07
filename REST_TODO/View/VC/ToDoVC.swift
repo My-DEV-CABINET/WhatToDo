@@ -179,7 +179,7 @@ extension ToDoVC {
 
         // TableView Cell 선택
         tableView.rx.itemSelected
-            .observe(on: MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.instance)
             .bind { [weak self] indexPath in
                 guard let self = self else { return }
 
@@ -205,61 +205,78 @@ extension ToDoVC {
 
         // TableView Cell 삭제
         tableView.rx.itemDeleted
-            .observe(on: MainScheduler.asyncInstance)
+            .observe(on: MainScheduler.instance)
             .withUnretained(self)
-            .bind { section, indexPath in
+            .subscribe(onNext: { section, indexPath in
                 let currentSection = section.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
                 self.viewModel.removeTodo(data: currentItem)
                 self.viewModel.requestGETTodos(completion: {})
-            }
-            .disposed(by: viewModel.disposeBag)
-
-        // TodoSubject 에 이벤트 발생시, TableView Reload
-        viewModel.todosSubject
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.tableView.reloadData()
             })
             .disposed(by: viewModel.disposeBag)
 
         // TableView RefreshControl 이벤트 처리
         refreshControl.rx.controlEvent(.valueChanged)
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
             .subscribe(onNext: { [weak self] _ in
-                self?.viewModel.resetPage()
-                self?.viewModel.requestGETTodos(completion: {
-                    DispatchQueue.main.async {
-                        self?.refreshControl.endRefreshing()
+                DispatchQueue.main.async {
+                    self?.viewModel.resetPage()
+
+                    if self?.searchVC.isActive == true {
+                        guard let text = self?.searchVC.searchBar.text else { return }
+
+                        DispatchQueue.main.async {
+                            self?.viewModel.searchTodo(query: text, completion: {
+                                self?.refreshControl.endRefreshing()
+                            })
+                        }
+
+                    } else {
+                        DispatchQueue.main.async {
+                            self?.viewModel.requestGETTodos(completion: {
+                                self?.refreshControl.endRefreshing()
+                            })
+                        }
                     }
-                })
+                }
             })
             .disposed(by: viewModel.disposeBag)
 
         // SearchBar 입력 이벤트 처리
         searchVC.searchBar.rx.text.orEmpty
-            .asDriver()
-            .debounce(.seconds(1))
-            .filter { $0.isEmpty == false }
-            .drive(onNext: { text in
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(text)")
-                self.viewModel.searchTodo(query: text)
+            .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
+            .filter { !$0.isEmpty }
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
+            .subscribe(onNext: { [weak self] text in
+                self?.viewModel.resetPage()
+                self?.viewModel.searchTodo(query: text, completion: {})
+
+                DispatchQueue.main.async {
+                    self?.tableView.setContentOffset(.zero, animated: true)
+                }
             })
             .disposed(by: viewModel.disposeBag)
 
         // SearchBar 취소 이벤트 처리
         searchVC.searchBar.rx.cancelButtonClicked
-            .asDriver()
-            .drive(onNext: {
-                self.searchVC.searchBar.text = ""
-                self.viewModel.requestGETTodos(completion: {})
-                self.searchVC.searchBar.resignFirstResponder()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                self?.tableView.setContentOffset(.zero, animated: true)
+                self?.searchVC.searchBar.text = ""
+                self?.viewModel.resetPage()
+                self?.viewModel.requestGETTodos(completion: {
+                    DispatchQueue.main.async {
+                        self?.viewModel.paginationRelay.accept(false)
+                    }
+                })
+                self?.searchVC.searchBar.resignFirstResponder()
             })
             .disposed(by: viewModel.disposeBag)
 
         // 스크롤 이벤트 처리
         tableView.rx.didScroll
-            .asDriver()
-            .drive(onNext: { [weak self] in
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 let currentOffset = self.tableView.contentOffset.y
                 let tableViewHeight = self.tableView.frame.size.height
@@ -274,20 +291,29 @@ extension ToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
 
-        // 페이지네이션 처리
+        // 페이지네이션 처리 - 비동기 이벤트 호출 처리
         viewModel.validPagination
-            .drive(onNext: { valid in
-                if valid == true, self.viewModel.paginationRelay.value == true {
-                    if self.searchVC.isActive == true {
-                        // 서치바 동작 상태일 때
-                        guard let text = self.searchVC.searchBar.text else { return }
-                        self.viewModel.requestMoreQueryTodos(query: text) {
-                            self.viewModel.paginationRelay.accept(false)
-                        }
-                    } else {
-                        // 서치바 동작 상태 아닐 때
-                        self.viewModel.requestMoreTodos {
-                            self.viewModel.paginationRelay.accept(false)
+            .asObservable()
+            .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
+            .subscribe(onNext: { [weak self] valid in
+                DispatchQueue.main.async {
+                    if valid == true, self?.viewModel.paginationRelay.value == true {
+                        print("#### \(self?.searchVC.isActive)")
+                        if self?.searchVC.isActive == true {
+                            // 서치바 동작 상태일 때
+                            guard let text = self?.searchVC.searchBar.text else { return }
+                            DispatchQueue.main.async {
+                                self?.viewModel.requestMoreQueryTodos(query: text) {
+                                    self?.viewModel.paginationRelay.accept(false)
+                                }
+                            }
+                        } else {
+                            // 서치바 동작 상태 아닐 때
+                            DispatchQueue.main.async {
+                                self?.viewModel.requestMoreTodos {
+                                    self?.viewModel.paginationRelay.accept(false)
+                                }
+                            }
                         }
                     }
                 }
@@ -296,7 +322,6 @@ extension ToDoVC {
 
         // 완료 보이기 이벤트 전달
         hiddenButton.rx.tap
-            .debug()
             .bind { [weak self] in
                 let isHidden = self?.viewModel.hiddenRelay.value
                 self?.viewModel.hiddenRelay.accept(!(isHidden ?? false))
@@ -305,16 +330,10 @@ extension ToDoVC {
 
         // 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
         viewModel.validHidden
-            .debug()
             .drive(onNext: { [weak self] title in
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(title)")
-                UIView.animate(withDuration: 1) {
-                    self?.hiddenButton.title = title
-                }
-
+                self?.hiddenButton.title = title
                 self?.viewModel.resetPage()
                 self?.viewModel.requestGETTodos(completion: {})
-
             })
             .disposed(by: viewModel.disposeBag)
     }

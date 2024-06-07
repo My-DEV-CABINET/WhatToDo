@@ -18,7 +18,6 @@ final class ToDoViewModel {
     var disposeBag = DisposeBag()
 
     private(set) var todos: [ToDoData] = []
-    private let utilityQueue = DispatchQueue.global(qos: .utility)
 
     var isHidden: Bool = true
 
@@ -55,6 +54,7 @@ final class ToDoViewModel {
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
     func requestGETTodos(completion: @escaping () -> Void?) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
         var parameters: [String: String] = [:]
 
@@ -115,7 +115,8 @@ final class ToDoViewModel {
     }
 
     /// Todo 데이터 검색
-    func searchTodo(query: String) {
+    func searchTodo(query: String, completion: @escaping () -> Void) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         resetPage()
         let url = Constants.scheme + Constants.host + Constants.searchPath
         let headers: HTTPHeaders = [
@@ -170,8 +171,8 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos = data
-                print("#### 함수명: \(#function), Line: \(#line), 출력 Log: \(data)")
                 self.todosSubject.onNext(data)
+                completion()
             case .failure(let error):
                 print("#### Error: \(error)")
             }
@@ -180,6 +181,7 @@ final class ToDoViewModel {
 
     /// Todo 데이터 삭제
     func removeTodo(data: ToDoData) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         guard let id = data.id else { return }
         let url = "https://phplaravel-574671-2962113.cloudwaysapps.com/api/v2/todos/\(id)"
         let headers: HTTPHeaders = [
@@ -220,6 +222,7 @@ final class ToDoViewModel {
 
     // Todos 데이터 추가 요청
     func requestMoreTodos(completion: @escaping () -> Void) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
         var parameters: [String: String] = [:]
 
@@ -283,6 +286,7 @@ final class ToDoViewModel {
 
     // 검색 데이터 추가 요청
     func requestMoreQueryTodos(query: String, completion: @escaping () -> Void) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.searchPath
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
@@ -292,6 +296,7 @@ final class ToDoViewModel {
         if hiddenRelay.value == false {
             /// 완료 여부 보이기
             parameters = [
+                "query": query,
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
@@ -300,6 +305,7 @@ final class ToDoViewModel {
         } else {
             /// 완료 여부 숨기기
             parameters = [
+                "query": query,
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
@@ -334,6 +340,7 @@ final class ToDoViewModel {
                 guard let data = value.data else { return }
                 self.todos += data
                 self.todosSubject.onNext(self.todos)
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.todos.count)")
                 completion()
             case .failure(let error):
                 print("#### Error: \(error)")
