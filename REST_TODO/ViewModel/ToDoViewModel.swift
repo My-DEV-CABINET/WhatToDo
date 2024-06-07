@@ -175,12 +175,13 @@ final class ToDoViewModel {
                 completion()
             case .failure(let error):
                 print("#### Error: \(error)")
+                self.todosSubject.onNext([])
             }
         }
     }
 
     /// Todo 데이터 삭제
-    func removeTodo(data: ToDoData) {
+    func removeTodo(data: ToDoData, completion: @escaping () -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         guard let id = data.id else { return }
         let url = "https://phplaravel-574671-2962113.cloudwaysapps.com/api/v2/todos/\(id)"
@@ -197,7 +198,7 @@ final class ToDoViewModel {
         .validate()
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
-        .validate()
+        .validate(statusCode: 200 ..< 300)
         // curl 표시
         .cURLDescription { description in
             print("curl -v : \(description)")
@@ -206,14 +207,15 @@ final class ToDoViewModel {
         .onURLRequestCreation { request in
             print("전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
+        .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success:
                 if let index = self.todos.firstIndex(where: { $0.id == data.id }) {
                     self.todos.remove(at: index)
+                    self.todosSubject.onNext(self.todos)
+                    completion()
                 }
-
             case .failure(let error):
                 print("Error: \(error)")
             }

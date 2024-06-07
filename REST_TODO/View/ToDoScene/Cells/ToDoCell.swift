@@ -37,10 +37,14 @@ final class ToDoCell: UITableViewCell {
     }
     
     func configure(data: ToDoData) {
+        guard let id = data.id else { return }
         guard let isDone = data.isDone else { return }
         
         titleLabel.text = data.title
         dateLabel.text = data.createdAt?.dateFormatterForTime()
+        
+        SeenManager.shared.id = id
+        seenLabel.isHidden = SeenManager.shared.existCheckInList
         
         if isDone {
             checkButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .normal)

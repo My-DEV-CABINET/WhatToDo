@@ -122,8 +122,14 @@ extension ToDoVC {
 
         vc.eventHandler = { [weak self] _ in
             self?.viewModel.resetPage()
-            self?.viewModel.requestGETTodos(completion: {})
-            self?.tableView.setContentOffset(.zero, animated: true)
+            let customQueue = DispatchQueue(label: "eventHandler-ADD")
+            customQueue.async {
+                self?.viewModel.requestGETTodos(completion: {})
+            }
+
+            DispatchQueue.main.async {
+                self?.tableView.setContentOffset(.zero, animated: true)
+            }
         }
 
         let navigationVC = UINavigationController(rootViewController: vc)
@@ -186,6 +192,10 @@ extension ToDoVC {
                 let currentSection = self.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
 
+                guard let id = currentItem.id else { return }
+
+                SeenManager.shared.insertSeenList(id: id)
+
                 let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
                 guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
                 vc.viewModel = DetailToDoViewModel()
@@ -193,13 +203,17 @@ extension ToDoVC {
                 vc.viewModel.userAction = .edit
 
                 vc.eventHandler = { [weak self] _ in
-                    self?.viewModel.requestGETTodos(completion: {})
+                    let customQueue = DispatchQueue(label: "eventHandler-EDIT")
+                    customQueue.async {
+                        self?.viewModel.requestGETTodos(completion: {})
+                    }
                 }
 
                 let navigationVC = UINavigationController(rootViewController: vc)
                 self.present(navigationVC, animated: true)
 
                 self.tableView.deselectRow(at: indexPath, animated: true)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             .disposed(by: viewModel.disposeBag)
 
@@ -210,8 +224,7 @@ extension ToDoVC {
             .subscribe(onNext: { section, indexPath in
                 let currentSection = section.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
-                self.viewModel.removeTodo(data: currentItem)
-                self.viewModel.requestGETTodos(completion: {})
+                self.viewModel.removeTodo(data: currentItem, completion: {})
             })
             .disposed(by: viewModel.disposeBag)
 
@@ -225,16 +238,22 @@ extension ToDoVC {
                     if self?.searchVC.isActive == true {
                         guard let text = self?.searchVC.searchBar.text else { return }
 
-                        DispatchQueue.main.async {
+                        let customQueue = DispatchQueue(label: "refresh")
+                        customQueue.async {
                             self?.viewModel.searchTodo(query: text, completion: {
-                                self?.refreshControl.endRefreshing()
+                                DispatchQueue.main.async {
+                                    self?.refreshControl.endRefreshing()
+                                }
                             })
                         }
 
                     } else {
-                        DispatchQueue.main.async {
+                        let customQueue = DispatchQueue(label: "refresh")
+                        customQueue.async {
                             self?.viewModel.requestGETTodos(completion: {
-                                self?.refreshControl.endRefreshing()
+                                DispatchQueue.main.async {
+                                    self?.refreshControl.endRefreshing()
+                                }
                             })
                         }
                     }
@@ -248,8 +267,11 @@ extension ToDoVC {
             .filter { !$0.isEmpty }
             .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
             .subscribe(onNext: { [weak self] text in
-                self?.viewModel.resetPage()
-                self?.viewModel.searchTodo(query: text, completion: {})
+                let customQueue = DispatchQueue(label: "searchBar")
+                customQueue.async {
+                    self?.viewModel.resetPage()
+                    self?.viewModel.searchTodo(query: text, completion: {})
+                }
 
                 DispatchQueue.main.async {
                     self?.tableView.setContentOffset(.zero, animated: true)
@@ -264,11 +286,15 @@ extension ToDoVC {
                 self?.tableView.setContentOffset(.zero, animated: true)
                 self?.searchVC.searchBar.text = ""
                 self?.viewModel.resetPage()
-                self?.viewModel.requestGETTodos(completion: {
-                    DispatchQueue.main.async {
-                        self?.viewModel.paginationRelay.accept(false)
-                    }
-                })
+
+                let customQueue = DispatchQueue(label: "searchBarCancel")
+                customQueue.async {
+                    self?.viewModel.requestGETTodos(completion: {
+                        DispatchQueue.main.async {
+                            self?.viewModel.paginationRelay.accept(false)
+                        }
+                    })
+                }
                 self?.searchVC.searchBar.resignFirstResponder()
             })
             .disposed(by: viewModel.disposeBag)
@@ -298,20 +324,25 @@ extension ToDoVC {
             .subscribe(onNext: { [weak self] valid in
                 DispatchQueue.main.async {
                     if valid == true, self?.viewModel.paginationRelay.value == true {
-                        print("#### \(self?.searchVC.isActive)")
                         if self?.searchVC.isActive == true {
                             // 서치바 동작 상태일 때
                             guard let text = self?.searchVC.searchBar.text else { return }
-                            DispatchQueue.main.async {
+                            let customQueue = DispatchQueue(label: "validPagination")
+                            customQueue.async {
                                 self?.viewModel.requestMoreQueryTodos(query: text) {
-                                    self?.viewModel.paginationRelay.accept(false)
+                                    DispatchQueue.main.async {
+                                        self?.viewModel.paginationRelay.accept(false)
+                                    }
                                 }
                             }
                         } else {
                             // 서치바 동작 상태 아닐 때
-                            DispatchQueue.main.async {
+                            let customQueue = DispatchQueue(label: "validPagination")
+                            customQueue.async {
                                 self?.viewModel.requestMoreTodos {
-                                    self?.viewModel.paginationRelay.accept(false)
+                                    DispatchQueue.main.async {
+                                        self?.viewModel.paginationRelay.accept(false)
+                                    }
                                 }
                             }
                         }
@@ -322,9 +353,10 @@ extension ToDoVC {
 
         // 완료 보이기 이벤트 전달
         hiddenButton.rx.tap
+            .observe(on: MainScheduler.asyncInstance)
             .bind { [weak self] in
-                let isHidden = self?.viewModel.hiddenRelay.value
-                self?.viewModel.hiddenRelay.accept(!(isHidden ?? false))
+                guard let isHidden = self?.viewModel.hiddenRelay.value else { return }
+                self?.viewModel.hiddenRelay.accept(!isHidden)
             }
             .disposed(by: viewModel.disposeBag)
 
@@ -332,8 +364,22 @@ extension ToDoVC {
         viewModel.validHidden
             .drive(onNext: { [weak self] title in
                 self?.hiddenButton.title = title
+                self?.tableView.setContentOffset(.zero, animated: true)
                 self?.viewModel.resetPage()
-                self?.viewModel.requestGETTodos(completion: {})
+                let customQueue = DispatchQueue(label: "validHidden")
+                if self?.searchVC.isActive == true {
+                    guard let text = self?.searchVC.searchBar.text else { return }
+                    // 검색창 활성화
+                    customQueue.async {
+                        self?.viewModel.searchTodo(query: text, completion: {})
+                    }
+                } else {
+                    // 검색창 비활성화
+                    customQueue.async {
+                        self?.viewModel.requestGETTodos(completion: {})
+                    }
+                }
+
             })
             .disposed(by: viewModel.disposeBag)
     }
