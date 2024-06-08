@@ -50,7 +50,28 @@ final class ToDoVC: UIViewController {
         let db = ToDoSectionDataSource(
             configureCell: { datasource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
-                cell.configure(data: item)
+                guard let id = item.id else { return UITableViewCell() }
+                let viewModel = ToDoViewModel()
+                cell.data = item
+
+                cell.checkHandler = { todo in
+                    //
+                }
+
+                cell.favoriteHandler = { id in
+                    let exist = viewModel.dbManager.fetchFavoriteByID(id: id)
+
+                    if exist {
+                        _ = viewModel.dbManager.deleteFavorite(id: id)
+
+                    } else {
+                        _ = viewModel.dbManager.insertFavorite(id: id)
+                    }
+
+                    tableView.reloadData()
+                }
+
+                cell.configure(data: item, isExistFavorite: viewModel.dbManager.fetchFavoriteByID(id: id))
                 return cell
             })
 
@@ -122,13 +143,14 @@ extension ToDoVC {
 
         vc.eventHandler = { [weak self] _ in
             self?.viewModel.resetPage()
-            let customQueue = DispatchQueue(label: "eventHandler-ADD")
-            customQueue.async {
-                self?.viewModel.requestGETTodos(completion: {})
-            }
 
             DispatchQueue.main.async {
                 self?.tableView.setContentOffset(.zero, animated: true)
+            }
+
+            let customQueue = DispatchQueue(label: "eventHandler-ADD")
+            customQueue.async {
+                self?.viewModel.requestGETTodos(completion: {})
             }
         }
 
@@ -165,7 +187,7 @@ extension ToDoVC {
 extension ToDoVC {
     private func bind() {
         // RxDataSource에 데이터 주입
-        viewModel.todosSubject
+        viewModel.todoBehaviorRelay
             .map { todos in
                 // CreatedAt 기준으로 Dictionary 생성
                 let groupedDictionary = Dictionary(grouping: todos) { todo in
@@ -224,7 +246,10 @@ extension ToDoVC {
             .subscribe(onNext: { section, indexPath in
                 let currentSection = section.dataSource.sectionModels[indexPath.section]
                 let currentItem = currentSection.items[indexPath.row]
-                self.viewModel.removeTodo(data: currentItem, completion: {})
+                guard let id = currentItem.id else { return }
+                self.viewModel.removeTodo(data: currentItem, completion: {
+                    _ = self.viewModel.dbManager.deleteFavorite(id: id)
+                })
             })
             .disposed(by: viewModel.disposeBag)
 
@@ -257,6 +282,8 @@ extension ToDoVC {
                             })
                         }
                     }
+
+                    self?.viewModel.paginationRelay.accept(false)
                 }
             })
             .disposed(by: viewModel.disposeBag)
@@ -379,6 +406,8 @@ extension ToDoVC {
                         self?.viewModel.requestGETTodos(completion: {})
                     }
                 }
+
+                self?.viewModel.paginationRelay.accept(false)
 
             })
             .disposed(by: viewModel.disposeBag)

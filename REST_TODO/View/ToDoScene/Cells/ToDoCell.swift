@@ -5,12 +5,14 @@
 ////  Created by 준우의 MacBook 16 on 5/17/24.
 ////
 //
+
+/// Rx
+import RxCocoa
+import RxRelay
+import RxSwift
+
+/// Apple
 import UIKit
-//
-// enum Identifier: String {
-//    case todoCell = "ToDoCell"
-// }
-//
 
 final class ToDoCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
@@ -20,23 +22,47 @@ final class ToDoCell: UITableViewCell {
     @IBOutlet weak var checkButton: UIButton!
     @IBOutlet weak var favoriteButton: UIButton!
     
+    var checkHandler: ((_ data: ToDoData) -> Void)?
+    var favoriteHandler: ((_ id: Int) -> Void)?
+    
     var data: ToDoData?
-    
-    // 셀 나타날 때 호출
-    override func prepareForReuse() {
-        setupUI()
-    }
-    
+
     // 셀 초기화시 호출
     override func awakeFromNib() {
-        //
+        setup()
     }
     
-    private func setupUI() {
-        //
+    /// 셀이 안 보일 때
+    override func prepareForReuse() {
+        reset()
     }
     
-    func configure(data: ToDoData) {
+    private func setup() {
+        confirmCheckButton()
+        confirmFavoriteButton()
+    }
+    
+    private func reset() {
+        data = nil
+        checkHandler = nil
+        favoriteHandler = nil
+    }
+    
+    private func confirmCheckButton() {
+        checkButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let data = self?.data else { return }
+            self?.checkHandler?(data)
+        }), for: .touchUpInside)
+    }
+    
+    private func confirmFavoriteButton() {
+        favoriteButton.addAction(UIAction(handler: { [weak self] _ in
+            guard let id = self?.data?.id else { return }
+            self?.favoriteHandler?(id)
+        }), for: .touchUpInside)
+    }
+    
+    func configure(data: ToDoData, isExistFavorite: Bool) {
         guard let id = data.id else { return }
         guard let isDone = data.isDone else { return }
         
@@ -46,11 +72,11 @@ final class ToDoCell: UITableViewCell {
         SeenManager.shared.id = id
         seenLabel.isHidden = SeenManager.shared.existCheckInList
         
-        if isDone {
-            checkButton.setImage(UIImage(systemName: "checkmark.square.fill"), for: .normal)
-        } else {
-            checkButton.setImage(UIImage(systemName: "square"), for: .normal)
-        }
+        let checkImage = isDone ? "checkmark.square.fill" : "square"
+        checkButton.setImage(UIImage(systemName: checkImage), for: .normal)
+        
+        let favoriteImage = isExistFavorite ? "star.fill" : "star"
+        favoriteButton.setImage(UIImage(systemName: favoriteImage), for: .normal)
     }
 }
 

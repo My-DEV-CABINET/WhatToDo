@@ -99,7 +99,6 @@
                     <constraint firstAttribute="trailing" secondItem="MaC-NH-S4R" secondAttribute="trailing" constant="12" id="Hhn-Na-hv1"/>
                     <constraint firstItem="MaC-NH-S4R" firstAttribute="top" secondItem="70I-y5-jAH" secondAttribute="top" constant="12" id="R55-1O-Slc"/>
                     <constraint firstAttribute="bottom" secondItem="MaC-NH-S4R" secondAttribute="bottom" constant="12" id="TdR-9j-QZR"/>
-                    <constraint firstItem="ctC-rt-SuB" firstAttribute="centerY" secondItem="70I-y5-jAH" secondAttribute="centerY" id="jFN-nb-KCP"/>
                     <constraint firstItem="MaC-NH-S4R" firstAttribute="leading" secondItem="70I-y5-jAH" secondAttribute="leading" constant="12" id="nfC-Ru-aac"/>
                 </constraints>
             </tableViewCellContentView>
@@ -120,7 +119,7 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

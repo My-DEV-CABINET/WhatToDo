@@ -14,7 +14,8 @@ import RxSwift
 import Foundation
 
 final class ToDoViewModel {
-    var todosSubject = BehaviorSubject<[ToDoData]>(value: [])
+    var dbManager = DBManager()
+    var todoBehaviorRelay = BehaviorRelay<[ToDoData]>(value: [])
     var disposeBag = DisposeBag()
 
     private(set) var todos: [ToDoData] = []
@@ -106,7 +107,7 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos = data
-                self.todosSubject.onNext(data)
+                self.todoBehaviorRelay.accept(data)
                 completion()
             case .failure(let error):
                 print("#### Error: \(error)")
@@ -171,11 +172,11 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos = data
-                self.todosSubject.onNext(data)
+                self.todoBehaviorRelay.accept(data)
                 completion()
             case .failure(let error):
                 print("#### Error: \(error)")
-                self.todosSubject.onNext([])
+                self.todoBehaviorRelay.accept([])
             }
         }
     }
@@ -213,7 +214,7 @@ final class ToDoViewModel {
             case .success:
                 if let index = self.todos.firstIndex(where: { $0.id == data.id }) {
                     self.todos.remove(at: index)
-                    self.todosSubject.onNext(self.todos)
+                    self.todoBehaviorRelay.accept(self.todos)
                     completion()
                 }
             case .failure(let error):
@@ -275,7 +276,7 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos += data
-                self.todosSubject.onNext(self.todos)
+                self.todoBehaviorRelay.accept(self.todos)
                 completion()
             case .failure(let error):
                 print("#### Error: \(error)")
@@ -341,7 +342,7 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos += data
-                self.todosSubject.onNext(self.todos)
+                self.todoBehaviorRelay.accept(self.todos)
                 print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.todos.count)")
                 completion()
             case .failure(let error):
