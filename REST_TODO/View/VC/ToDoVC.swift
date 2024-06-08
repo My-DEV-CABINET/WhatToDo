@@ -46,32 +46,35 @@ final class ToDoVC: UIViewController {
 
     typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
 
-    let dataSource: ToDoSectionDataSource = {
+    lazy var dataSource: ToDoSectionDataSource = {
         let db = ToDoSectionDataSource(
             configureCell: { datasource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
                 guard let id = item.id else { return UITableViewCell() }
-                let viewModel = ToDoViewModel()
                 cell.data = item
 
-                cell.checkHandler = { todo in
-                    //
+                // isDone 스위치 이벤트
+                cell.checkHandler = { [weak self] data in
+                    guard let title = data.title else { return }
+                    guard let isDone = data.isDone else { return }
+                    guard let id = data.id else { return }
+
+                    self?.viewModel.editTodo(title: title, isDone: isDone, id: id)
                 }
 
-                cell.favoriteHandler = { id in
-                    let exist = viewModel.dbManager.fetchFavoriteByID(id: id)
+                // 북마크 스위치 이벤트
+                cell.favoriteHandler = { [weak self] id in
+                    guard let exist = self?.viewModel.dbManager.fetchFavoriteByID(id: id) else { return }
 
                     if exist {
-                        _ = viewModel.dbManager.deleteFavorite(id: id)
+                        _ = self?.viewModel.dbManager.deleteFavorite(id: id)
 
                     } else {
-                        _ = viewModel.dbManager.insertFavorite(id: id)
+                        _ = self?.viewModel.dbManager.insertFavorite(id: id)
                     }
-
-                    tableView.reloadData()
                 }
 
-                cell.configure(data: item, isExistFavorite: viewModel.dbManager.fetchFavoriteByID(id: id))
+                cell.configure(data: item, isExistFavorite: self.viewModel.dbManager.fetchFavoriteByID(id: id))
                 return cell
             })
 
@@ -124,6 +127,17 @@ extension ToDoVC {
     private func registerCell() {
         let todoCell = UINib(nibName: Identifier.todoCell.rawValue, bundle: nil)
         tableView.register(todoCell, forCellReuseIdentifier: Identifier.todoCell.rawValue)
+    }
+
+    /// Alert 페이지
+    private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            completion()
+        }
+        alert.addAction(confirmAlert)
+        present(alert, animated: true)
     }
 
     /// Floatting 버튼 구성 및 화면 이동 로직
@@ -265,7 +279,7 @@ extension ToDoVC {
 
                         let customQueue = DispatchQueue(label: "refresh")
                         customQueue.async {
-                            self?.viewModel.searchTodo(query: text, completion: {
+                            self?.viewModel.searchTodo(query: text, completion: { [weak self] _ in
                                 DispatchQueue.main.async {
                                     self?.refreshControl.endRefreshing()
                                 }
@@ -290,14 +304,23 @@ extension ToDoVC {
 
         // SearchBar 입력 이벤트 처리
         searchVC.searchBar.rx.text.orEmpty
-            .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
+            .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
             .filter { !$0.isEmpty }
             .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
             .subscribe(onNext: { [weak self] text in
                 let customQueue = DispatchQueue(label: "searchBar")
                 customQueue.async {
                     self?.viewModel.resetPage()
-                    self?.viewModel.searchTodo(query: text, completion: {})
+                    self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
+                        if todos.count == 0 {
+                            DispatchQueue.main.async {
+                                self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
+                                    self?.searchVC.searchBar.text = ""
+                                    self?.searchVC.searchBar.becomeFirstResponder()
+                                })
+                            }
+                        }
+                    })
                 }
 
                 DispatchQueue.main.async {
@@ -398,7 +421,7 @@ extension ToDoVC {
                     guard let text = self?.searchVC.searchBar.text else { return }
                     // 검색창 활성화
                     customQueue.async {
-                        self?.viewModel.searchTodo(query: text, completion: {})
+                        self?.viewModel.searchTodo(query: text, completion: { [weak self] _ in })
                     }
                 } else {
                     // 검색창 비활성화
@@ -409,6 +432,16 @@ extension ToDoVC {
 
                 self?.viewModel.paginationRelay.accept(false)
 
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        // ViewModel todoBehaviorRelay 이벤트 처리
+        viewModel.todoBehaviorRelay
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] todos in
+                self?.tableView.reloadData()
+            }, onError: { error in
+                print("#### Line: \(#line) \(error)")
             })
             .disposed(by: viewModel.disposeBag)
     }

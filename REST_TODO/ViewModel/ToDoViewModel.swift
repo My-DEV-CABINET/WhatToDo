@@ -116,7 +116,7 @@ final class ToDoViewModel {
     }
 
     /// Todo 데이터 검색
-    func searchTodo(query: String, completion: @escaping () -> Void) {
+    func searchTodo(query: String, completion: @escaping ([ToDoData]) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         resetPage()
         let url = Constants.scheme + Constants.host + Constants.searchPath
@@ -173,9 +173,10 @@ final class ToDoViewModel {
                 guard let data = value.data else { return }
                 self.todos = data
                 self.todoBehaviorRelay.accept(data)
-                completion()
+                completion(self.todos)
             case .failure(let error):
                 print("#### Error: \(error)")
+                completion([])
                 self.todoBehaviorRelay.accept([])
             }
         }
@@ -219,6 +220,54 @@ final class ToDoViewModel {
                 }
             case .failure(let error):
                 print("Error: \(error)")
+            }
+        }
+    }
+
+    /// Todo 데이터 수정
+    func editTodo(title: String, isDone: Bool, id: Int) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
+        let url = Constants.scheme + Constants.host + Constants.path + "/\(id)"
+        let headers: HTTPHeaders = [
+            Constants.accept: Constants.applicationJson,
+            Constants.contentType: Constants.applicationXw3FormUrlencoded
+        ]
+        let parameters: [String: String] = [
+            "title": title,
+            "is_done": isDone.description
+        ]
+
+        AF.request(
+            url,
+            method: .put,
+            parameters: parameters,
+            encoding: URLEncoding.default,
+            headers: headers,
+            interceptor: .retryPolicy
+        )
+        .cacheResponse(using: .cache)
+        .redirect(using: .follow)
+        .validate(statusCode: 200 ..< 500)
+        // curl 표시
+        .cURLDescription { description in
+            print("#### curl -v : \(description)")
+        }
+        // 요청하는 URL 전체 주소 표시
+        .onURLRequestCreation { request in
+            print("#### 전체 URL은 \(request)")
+        }
+        .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let value):
+                guard let data = value.data else { return }
+
+                if let index = self.todos.firstIndex(where: { $0.id == id }) {
+                    self.todos[index] = data
+                    self.todoBehaviorRelay.accept(self.todos)
+                }
+            case .failure(let error):
+                print("#### Error: \(error)")
             }
         }
     }

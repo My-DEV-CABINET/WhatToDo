@@ -22,6 +22,7 @@ final class ToDoCell: UITableViewCell {
     @IBOutlet weak var checkButton: UIButton!
     @IBOutlet weak var favoriteButton: UIButton!
     
+    /// CheckHandler 방식 변경 필요
     var checkHandler: ((_ data: ToDoData) -> Void)?
     var favoriteHandler: ((_ id: Int) -> Void)?
     
@@ -50,7 +51,9 @@ final class ToDoCell: UITableViewCell {
     
     private func confirmCheckButton() {
         checkButton.addAction(UIAction(handler: { [weak self] _ in
-            guard let data = self?.data else { return }
+            guard var data = self?.data else { return }
+            guard let isDone = data.isDone else { return }
+            data.isDone = !isDone
             self?.checkHandler?(data)
         }), for: .touchUpInside)
     }
