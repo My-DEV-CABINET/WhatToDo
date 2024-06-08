@@ -133,7 +133,7 @@ extension ToDoVC {
     private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        let confirmAlert = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
             completion()
         }
         alert.addAction(confirmAlert)
@@ -239,9 +239,24 @@ extension ToDoVC {
                 vc.viewModel.userAction = .edit
 
                 vc.eventHandler = { [weak self] _ in
+                    self?.viewModel.resetPage()
+
                     let customQueue = DispatchQueue(label: "eventHandler-EDIT")
-                    customQueue.async {
-                        self?.viewModel.requestGETTodos(completion: {})
+
+                    DispatchQueue.main.async {
+                        self?.tableView.setContentOffset(.zero, animated: true)
+                        if self?.searchVC.isActive == true {
+                            guard let query = self?.searchVC.searchBar.text else { return }
+                            // 검색창 활성화
+                            customQueue.async {
+                                self?.viewModel.searchTodo(query: query, completion: { _ in })
+                            }
+                        } else {
+                            // 검색창 비활성화
+                            customQueue.async {
+                                self?.viewModel.requestGETTodos(completion: {})
+                            }
+                        }
                     }
                 }
 
@@ -279,13 +294,20 @@ extension ToDoVC {
 
                         let customQueue = DispatchQueue(label: "refresh")
                         customQueue.async {
-                            self?.viewModel.searchTodo(query: text, completion: { [weak self] _ in
+                            self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
+
                                 DispatchQueue.main.async {
+                                    if todos.count == 0 {
+                                        self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
+                                            self?.searchVC.searchBar.text = text
+                                            self?.searchVC.searchBar.becomeFirstResponder()
+                                        })
+                                    }
+
                                     self?.refreshControl.endRefreshing()
                                 }
                             })
                         }
-
                     } else {
                         let customQueue = DispatchQueue(label: "refresh")
                         customQueue.async {
@@ -296,7 +318,6 @@ extension ToDoVC {
                             })
                         }
                     }
-
                     self?.viewModel.paginationRelay.accept(false)
                 }
             })
@@ -312,10 +333,11 @@ extension ToDoVC {
                 customQueue.async {
                     self?.viewModel.resetPage()
                     self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-                        if todos.count == 0 {
-                            DispatchQueue.main.async {
+
+                        DispatchQueue.main.async {
+                            if todos.count == 0, self?.searchVC.searchBar.isFirstResponder == true {
                                 self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                                    self?.searchVC.searchBar.text = ""
+                                    self?.searchVC.searchBar.text = text
                                     self?.searchVC.searchBar.becomeFirstResponder()
                                 })
                             }
@@ -421,7 +443,7 @@ extension ToDoVC {
                     guard let text = self?.searchVC.searchBar.text else { return }
                     // 검색창 활성화
                     customQueue.async {
-                        self?.viewModel.searchTodo(query: text, completion: { [weak self] _ in })
+                        self?.viewModel.searchTodo(query: text, completion: { _ in })
                     }
                 } else {
                     // 검색창 비활성화

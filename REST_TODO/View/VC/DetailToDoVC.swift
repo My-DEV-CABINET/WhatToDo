@@ -109,7 +109,8 @@ extension DetailToDoVC {
 extension DetailToDoVC {
     private func bind() {
         // 맨 처음 띄어쓰기 방지, 두번째부터는 띄어쓰기 허용
-        textField.rx.text.orEmpty.asObservable()
+        textField.rx.text.orEmpty
+            .asObservable()
             .scan("") { lastValue, newValue in
                 if newValue.count != 0, newValue == " " {
                     let removeSpaceString = newValue.replacingOccurrences(of: " ", with: "")

@@ -23,8 +23,6 @@ final class DetailToDoViewModel {
     var userAction: UserAction = .edit
     var previousText = ""
 
-    private let utilityQueue = DispatchQueue.global(qos: .utility)
-
     let textInputRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
     let buttonTapRelay = PublishRelay<Int>()
     let editTapRelay = PublishRelay<Void>()
@@ -43,7 +41,7 @@ final class DetailToDoViewModel {
     }
 
     func createTodo(title: String, isDone: Bool, completion: @escaping (Bool) -> Void) {
-        // POST
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.postPath
         let headers: HTTPHeaders = [Constants.accept: Constants.applicationJson, Constants.contentType: Constants.applicationJson]
         let parameters: [String: String] = [
@@ -83,7 +81,7 @@ final class DetailToDoViewModel {
     }
 
     func editTodo(title: String, isDone: Bool, completion: @escaping (Bool) -> Void) {
-        // PUT
+        let utilityQueue = DispatchQueue.global(qos: .utility)
         guard let id = todo?.id else { return }
         let url = Constants.scheme + Constants.host + Constants.path + "/\(id)"
         let headers: HTTPHeaders = [
