@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="vzi-Uw-jZY" customClass="HeaderView" customModule="REST_TODO" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2024.06.09" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RZz-Et-wCe">
+                    <rect key="frame" x="30" y="69" width="181.33333333333334" height="729"/>
+                    <fontDescription key="fontDescription" type="system" weight="black" pointSize="30"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="5MA-bK-IG6"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="RZz-Et-wCe" firstAttribute="centerY" secondItem="5MA-bK-IG6" secondAttribute="centerY" id="Pl0-5n-WWQ"/>
+                <constraint firstItem="RZz-Et-wCe" firstAttribute="leading" secondItem="5MA-bK-IG6" secondAttribute="leading" constant="30" id="b37-5d-AaV"/>
+                <constraint firstItem="RZz-Et-wCe" firstAttribute="top" secondItem="5MA-bK-IG6" secondAttribute="top" constant="10" id="tWR-0S-Ize"/>
+                <constraint firstItem="5MA-bK-IG6" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="RZz-Et-wCe" secondAttribute="trailing" constant="30" id="xo0-fK-4Zy"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="dateLabel" destination="RZz-Et-wCe" id="VVV-4k-36s"/>
+            </connections>
+            <point key="canvasLocation" x="-299.23664122137404" y="342.95774647887328"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

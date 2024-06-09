@@ -50,6 +50,7 @@ final class ToDoViewController: UIViewController {
         let db = ToDoSectionDataSource(
             configureCell: { datasource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
+
                 guard let id = item.id else { return UITableViewCell() }
                 cell.data = item
 
@@ -80,9 +81,9 @@ final class ToDoViewController: UIViewController {
                 return cell
             })
 
-        db.titleForHeaderInSection = { dataSource, index in
-            return dataSource.sectionModels[index].header
-        }
+//        db.titleForHeaderInSection = { dataSource, index in
+//            return dataSource.sectionModels[index].header
+//        }
 
         db.canEditRowAtIndexPath = { dataSource, indexPath in
             return true
@@ -130,8 +131,13 @@ extension ToDoViewController {
 
     /// Xib 셀 등록
     private func registerCell() {
+        /// TableView Cell
         let todoCell = UINib(nibName: Identifier.todoCell.rawValue, bundle: nil)
         tableView.register(todoCell, forCellReuseIdentifier: Identifier.todoCell.rawValue)
+
+        /// TableView Header Cell
+        let haderCell = UINib(nibName: Identifier.headerView.rawValue, bundle: nil)
+        tableView.register(haderCell, forHeaderFooterViewReuseIdentifier: Identifier.headerView.rawValue)
     }
 
     /// Alert 페이지
@@ -205,6 +211,10 @@ extension ToDoViewController {
 
 extension ToDoViewController {
     private func bind() {
+        // TableView Delegate
+        tableView.rx.setDelegate(self)
+            .disposed(by: viewModel.disposeBag)
+
         // RxDataSource에 데이터 주입
         viewModel.todoBehaviorSubject
             .map { todos in
@@ -487,5 +497,21 @@ extension ToDoViewController {
                 self?.tableView.reloadData()
             })
             .disposed(by: viewModel.disposeBag)
+    }
+}
+
+// MARK: - UITableViewDelegate 처리
+
+extension ToDoViewController: UITableViewDelegate {
+    /// 헤더 설정
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: Identifier.headerView.rawValue) as? HeaderView else { return UIView() }
+        header.dateLabel.text = dataSource.sectionModels[section].header
+        return header
+    }
+
+    /// 헤더 높이 설정
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
     }
 }
