@@ -63,14 +63,14 @@ extension DetailToDoVC {
 extension DetailToDoVC {
     private func setupUI() {
         confirmNavigationBar()
-
-//        confirmTextField()
         confirmTaskLabel()
-
         confirmCancelButton()
-
         confirmBackButton()
         confirmEditButton()
+        //        confirmTextField()
+        
+        /// 빈 화면 터치시 키보드 내리기
+        hideKeyboardWhenTappedAround()
     }
 
     func configure(action: UserAction) {

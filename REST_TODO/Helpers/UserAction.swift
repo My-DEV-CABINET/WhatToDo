@@ -8,6 +8,6 @@
 import Foundation
 
 enum UserAction {
-    case add
-    case edit
+    case add // 데이터 추가
+    case edit // 데이터 편집
 }

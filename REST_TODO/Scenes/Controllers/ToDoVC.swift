@@ -72,6 +72,8 @@ final class ToDoVC: UIViewController {
                     } else {
                         _ = self?.viewModel.dbManager.insertFavorite(id: id)
                     }
+
+                    self?.tableView.reloadData()
                 }
 
                 cell.configure(data: item, isExistFavorite: self.viewModel.dbManager.fetchFavoriteByID(id: id))
@@ -118,6 +120,9 @@ extension ToDoVC {
         confirmRefreshControl()
         confirmSearchVC()
         confirmAddButton()
+
+        /// 화면 터치시, 키보드 내리기
+        hideKeyboardWhenTappedAround()
 
         /// Binding
         bind()
@@ -201,7 +206,7 @@ extension ToDoVC {
 extension ToDoVC {
     private func bind() {
         // RxDataSource에 데이터 주입
-        viewModel.todoBehaviorRelay
+        viewModel.todoBehaviorSubject
             .map { todos in
                 // CreatedAt 기준으로 Dictionary 생성
                 let groupedDictionary = Dictionary(grouping: todos) { todo in
@@ -442,9 +447,18 @@ extension ToDoVC {
                 if self?.searchVC.isActive == true {
                     guard let text = self?.searchVC.searchBar.text else { return }
                     // 검색창 활성화
-                    customQueue.async {
-                        self?.viewModel.searchTodo(query: text, completion: { _ in })
+                    if text == "" {
+                        /// 검색창 빈칸일 시, Alert 창 띄우기
+                        self?.showBlankMessage(title: "검색 오류", message: "검색할 내용을 입력해주세요.", completion: {
+                            self?.searchVC.searchBar.text = text
+                            self?.searchVC.searchBar.becomeFirstResponder()
+                        })
+                    } else {
+                        customQueue.async {
+                            self?.viewModel.searchTodo(query: text, completion: { _ in })
+                        }
                     }
+
                 } else {
                     // 검색창 비활성화
                     customQueue.async {
@@ -458,12 +472,10 @@ extension ToDoVC {
             .disposed(by: viewModel.disposeBag)
 
         // ViewModel todoBehaviorRelay 이벤트 처리
-        viewModel.todoBehaviorRelay
+        viewModel.todoBehaviorSubject
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] todos in
                 self?.tableView.reloadData()
-            }, onError: { error in
-                print("#### Line: \(#line) \(error)")
             })
             .disposed(by: viewModel.disposeBag)
     }
