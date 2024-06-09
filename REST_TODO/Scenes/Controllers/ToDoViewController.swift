@@ -12,9 +12,7 @@ import RxSwift
 /// Apple
 import UIKit
 
-enum Identifier: String {
-    case todoCell = "ToDoCell"
-}
+// MARK: - RxDataSource Section Model
 
 struct SectionOfCustomData {
     var header: String
@@ -35,7 +33,9 @@ extension SectionOfCustomData: SectionModelType {
     }
 }
 
-final class ToDoVC: UIViewController {
+// MARK: - ToDoViewController
+
+final class ToDoViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var hiddenButton: UIBarButtonItem!
@@ -102,7 +102,7 @@ final class ToDoVC: UIViewController {
 
 // MARK: - View Life Cycle 관련 메서드 모음
 
-extension ToDoVC {
+extension ToDoViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -112,7 +112,7 @@ extension ToDoVC {
 
 // MARK: - View Setting 관련 메서드 모음
 
-extension ToDoVC {
+extension ToDoViewController {
     private func setupUI() {
         view.backgroundColor = .white
         registerCell()
@@ -156,7 +156,7 @@ extension ToDoVC {
     /// DetailVC 로 화면 이동 처리
     private func pushDetailVC() {
         let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
+        guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoViewController else { return }
         vc.viewModel = DetailToDoViewModel()
         vc.viewModel.userAction = .add
 
@@ -203,7 +203,7 @@ extension ToDoVC {
 
 // MARK: - ViewModel Rx Binding 관련 처리 메서드 모음
 
-extension ToDoVC {
+extension ToDoViewController {
     private func bind() {
         // RxDataSource에 데이터 주입
         viewModel.todoBehaviorSubject
@@ -238,7 +238,7 @@ extension ToDoVC {
                 SeenManager.shared.insertSeenList(id: id)
 
                 let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-                guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoVC else { return }
+                guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoViewController else { return }
                 vc.viewModel = DetailToDoViewModel()
                 vc.viewModel.todo = currentItem
                 vc.viewModel.userAction = .edit
@@ -254,12 +254,21 @@ extension ToDoVC {
                             guard let query = self?.searchVC.searchBar.text else { return }
                             // 검색창 활성화
                             customQueue.async {
-                                self?.viewModel.searchTodo(query: query, completion: { _ in })
+                                self?.viewModel.searchTodo(query: query, completion: { [weak self] _ in
+
+                                    DispatchQueue.main.async {
+                                        self?.viewModel.paginationRelay.accept(false)
+                                    }
+                                })
                             }
                         } else {
                             // 검색창 비활성화
                             customQueue.async {
-                                self?.viewModel.requestGETTodos(completion: {})
+                                self?.viewModel.requestGETTodos(completion: {
+                                    DispatchQueue.main.async {
+                                        self?.viewModel.paginationRelay.accept(false)
+                                    }
+                                })
                             }
                         }
                     }

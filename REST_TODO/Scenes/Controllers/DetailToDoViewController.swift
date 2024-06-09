@@ -5,12 +5,13 @@
 //  Created by 준우의 MacBook 16 on 5/31/24.
 //
 
-import RxCocoa
+/// Rx
 import RxSwift
 
+/// Apple
 import UIKit
 
-final class DetailToDoVC: UIViewController {
+final class DetailToDoViewController: UIViewController {
     /// Label
     @IBOutlet weak var userActionLabel: UILabel!
     @IBOutlet weak var warningLabel: UILabel!
@@ -40,7 +41,7 @@ final class DetailToDoVC: UIViewController {
 
 // MARK: - View Life Cycle 관련 모음
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -60,7 +61,7 @@ extension DetailToDoVC {
 
 // MARK: - View UI 설정 관련 모음
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
     private func setupUI() {
         confirmNavigationBar()
         confirmTaskLabel()
@@ -68,7 +69,7 @@ extension DetailToDoVC {
         confirmBackButton()
         confirmEditButton()
         //        confirmTextField()
-        
+
         /// 빈 화면 터치시 키보드 내리기
         hideKeyboardWhenTappedAround()
     }
@@ -106,7 +107,7 @@ extension DetailToDoVC {
 
 // MARK: - ViewModel Rx Binding 관련 모음
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
     private func bind() {
         // 맨 처음 띄어쓰기 방지, 두번째부터는 띄어쓰기 허용
         textField.rx.text.orEmpty
@@ -262,7 +263,7 @@ extension DetailToDoVC {
 
 // MARK: - Navigation 관련 모음
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
     private func confirmNavigationBar() {
         navigationItem.title = viewModel.todo?.id?.description
         navigationController?.navigationBar.backgroundColor = .systemGray6
@@ -271,7 +272,7 @@ extension DetailToDoVC {
 
 // MARK: - Bar Button 관련 모음
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
     private func confirmBackButton() {
         backButton = UIBarButtonItem()
         backButton.tintColor = .black
@@ -298,7 +299,7 @@ extension DetailToDoVC {
 
 // MARK: - TextField & Label 관련 모음
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
 //    private func confirmTextField() {
 //        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 4, height: 0))
 //        textField.leftViewMode = .always
@@ -313,7 +314,7 @@ extension DetailToDoVC {
 
 // MARK: - Confirm / Cancel Button
 
-extension DetailToDoVC {
+extension DetailToDoViewController {
     private func confirmCancelButton() {
         cancelButton.isHidden = true
     }
