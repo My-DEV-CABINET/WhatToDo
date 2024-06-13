@@ -40,6 +40,10 @@ final class ToDoViewController: UIViewController {
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var hiddenButton: UIBarButtonItem!
 
+    /// Testing
+    @IBOutlet weak var aButton: UIButton!
+    @IBOutlet weak var bButton: UIButton!
+
     private var viewModel = ToDoViewModel()
     private var searchVC: UISearchController!
     private var refreshControl: UIRefreshControl!
@@ -81,6 +85,7 @@ final class ToDoViewController: UIViewController {
                 return cell
             })
 
+        /// 헤더뷰 표시
 //        db.titleForHeaderInSection = { dataSource, index in
 //            return dataSource.sectionModels[index].header
 //        }
@@ -108,6 +113,26 @@ extension ToDoViewController {
         super.viewDidLoad()
         setupUI()
         viewModel.requestGETTodos(completion: {})
+
+        confirmABButton()
+    }
+
+    private func confirmABButton() {
+        aButton.addAction(UIAction(handler: { [weak self] _ in
+            let sb: UIStoryboard = .init(name: "A", bundle: nil)
+            guard let vc = sb.instantiateViewController(identifier: "AViewController") as? AViewController else { return }
+
+            let navigationVC = UINavigationController(rootViewController: vc)
+            self?.present(navigationVC, animated: true)
+        }), for: .touchUpInside)
+
+        bButton.addAction(UIAction(handler: { [weak self] _ in
+            let sb: UIStoryboard = .init(name: "B", bundle: nil)
+            guard let vc = sb.instantiateViewController(identifier: "BViewController") as? BViewController else { return }
+
+            let navigationVC = UINavigationController(rootViewController: vc)
+            self?.present(navigationVC, animated: true)
+        }), for: .touchUpInside)
     }
 }
 
@@ -353,11 +378,13 @@ extension ToDoViewController {
             .filter { !$0.isEmpty }
             .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
             .subscribe(onNext: { [weak self] text in
+
                 let customQueue = DispatchQueue(label: "searchBar")
+
                 customQueue.async {
                     self?.viewModel.resetPage()
                     self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-
+                        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Text Log: \(text)")
                         DispatchQueue.main.async {
                             if todos.count == 0, self?.searchVC.searchBar.isFirstResponder == true {
                                 self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
@@ -365,6 +392,8 @@ extension ToDoViewController {
                                     self?.searchVC.searchBar.becomeFirstResponder()
                                 })
                             }
+
+                            self?.viewModel.paginationRelay.accept(false)
                         }
                     })
                 }
@@ -423,6 +452,7 @@ extension ToDoViewController {
                         if self?.searchVC.isActive == true {
                             // 서치바 동작 상태일 때
                             guard let text = self?.searchVC.searchBar.text else { return }
+
                             let customQueue = DispatchQueue(label: "validPagination")
                             customQueue.async {
                                 self?.viewModel.requestMoreQueryTodos(query: text) {
@@ -434,6 +464,7 @@ extension ToDoViewController {
                         } else {
                             // 서치바 동작 상태 아닐 때
                             let customQueue = DispatchQueue(label: "validPagination")
+
                             customQueue.async {
                                 self?.viewModel.requestMoreTodos {
                                     DispatchQueue.main.async {
@@ -490,7 +521,7 @@ extension ToDoViewController {
             })
             .disposed(by: viewModel.disposeBag)
 
-        // ViewModel todoBehaviorRelay 이벤트 처리
+        // ViewModel todoBehaviorSubject 이벤트 처리
         viewModel.todoBehaviorSubject
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] todos in

@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -17,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="CBb-Do-dlG">
-                                <rect key="frame" x="32" y="91" width="329" height="359"/>
+                                <rect key="frame" x="32" y="91" width="329" height="379"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="할일 추가" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="drX-yr-KjF">
                                         <rect key="frame" x="0.0" y="0.0" width="147" height="48"/>
@@ -30,13 +31,13 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillProportionally" alignment="top" spacing="90" translatesAutoresizingMaskIntoConstraints="NO" id="M60-rL-x9M">
-                                        <rect key="frame" x="0.0" y="98" width="329" height="161"/>
+                                        <rect key="frame" x="0.0" y="98" width="329" height="181"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="EYQ-oo-SIx">
-                                                <rect key="frame" x="0.0" y="0.0" width="329" height="40"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="329" height="60"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="할일" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hLo-HG-e23">
-                                                        <rect key="frame" x="0.0" y="0.0" width="80" height="40"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="80" height="60"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="80" id="lGs-nR-ZZQ"/>
                                                         </constraints>
@@ -45,22 +46,21 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="할일을 입력해주세요" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="D65-fe-LOf">
-                                                        <rect key="frame" x="90" y="0.0" width="100" height="40"/>
+                                                        <rect key="frame" x="90" y="0.0" width="100" height="60"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" relation="lessThanOrEqual" constant="80" id="S0r-fP-czc"/>
                                                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="bLK-fv-GGz"/>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="dgt-Zw-Y76"/>
+                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="scI-JT-W97"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
                                                     </textField>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="오늘의 할일은 잠자기" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Lr-pE-R3V">
-                                                        <rect key="frame" x="200" y="0.0" width="129" height="40"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="오늘의 할일은 잠자기" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Lr-pE-R3V">
+                                                        <rect key="frame" x="200" y="0.0" width="129" height="60"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" relation="lessThanOrEqual" constant="80" id="20k-Qu-68J"/>
                                                             <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="VEh-ZK-1IM"/>
                                                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="250" id="h2w-37-946"/>
-                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="hpM-bz-x4T"/>
+                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="uYQ-FP-QVI"/>
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                         <nil key="textColor"/>
@@ -68,11 +68,11 @@
                                                     </label>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="Bad-dT-84k"/>
+                                                    <constraint firstAttribute="trailing" secondItem="5Lr-pE-R3V" secondAttribute="trailing" id="Xrn-zS-wE6"/>
                                                 </constraints>
                                             </stackView>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="172" translatesAutoresizingMaskIntoConstraints="NO" id="yF1-Sj-mEZ">
-                                                <rect key="frame" x="0.0" y="130" width="329" height="31"/>
+                                                <rect key="frame" x="0.0" y="150" width="329" height="31"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="완료" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rqY-8u-XuN">
                                                         <rect key="frame" x="0.0" y="0.0" width="108" height="31"/>
@@ -84,11 +84,14 @@
                                                         <rect key="frame" x="280" y="0.0" width="51" height="31"/>
                                                     </switch>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="30" id="O2z-WY-wZe"/>
+                                                </constraints>
                                             </stackView>
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="IPu-Xu-RPs">
-                                        <rect key="frame" x="0.0" y="309" width="329" height="50"/>
+                                        <rect key="frame" x="0.0" y="329" width="329" height="50"/>
                                         <subviews>
                                             <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bAs-Re-uyt">
                                                 <rect key="frame" x="0.0" y="0.0" width="159.66666666666666" height="50"/>
@@ -121,13 +124,14 @@
                                     </stackView>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstItem="M60-rL-x9M" firstAttribute="top" secondItem="drX-yr-KjF" secondAttribute="bottom" constant="50" id="54D-rR-Akj"/>
                                     <constraint firstItem="IPu-Xu-RPs" firstAttribute="leading" secondItem="CBb-Do-dlG" secondAttribute="leading" id="8Oy-5P-ZOc"/>
                                     <constraint firstAttribute="trailing" secondItem="8j8-Yx-89v" secondAttribute="trailing" id="gvQ-oj-Zgj"/>
                                     <constraint firstItem="IPu-Xu-RPs" firstAttribute="centerX" secondItem="CBb-Do-dlG" secondAttribute="centerX" id="l45-MO-RTr"/>
                                 </constraints>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="6글자 이상 입력해주세요.(공백 제외)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j9M-Bm-TUP">
-                                <rect key="frame" x="122" y="249" width="176" height="20"/>
+                                <rect key="frame" x="122" y="264" width="176" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="L3a-ox-Qbx"/>
                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="Yo7-0X-CK9"/>
@@ -144,8 +148,9 @@
                             <constraint firstItem="j9M-Bm-TUP" firstAttribute="leading" secondItem="D65-fe-LOf" secondAttribute="leading" id="3zz-Ep-MMK"/>
                             <constraint firstItem="poF-qs-Dui" firstAttribute="trailing" secondItem="CBb-Do-dlG" secondAttribute="trailing" constant="32" id="OeS-CW-Ouo"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="centerX" secondItem="poF-qs-Dui" secondAttribute="centerX" id="VKj-4c-RWn"/>
-                            <constraint firstItem="j9M-Bm-TUP" firstAttribute="top" secondItem="EYQ-oo-SIx" secondAttribute="bottom" constant="20" id="aaD-xO-Qfi"/>
+                            <constraint firstItem="j9M-Bm-TUP" firstAttribute="top" secondItem="EYQ-oo-SIx" secondAttribute="bottom" constant="15" id="aaD-xO-Qfi"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="leading" secondItem="poF-qs-Dui" secondAttribute="leading" constant="32" id="nSH-zc-hvI"/>
+                            <constraint firstItem="poF-qs-Dui" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="CBb-Do-dlG" secondAttribute="bottom" constant="200" id="rug-zg-ohe"/>
                             <constraint firstItem="CBb-Do-dlG" firstAttribute="top" secondItem="poF-qs-Dui" secondAttribute="top" constant="32" id="wpd-87-HJU"/>
                         </constraints>
                     </view>
@@ -163,7 +168,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="RFY-OD-zRz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1669" y="5"/>
+            <point key="canvasLocation" x="213" y="17"/>
         </scene>
     </scenes>
     <resources>

@@ -127,7 +127,6 @@ final class ToDoViewModel {
     /// Todo 데이터 검색
     func searchTodo(query: String, completion: @escaping ([ToDoData]) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
-        resetPage()
         let url = Constants.scheme + Constants.host + Constants.searchPath
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
@@ -181,8 +180,10 @@ final class ToDoViewModel {
             case .success(let value):
                 guard let data = value.data else { return }
                 self.todos = data
-                self.todoBehaviorSubject.onNext(data)
                 completion(self.todos)
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.todos.count)")
+                self.todoBehaviorSubject.onNext(data)
+
             case .failure(let error):
                 print("#### Search Error: \(error)")
                 completion([])

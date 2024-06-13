@@ -184,7 +184,6 @@ extension DetailToDoViewController {
 
                 if result {
                     // 편집 시작
-                    self.textField.becomeFirstResponder()
                     self.textField.text = viewModel.previousText
                     self.viewModel.textInputRelay.accept(viewModel.previousText)
 
@@ -196,16 +195,18 @@ extension DetailToDoViewController {
                     self.warningLabel.isHidden = true
                     self.confirmButton.isHidden = false
 
+                    self.textField.becomeFirstResponder()
+
                 } else {
                     // 편집 종료
-                    self.textField.resignFirstResponder()
-
                     self.cancelButton.isHidden = true
                     self.textField.isHidden = true
                     self.warningLabel.isHidden = true
                     self.taskLabel.isHidden = false
                     self.confirmButton.isHidden = true
                     self.isConfirmSwitch.isEnabled = false
+
+                    self.textField.resignFirstResponder()
                 }
 
             })
@@ -253,7 +254,7 @@ extension DetailToDoViewController {
 
                     } else {
                         // Cancel Button
-                        self.textField.text = viewModel.previousText
+                        self.taskLabel.text = viewModel.previousText
                     }
                 }
             })
