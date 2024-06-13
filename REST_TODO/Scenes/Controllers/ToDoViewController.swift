@@ -375,27 +375,36 @@ extension ToDoViewController {
         // SearchBar 입력 이벤트 처리
         searchVC.searchBar.rx.text.orEmpty
             .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
-            .filter { !$0.isEmpty }
-            .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] text in
-
+                self?.viewModel.resetPage()
                 let customQueue = DispatchQueue(label: "searchBar")
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(text)")
+                if self?.searchVC.isActive == true, text.isEmpty != true {
+                    customQueue.async {
+                        self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
 
-                customQueue.async {
-                    self?.viewModel.resetPage()
-                    self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-                        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Text Log: \(text)")
-                        DispatchQueue.main.async {
-                            if todos.count == 0, self?.searchVC.searchBar.isFirstResponder == true {
-                                self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                                    self?.searchVC.searchBar.text = text
-                                    self?.searchVC.searchBar.becomeFirstResponder()
-                                })
+                            DispatchQueue.main.async {
+                                if todos.count == 0, self?.searchVC.searchBar.isFirstResponder == true {
+                                    self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
+                                        self?.searchVC.searchBar.text = text
+                                        self?.searchVC.searchBar.becomeFirstResponder()
+                                    })
+                                }
+
+                                self?.viewModel.paginationRelay.accept(false)
                             }
+                        })
+                    }
 
-                            self?.viewModel.paginationRelay.accept(false)
-                        }
-                    })
+                } else if self?.searchVC.isActive == true, text.isEmpty == true {
+                    customQueue.async {
+                        self?.viewModel.requestGETTodos(completion: {
+                            DispatchQueue.main.async {
+                                self?.viewModel.paginationRelay.accept(false)
+                            }
+                        })
+                    }
                 }
 
                 DispatchQueue.main.async {
