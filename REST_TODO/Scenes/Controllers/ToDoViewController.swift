@@ -317,20 +317,6 @@ extension ToDoViewController {
             }
             .disposed(by: viewModel.disposeBag)
 
-        // TableView Cell 삭제
-        tableView.rx.itemDeleted
-            .observe(on: MainScheduler.instance)
-            .withUnretained(self)
-            .subscribe(onNext: { section, indexPath in
-                let currentSection = section.dataSource.sectionModels[indexPath.section]
-                let currentItem = currentSection.items[indexPath.row]
-                guard let id = currentItem.id else { return }
-                self.viewModel.removeTodo(data: currentItem, completion: {
-                    _ = self.viewModel.dbManager.deleteFavorite(id: id)
-                })
-            })
-            .disposed(by: viewModel.disposeBag)
-
         // TableView RefreshControl 이벤트 처리
         refreshControl.rx.controlEvent(.valueChanged)
             .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
@@ -543,6 +529,25 @@ extension ToDoViewController {
 // MARK: - UITableViewDelegate 처리
 
 extension ToDoViewController: UITableViewDelegate {
+    /// 셀 삭제
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { action, view, perform in
+            let currentSection = self.dataSource.sectionModels[indexPath.section]
+            let currentItem = currentSection.items[indexPath.row]
+            guard let id = currentItem.id else { return }
+
+            self.viewModel.removeTodo(data: currentItem, completion: {
+                _ = self.viewModel.dbManager.deleteFavorite(id: id)
+            })
+        }
+
+        let configuration = UISwipeActionsConfiguration(actions: [
+            deleteAction
+        ])
+
+        return configuration
+    }
+
     /// 헤더 설정
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: Identifier.headerView.rawValue) as? HeaderView else { return UIView() }
