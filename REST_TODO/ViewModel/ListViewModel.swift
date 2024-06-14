@@ -18,7 +18,7 @@ import RxSwift
 /// Apple
 import Foundation
 
-final class ToDoViewModel {
+final class ListViewModel {
     var todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
     var disposeBag = DisposeBag()
 
@@ -167,11 +167,11 @@ final class ToDoViewModel {
         .validate()
         // curl 표시
         .cURLDescription { description in
-            print("curl -v : \(description)")
+            print("#### curl -v : \(description)")
         }
         // 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
-            print("전체 URL은 \(request)")
+            print("#### 전체 URL은 \(request)")
         }
         .responseDecodable(of: ToDos.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
@@ -181,7 +181,6 @@ final class ToDoViewModel {
                 guard let data = value.data else { return }
                 self.todos = data
                 completion(self.todos)
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.todos.count)")
                 self.todoBehaviorSubject.onNext(data)
 
             case .failure(let error):
@@ -213,11 +212,11 @@ final class ToDoViewModel {
         .validate(statusCode: 200 ..< 300)
         // curl 표시
         .cURLDescription { description in
-            print("curl -v : \(description)")
+            print("#### curl -v : \(description)")
         }
         // 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
-            print("전체 URL은 \(request)")
+            print("#### 전체 URL은 \(request)")
         }
         .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
             guard let self = self else { return }
@@ -412,7 +411,7 @@ final class ToDoViewModel {
 
 // MARK: - Pagination 처리 모음
 
-extension ToDoViewModel {
+extension ListViewModel {
     func increasePage() {
         page += 1
     }

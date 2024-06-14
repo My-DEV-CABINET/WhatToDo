@@ -45,7 +45,7 @@ final class ToDoViewController: UIViewController {
     @IBOutlet weak var aButton: UIButton!
     @IBOutlet weak var bButton: UIButton!
 
-    private var viewModel = ToDoViewModel()
+    private var viewModel = ListViewModel()
     private var searchVC: UISearchController!
     private var refreshControl: UIRefreshControl!
 
@@ -182,7 +182,7 @@ extension ToDoViewController {
     private func confirmAddButton() {
         addButton.addAction(UIAction(handler: { [weak self] _ in
             guard let self = self else { return }
-            pushDetailVC()
+            pushAddVC()
         }), for: .touchUpInside)
     }
 
@@ -191,12 +191,11 @@ extension ToDoViewController {
         indicatorView.hidesWhenStopped = true
     }
 
-    /// DetailVC 로 화면 이동 처리
-    private func pushDetailVC() {
-        let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoViewController else { return }
-        vc.viewModel = DetailToDoViewModel()
-        vc.viewModel.userAction = .add
+    /// Add 페이지 화면 이동
+    private func pushAddVC() {
+        let sb: UIStoryboard = .init(name: "ADD", bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: "AddViewController") as? AddViewController else { return }
+        vc.viewModel = AddViewModel()
 
         vc.eventHandler = { [weak self] _ in
             self?.viewModel.resetPage()
@@ -213,6 +212,11 @@ extension ToDoViewController {
 
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
+    }
+
+    /// Edit 페이지 화면 이동
+    private func pushEditVC() {
+        //
     }
 
     private func confirmTableView() {
@@ -280,10 +284,10 @@ extension ToDoViewController {
                 SeenManager.shared.insertSeenList(id: id)
 
                 let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-                guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? DetailToDoViewController else { return }
-                vc.viewModel = DetailToDoViewModel()
-                vc.viewModel.todo = currentItem
-                vc.viewModel.userAction = .edit
+                guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? AddViewController else { return }
+                vc.viewModel = AddViewModel()
+//                vc.viewModel.todo = currentItem
+//                vc.viewModel.userAction = .edit
 
                 vc.eventHandler = { [weak self] _ in
                     self?.viewModel.resetPage()
@@ -372,7 +376,7 @@ extension ToDoViewController {
             .subscribe(onNext: { [weak self] text in
                 self?.viewModel.resetPage()
                 let customQueue = DispatchQueue(label: "searchBar")
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(text)")
+
                 if self?.searchVC.isActive == true, text.isEmpty != true {
                     customQueue.async {
                         self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in

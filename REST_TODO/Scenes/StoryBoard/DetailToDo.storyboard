@@ -2,17 +2,16 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Detail To Do View Controller-->
+        <!--Add View Controller-->
         <scene sceneID="M97-f7-5uO">
             <objects>
-                <viewController storyboardIdentifier="DetailToDoVC" id="m7v-XW-cSI" customClass="DetailToDoViewController" customModule="REST_TODO" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetailToDoVC" id="m7v-XW-cSI" customClass="AddViewController" customModule="REST_TODO" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="871-Ni-cyo">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -156,12 +155,12 @@
                     </view>
                     <connections>
                         <outlet property="cancelButton" destination="Ha0-EL-j6y" id="eKN-Hb-1ub"/>
-                        <outlet property="confirmButton" destination="bAs-Re-uyt" id="L58-nm-GKF"/>
                         <outlet property="confirmLabel" destination="rqY-8u-XuN" id="NDn-wx-3wR"/>
-                        <outlet property="isConfirmSwitch" destination="8j8-Yx-89v" id="Ceb-Ud-jCi"/>
+                        <outlet property="saveButton" destination="bAs-Re-uyt" id="L58-nm-GKF"/>
                         <outlet property="taskLabel" destination="5Lr-pE-R3V" id="IIW-HQ-8y4"/>
-                        <outlet property="textField" destination="D65-fe-LOf" id="H1y-x7-hKa"/>
+                        <outlet property="textView" destination="D65-fe-LOf" id="H1y-x7-hKa"/>
                         <outlet property="todoLabel" destination="hLo-HG-e23" id="GLb-g2-LbZ"/>
+                        <outlet property="todoSwitch" destination="8j8-Yx-89v" id="Ceb-Ud-jCi"/>
                         <outlet property="userActionLabel" destination="drX-yr-KjF" id="hzJ-sT-3MY"/>
                         <outlet property="warningLabel" destination="j9M-Bm-TUP" id="T3i-5c-jc9"/>
                     </connections>
