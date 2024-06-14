@@ -39,6 +39,7 @@ final class ToDoViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var hiddenButton: UIBarButtonItem!
+    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
 
     /// Testing
     @IBOutlet weak var aButton: UIButton!
@@ -144,6 +145,7 @@ extension ToDoViewController {
         registerCell()
         confirmTableView()
         confirmRefreshControl()
+        confirmActivityView()
         confirmSearchVC()
         confirmAddButton()
 
@@ -182,6 +184,11 @@ extension ToDoViewController {
             guard let self = self else { return }
             pushDetailVC()
         }), for: .touchUpInside)
+    }
+
+    /// ActivityIndicatorView 설정
+    private func confirmActivityView() {
+        indicatorView.hidesWhenStopped = true
     }
 
     /// DetailVC 로 화면 이동 처리
@@ -444,6 +451,7 @@ extension ToDoViewController {
             .subscribe(onNext: { [weak self] valid in
                 DispatchQueue.main.async {
                     if valid == true, self?.viewModel.paginationRelay.value == true {
+                        self?.indicatorView.startAnimating()
                         if self?.searchVC.isActive == true {
                             // 서치바 동작 상태일 때
                             guard let text = self?.searchVC.searchBar.text else { return }
@@ -452,17 +460,20 @@ extension ToDoViewController {
                             customQueue.async {
                                 self?.viewModel.requestMoreQueryTodos(query: text) {
                                     DispatchQueue.main.async {
+                                        self?.indicatorView.stopAnimating()
                                         self?.viewModel.paginationRelay.accept(false)
                                     }
                                 }
                             }
                         } else {
                             // 서치바 동작 상태 아닐 때
+
                             let customQueue = DispatchQueue(label: "validPagination")
 
                             customQueue.async {
                                 self?.viewModel.requestMoreTodos {
                                     DispatchQueue.main.async {
+                                        self?.indicatorView.stopAnimating()
                                         self?.viewModel.paginationRelay.accept(false)
                                     }
                                 }
