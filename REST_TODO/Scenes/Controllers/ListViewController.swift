@@ -35,7 +35,7 @@ extension SectionOfCustomData: SectionModelType {
 
 // MARK: - ToDoViewController
 
-final class ToDoViewController: UIViewController {
+final class ListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var hiddenButton: UIBarButtonItem!
@@ -109,7 +109,7 @@ final class ToDoViewController: UIViewController {
 
 // MARK: - View Life Cycle 관련 메서드 모음
 
-extension ToDoViewController {
+extension ListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -139,7 +139,7 @@ extension ToDoViewController {
 
 // MARK: - View Setting 관련 메서드 모음
 
-extension ToDoViewController {
+extension ListViewController {
     private func setupUI() {
         view.backgroundColor = .white
         registerCell()
@@ -214,11 +214,6 @@ extension ToDoViewController {
         present(navigationVC, animated: true)
     }
 
-    /// Edit 페이지 화면 이동
-    private func pushEditVC() {
-        //
-    }
-
     private func confirmTableView() {
         tableView.bounces = true
         tableView.backgroundColor = .systemGray6
@@ -245,7 +240,7 @@ extension ToDoViewController {
 
 // MARK: - ViewModel Rx Binding 관련 처리 메서드 모음
 
-extension ToDoViewController {
+extension ListViewController {
     private func bind() {
         // TableView Delegate
         tableView.rx.setDelegate(self)
@@ -283,45 +278,68 @@ extension ToDoViewController {
 
                 SeenManager.shared.insertSeenList(id: id)
 
-                let sb: UIStoryboard = .init(name: "DetailToDo", bundle: nil)
-                guard let vc = sb.instantiateViewController(identifier: "DetailToDoVC") as? AddViewController else { return }
-                vc.viewModel = AddViewModel()
+//                let sb: UIStoryboard = .init(name: "EDIT", bundle: nil)
+//                guard let vc = sb.instantiateViewController(identifier: "EditViewController") as? EditViewController else { return }
+//                vc.viewModel = AddViewModel()
 //                vc.viewModel.todo = currentItem
 //                vc.viewModel.userAction = .edit
 
-                vc.eventHandler = { [weak self] _ in
-                    self?.viewModel.resetPage()
+//                vc.eventHandler = { [weak self] _ in
+//                    self?.viewModel.resetPage()
+//
+//                    let customQueue = DispatchQueue(label: "eventHandler-EDIT")
+//
+//                    DispatchQueue.main.async {
+//                        self?.tableView.setContentOffset(.zero, animated: true)
+//                        if self?.searchVC.isActive == true {
+//                            guard let query = self?.searchVC.searchBar.text else { return }
+//                            // 검색창 활성화
+//                            customQueue.async {
+//                                self?.viewModel.searchTodo(query: query, completion: { [weak self] _ in
+//
+//                                    DispatchQueue.main.async {
+//                                        self?.viewModel.paginationRelay.accept(false)
+//                                    }
+//                                })
+//                            }
+//                        } else {
+//                            // 검색창 비활성화
+//                            customQueue.async {
+//                                self?.viewModel.requestGETTodos(completion: {
+//                                    DispatchQueue.main.async {
+//                                        self?.viewModel.paginationRelay.accept(false)
+//                                    }
+//                                })
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                let navigationVC = UINavigationController(rootViewController: vc)
+//                self.present(navigationVC, animated: true)
 
-                    let customQueue = DispatchQueue(label: "eventHandler-EDIT")
+                let sb: UIStoryboard = .init(name: "EDIT", bundle: nil)
+                guard let vc = sb.instantiateViewController(identifier: "EditViewController") as? EditViewController else { return }
+                vc.viewModel = EditViewModel()
+                vc.viewModel.todo = currentItem
 
-                    DispatchQueue.main.async {
-                        self?.tableView.setContentOffset(.zero, animated: true)
-                        if self?.searchVC.isActive == true {
-                            guard let query = self?.searchVC.searchBar.text else { return }
-                            // 검색창 활성화
-                            customQueue.async {
-                                self?.viewModel.searchTodo(query: query, completion: { [weak self] _ in
+                vc.eventHandler = { [weak self] valid in
+                    if valid {
+                        self?.viewModel.resetPage()
 
-                                    DispatchQueue.main.async {
-                                        self?.viewModel.paginationRelay.accept(false)
-                                    }
-                                })
-                            }
-                        } else {
-                            // 검색창 비활성화
-                            customQueue.async {
-                                self?.viewModel.requestGETTodos(completion: {
-                                    DispatchQueue.main.async {
-                                        self?.viewModel.paginationRelay.accept(false)
-                                    }
-                                })
-                            }
+                        DispatchQueue.main.async {
+                            self?.tableView.setContentOffset(.zero, animated: true)
+                        }
+
+                        let customQueue = DispatchQueue(label: "eventHandler-ADD")
+                        customQueue.async {
+                            self?.viewModel.requestGETTodos(completion: {})
                         }
                     }
                 }
 
                 let navigationVC = UINavigationController(rootViewController: vc)
-                self.present(navigationVC, animated: true)
+                present(navigationVC, animated: true)
 
                 self.tableView.deselectRow(at: indexPath, animated: true)
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -384,12 +402,17 @@ extension ToDoViewController {
                             DispatchQueue.main.async {
                                 if todos.count == 0, self?.searchVC.searchBar.isFirstResponder == true {
                                     self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
+                                        self?.indicatorView.stopAnimating()
                                         self?.searchVC.searchBar.text = text
                                         self?.searchVC.searchBar.becomeFirstResponder()
+                                        self?.tableView.setContentOffset(.zero, animated: true)
                                     })
                                 }
 
+                                self?.viewModel.scrollEndRelay.accept(false)
                                 self?.viewModel.paginationRelay.accept(false)
+                                self?.indicatorView.stopAnimating()
+                                self?.tableView.setContentOffset(.zero, animated: true)
                             }
                         })
                     }
@@ -398,15 +421,15 @@ extension ToDoViewController {
                     customQueue.async {
                         self?.viewModel.requestGETTodos(completion: {
                             DispatchQueue.main.async {
+                                self?.viewModel.scrollEndRelay.accept(false)
                                 self?.viewModel.paginationRelay.accept(false)
+                                self?.indicatorView.stopAnimating()
+                                self?.tableView.setContentOffset(.zero, animated: true)
                             }
                         })
                     }
                 }
 
-                DispatchQueue.main.async {
-                    self?.tableView.setContentOffset(.zero, animated: true)
-                }
             })
             .disposed(by: viewModel.disposeBag)
 
@@ -414,7 +437,7 @@ extension ToDoViewController {
         searchVC.searchBar.rx.cancelButtonClicked
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
-                self?.tableView.setContentOffset(.zero, animated: true)
+
                 self?.searchVC.searchBar.text = ""
                 self?.viewModel.resetPage()
 
@@ -422,10 +445,13 @@ extension ToDoViewController {
                 customQueue.async {
                     self?.viewModel.requestGETTodos(completion: {
                         DispatchQueue.main.async {
+                            self?.viewModel.scrollEndRelay.accept(false)
                             self?.viewModel.paginationRelay.accept(false)
                         }
                     })
                 }
+
+                self?.tableView.setContentOffset(.zero, animated: true)
                 self?.searchVC.searchBar.resignFirstResponder()
             })
             .disposed(by: viewModel.disposeBag)
@@ -441,8 +467,10 @@ extension ToDoViewController {
 
                 let paginationOffset = (contentHeight - tableViewHeight - 100) * 0.75
 
-                if currentOffset > paginationOffset, self.viewModel.paginationRelay.value == false {
-                    self.viewModel.increasePage()
+                if Int(currentOffset) == Int(contentHeight - tableViewHeight) {
+                    self.viewModel.scrollEndRelay.accept(true)
+
+                } else if currentOffset > paginationOffset, !self.viewModel.paginationRelay.value, !self.viewModel.scrollEndRelay.value {
                     self.viewModel.paginationRelay.accept(true)
                 }
             })
@@ -453,6 +481,8 @@ extension ToDoViewController {
             .asObservable()
             .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
             .subscribe(onNext: { [weak self] valid in
+                let customQueue = DispatchQueue(label: "validPagination")
+
                 DispatchQueue.main.async {
                     if valid == true, self?.viewModel.paginationRelay.value == true {
                         self?.indicatorView.startAnimating()
@@ -460,25 +490,24 @@ extension ToDoViewController {
                             // 서치바 동작 상태일 때
                             guard let text = self?.searchVC.searchBar.text else { return }
 
-                            let customQueue = DispatchQueue(label: "validPagination")
                             customQueue.async {
-                                self?.viewModel.requestMoreQueryTodos(query: text) {
+                                self?.viewModel.increasePage()
+                                self?.viewModel.requestMoreQueryTodos(query: text) { response in
+
                                     DispatchQueue.main.async {
-                                        self?.indicatorView.stopAnimating()
                                         self?.viewModel.paginationRelay.accept(false)
+                                        self?.indicatorView.stopAnimating()
                                     }
                                 }
                             }
                         } else {
                             // 서치바 동작 상태 아닐 때
-
-                            let customQueue = DispatchQueue(label: "validPagination")
-
                             customQueue.async {
+                                self?.viewModel.increasePage()
                                 self?.viewModel.requestMoreTodos {
                                     DispatchQueue.main.async {
-                                        self?.indicatorView.stopAnimating()
                                         self?.viewModel.paginationRelay.accept(false)
+                                        self?.indicatorView.stopAnimating()
                                     }
                                 }
                             }
@@ -530,20 +559,12 @@ extension ToDoViewController {
 
             })
             .disposed(by: viewModel.disposeBag)
-
-        // ViewModel todoBehaviorSubject 이벤트 처리
-        viewModel.todoBehaviorSubject
-            .observe(on: MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] todos in
-                self?.tableView.reloadData()
-            })
-            .disposed(by: viewModel.disposeBag)
     }
 }
 
 // MARK: - UITableViewDelegate 처리
 
-extension ToDoViewController: UITableViewDelegate {
+extension ListViewController: UITableViewDelegate {
     /// 셀 삭제
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { action, view, perform in
@@ -561,6 +582,11 @@ extension ToDoViewController: UITableViewDelegate {
         ])
 
         return configuration
+    }
+
+    /// 셀 높이 설정
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
     }
 
     /// 헤더 설정

@@ -36,6 +36,9 @@ final class ListViewModel {
     /// 페이지네이션 이벤트 처리
     var paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
+    /// 스크롤 이벤트 처리: 스크롤이 끝에 도달했는지 파악
+    var scrollEndRelay: BehaviorRelay<Bool> = .init(value: false)
+
     /// 완료 숨기기 버튼 이벤트 처리
     var hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
 
@@ -182,7 +185,7 @@ final class ListViewModel {
                 self.todos = data
                 completion(self.todos)
                 self.todoBehaviorSubject.onNext(data)
-
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(data.count)")
             case .failure(let error):
                 print("#### Search Error: \(error)")
                 completion([])
@@ -345,7 +348,7 @@ final class ListViewModel {
     }
 
     // 검색 데이터 추가 요청
-    func requestMoreQueryTodos(query: String, completion: @escaping () -> Void) {
+    func requestMoreQueryTodos(query: String, completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.searchPath
         let headers: HTTPHeaders = [
@@ -401,9 +404,10 @@ final class ListViewModel {
                 self.todos += data
                 self.todoBehaviorSubject.onNext(self.todos)
                 print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(self.todos.count)")
-                completion()
+                completion(true)
             case .failure(let error):
-                print("#### Search Pagination Error: \(error)")
+                completion(false)
+                print("#### Search Pagination Error: \(error.isResponseSerializationError)")
             }
         }
     }

@@ -14,5 +14,9 @@ import RxSwift
 import Foundation
 
 final class EditViewModel {
-    //
+    var disposeBag = DisposeBag()
+
+    var userAction: UserAction = .edit
+    var todo: ToDoData?
+    var isUpdate: Bool = false
 }

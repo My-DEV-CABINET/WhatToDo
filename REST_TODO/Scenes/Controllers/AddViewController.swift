@@ -17,6 +17,7 @@ final class AddViewController: UIViewController {
 
     /// Button
     @IBOutlet weak var saveButton: UIButton!
+    @IBOutlet weak var cancelButton: UIButton!
 
     /// Switch
     @IBOutlet weak var todoSwitch: UISwitch!
@@ -29,6 +30,8 @@ final class AddViewController: UIViewController {
 
     /// Add 후 ToDoVC 이벤트 처리 클로저
     var eventHandler: ((Bool) -> Void)?
+    /// Edit 후 EditVC 이벤트 처리 클로저
+    var editHandler: ((String, Bool) -> Void)?
 }
 
 // MARK: - View Life Cycle 관련 모음
@@ -52,6 +55,7 @@ extension AddViewController {
     private func setupUI() {
         /// 기본 UI 처리
         confirmTextView()
+        confirmCancelButton()
         confirmTodoSwitch()
 
         /// 네비게이션 UI
@@ -60,17 +64,43 @@ extension AddViewController {
 
         /// 빈 화면 터치시 키보드 내리기
         hideKeyboardWhenTappedAround()
+
+        /// Edit 일 때, 화면 구성
+        configure()
+    }
+
+    /// 데이터 주입 처리
+    private func configure() {
+        guard let todo = viewModel.todo else { return }
+        guard let title = todo.title else { return }
+        guard let isDone = todo.isDone else { return }
+
+        if viewModel.userAction == .edit {
+            textView.text = title
+            todoSwitch.isOn = isDone
+        }
     }
 
     private func confirmTextView() {
         textView.layer.cornerRadius = 10
         textView.layer.masksToBounds = true
+        textView.layer.borderWidth = 2
+        textView.layer.borderColor = UIColor.black.cgColor
 
+        /// TextView 패딩
         textView.textContainerInset = .init(top: 10, left: 10, bottom: 10, right: 10)
     }
 
+    private func confirmCancelButton() {
+        if viewModel.userAction == .add {
+            cancelButton.isHidden = true
+        } else {
+            cancelButton.isHidden = false
+        }
+    }
+
     private func confirmTodoSwitch() {
-        todoSwitch.isOn = false
+        todoSwitch.isOn = false /// 기본값은 false
     }
 }
 
@@ -80,6 +110,7 @@ extension AddViewController {
     private func bind() {
         textViewBind()
         saveButtonBind()
+        cancelButtonBind()
 
         // ViewModel 로 ConfirmButton Tag 값 전달
 //        saveButton.rx.tap
@@ -189,6 +220,7 @@ extension AddViewController {
 //            .disposed(by: viewModel.disposeBag)
     }
 
+    /// TextView 관련 Bind 모음
     private func textViewBind() {
         /// TextView 맨 처음 띄어쓰기 방지, 두번째부터는 띄어쓰기 허용
         textView.rx.text
@@ -253,6 +285,7 @@ extension AddViewController {
             .disposed(by: viewModel.disposeBag)
     }
 
+    /// SaveButton 관련 Bind 모음
     private func saveButtonBind() {
         /// SaveButton 누를 시, 예외처리 및 성공처리
         saveButton.rx.tap
@@ -263,30 +296,75 @@ extension AddViewController {
                 let isDone = self.todoSwitch.isOn
 
                 if self.textView.text.count < 6 {
-                    self.showBlankMessage(title: "할일 추가 ERROR", message: "할일 내용이 너무 짧습니다. 6글자 이상 입력해주세요.", completion: {})
+                    self.showBlankMessage(
+                        title: "할일 추가 ERROR",
+                        message: "할일 내용이 너무 짧습니다. 6글자 이상 입력해주세요.",
+                        completion: {}
+                    )
                 } else if (self.textView.text == """
                 저장하고 싶은 할일 내용을 입력해주세요.
                 """ || self.textView.text == nil) {
-                    self.showBlankMessage(title: "할일 추가 ERROR", message: "할일 내용이 없습니다. 내용을 입력해주세요.", completion: {})
+                    self.showBlankMessage(
+                        title: "할일 추가 ERROR",
+                        message: "할일 내용이 없습니다. 내용을 입력해주세요.",
+                        completion: {}
+                    )
                 } else {
                     let queue = DispatchQueue(label: "queue", qos: .userInitiated)
-                    queue.async {
-                        self.viewModel.createTodo(title: text, isDone: isDone) { success in
-                            if success {
-                                self.eventHandler?(true)
-                                DispatchQueue.main.async {
-                                    self.navigationController?.dismiss(animated: true)
+                    if viewModel.userAction == .add {
+                        /// UserAction 이 Add 일 때,
+                        queue.async {
+                            self.viewModel.createTodo(title: text, isDone: isDone) { success in
+                                if success {
+                                    self.eventHandler?(true)
+                                    DispatchQueue.main.async {
+                                        self.navigationController?.dismiss(animated: true)
+                                    }
+                                } else {
+                                    // 오류 처리
+                                    DispatchQueue.main.async {
+                                        self.showBlankMessage(
+                                            title: "할일 추가 ERROR",
+                                            message: "할일 추가에 실패하였습니다. 다시 시도해주세요.",
+                                            completion: {}
+                                        )
+                                    }
                                 }
-                            } else {
-                                // 오류 처리
-                                print("#### 할 일 업데이트 실패")
-                                DispatchQueue.main.async {
-                                    self.showBlankMessage(title: "할일 추가 ERROR", message: "할일 추가에 실패하였습니다. 다시 시도해주세요.", completion: {})
+                            }
+                        }
+                    } else {
+                        /// UserAction 이 Edit 일 때,
+                        queue.async {
+                            self.viewModel.editTodo(title: text, isDone: isDone) { success in
+                                if success {
+                                    self.editHandler?(text, isDone)
+                                    DispatchQueue.main.async {
+                                        self.navigationController?.dismiss(animated: true)
+                                    }
+                                } else {
+                                    // 오류 처리
+                                    DispatchQueue.main.async {
+                                        self.showBlankMessage(
+                                            title: "할일 수정 ERROR",
+                                            message: "할일 수정에 실패하였습니다. 다시 시도해주세요.",
+                                            completion: {}
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            })
+            .disposed(by: viewModel.disposeBag)
+    }
+
+    /// CancelButton 버튼 관련 Bind 모음
+    private func cancelButtonBind() {
+        cancelButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                self?.navigationController?.dismiss(animated: true)
             })
             .disposed(by: viewModel.disposeBag)
     }
@@ -296,7 +374,7 @@ extension AddViewController {
 
 extension AddViewController {
     private func confirmNavigationBar() {
-        navigationItem.title = "할일 추가"
+        navigationItem.title = viewModel.userAction == .edit ? "할일 수정" : "할일 추가"
         navigationController?.navigationBar.backgroundColor = .systemGray6
     }
 
