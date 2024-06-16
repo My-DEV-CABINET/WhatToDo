@@ -280,7 +280,7 @@ final class ListViewModel {
         }
     }
 
-    // Todos 데이터 추가 요청
+    /// Todos 데이터 추가 요청
     func requestMoreTodos(completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
@@ -344,7 +344,7 @@ final class ListViewModel {
         }
     }
 
-    // 검색 데이터 추가 요청
+    /// 검색 데이터 추가 요청
     func requestMoreQueryTodos(query: String, completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.searchPath

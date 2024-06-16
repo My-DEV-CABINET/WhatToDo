@@ -55,8 +55,6 @@
 		4E99395A2BFBA8C80087AA39 /* AddViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9939592BFBA8C80087AA39 /* AddViewModel.swift */; };
 		4EAB61FD2C1AD56A009D7388 /* EDIT.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4EAB61FC2C1AD56A009D7388 /* EDIT.storyboard */; };
 		4EAB61FF2C1AD574009D7388 /* ADD.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4EAB61FE2C1AD574009D7388 /* ADD.storyboard */; };
-		4EAB62012C1AD6A2009D7388 /* AViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EAB62002C1AD6A2009D7388 /* AViewController.swift */; };
-		4EAB62032C1AD6A6009D7388 /* BViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EAB62022C1AD6A6009D7388 /* BViewController.swift */; };
 		4EAB62052C1ADCBF009D7388 /* C.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4EAB62042C1ADCBF009D7388 /* C.storyboard */; };
 		4ED353622C09F3BB007ED64E /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ED3535B2C09F397007ED64E /* RxSwift.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		4ED353652C09F3BD007ED64E /* sqlite3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ED3535F2C09F39C007ED64E /* sqlite3.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -154,8 +152,6 @@
 		4E9939592BFBA8C80087AA39 /* AddViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewModel.swift; sourceTree = "<group>"; };
 		4EAB61FC2C1AD56A009D7388 /* EDIT.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = EDIT.storyboard; sourceTree = "<group>"; };
 		4EAB61FE2C1AD574009D7388 /* ADD.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = ADD.storyboard; sourceTree = "<group>"; };
-		4EAB62002C1AD6A2009D7388 /* AViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AViewController.swift; sourceTree = "<group>"; };
-		4EAB62022C1AD6A6009D7388 /* BViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BViewController.swift; sourceTree = "<group>"; };
 		4EAB62042C1ADCBF009D7388 /* C.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = C.storyboard; sourceTree = "<group>"; };
 		4ED3535B2C09F397007ED64E /* RxSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RxSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ED3535F2C09F39C007ED64E /* sqlite3.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = sqlite3.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -259,8 +255,6 @@
 				4E27893D2C09B6540002466B /* ListViewController.swift */,
 				4E2789412C09B66F0002466B /* AddViewController.swift */,
 				4E4E555B2C1C3C7200700380 /* EditViewController.swift */,
-				4EAB62002C1AD6A2009D7388 /* AViewController.swift */,
-				4EAB62022C1AD6A6009D7388 /* BViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -698,7 +692,6 @@
 				4E8DBD022BFF3955003E44DD /* POSTAPI.swift in Sources */,
 				4E1BF79F2C1565F40087994A /* PreviousToDoViewModel.swift in Sources */,
 				4E8649342BF8CCD80099DFB5 /* AppCoordinator.swift in Sources */,
-				4EAB62032C1AD6A6009D7388 /* BViewController.swift in Sources */,
 				4E2062B82C04423C0065592C /* Extension+UIViewController.swift in Sources */,
 				4EE6F0962BF51A420043D833 /* ToDoView.swift in Sources */,
 				4EE6F0922BF51A420043D833 /* AppDelegate.swift in Sources */,
@@ -729,7 +722,6 @@
 				4E7C5D852BF85CDA00A4AE33 /* DetailToDoView.swift in Sources */,
 				4E9939582BFB9EE30087AA39 /* Extension+UIColor.swift in Sources */,
 				4E2062B62C0423650065592C /* APICase.swift in Sources */,
-				4EAB62012C1AD6A2009D7388 /* AViewController.swift in Sources */,
 				4E8DBD002BFF3901003E44DD /* GETAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

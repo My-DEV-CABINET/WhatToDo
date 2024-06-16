@@ -23,6 +23,7 @@ final class AddViewModel {
     var userAction: UserAction = .add
     let textViewInputRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
 
+    /// Todo 데이터 생성
     func createTodo(title: String, isDone: Bool, completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.postPath
@@ -63,6 +64,7 @@ final class AddViewModel {
         }
     }
 
+    /// Todo 데이터 수정
     func editTodo(title: String, isDone: Bool, completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         guard let id = todo?.id else { return }

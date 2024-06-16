@@ -111,113 +111,6 @@ extension AddViewController {
         textViewBind()
         saveButtonBind()
         cancelButtonBind()
-
-        // ViewModel 로 ConfirmButton Tag 값 전달
-//        saveButton.rx.tap
-//            .map { self.saveButton.tag }
-//            .bind(to: viewModel.buttonTapRelay)
-//            .disposed(by: viewModel.disposeBag)
-
-        // View -> ViewModel TaskLabel 텍스트 입력 내용 전송
-//        viewModel.textViewInputRelay
-//            .subscribe { [weak self] text in
-//                guard let self = self else { return }
-//                taskLabel.text = text
-//            }
-//            .disposed(by: viewModel.disposeBag)
-
-        // 6글자 미만시, ConfirmButton 비활성화
-//        viewModel.textValidDriver
-//            .drive(saveButton.rx.isEnabled)
-//            .disposed(by: viewModel.disposeBag)
-
-        // ConfirmButton 클릭 이벤트 전달
-//        saveButton.rx.tap
-//            .bind(to: viewModel.editTapRelay)
-//            .disposed(by: viewModel.disposeBag)
-
-//        // Edit, Cancel 버튼 클릭시, TextField, TaskLabel 숨김 활성화/비활성화 처리
-//        viewModel.isHiddenValid
-//            .drive(onNext: { [weak self] result in
-//                guard let self = self else { return }
-//
-//                if result {
-//                    // 편집 시작
-//                    self.textView.text = viewModel.previousText
-//                    self.viewModel.textInputRelay.accept(viewModel.previousText)
-//
-//                    self.isConfirmSwitch.isEnabled = true
-        ////                    self.taskLabel.isHidden = true
-//
-        ////                    self.cancelButton.isHidden = false
-//                    self.textView.isHidden = false
-        ////                    self.warningLabel.isHidden = true
-//                    self.confirmButton.isHidden = false
-//
-//                    self.textView.becomeFirstResponder()
-//
-//                } else {
-//                    // 편집 종료
-        ////                    self.cancelButton.isHidden = true
-//                    self.textView.isHidden = true
-        ////                    self.warningLabel.isHidden = true
-        ////                    self.taskLabel.isHidden = false
-//                    self.confirmButton.isHidden = true
-//                    self.isConfirmSwitch.isEnabled = false
-//
-//                    self.textView.resignFirstResponder()
-//                }
-//
-//            })
-//            .disposed(by: viewModel.disposeBag)
-
-//        // ViewModel 의 ButtonTapRelay 버튼 값 입력처리
-//        viewModel.buttonTapRelay
-//            .subscribe(onNext: { [weak self] tag in
-//                guard let self = self else { return }
-//                if viewModel.userAction == .add {
-//                    // 추가
-//                    if tag == 1 {
-//                        guard let text = self.textView.text else { return }
-//                        let isDone = self.isConfirmSwitch.isOn
-//                        viewModel.previousText = text
-//                        viewModel.createTodo(title: text, isDone: isDone) { success in
-//                            if success {
-//                                self.eventHandler?(true)
-//
-//                                DispatchQueue.main.async {
-//                                    self.navigationController?.dismiss(animated: true)
-//                                }
-//                            } else {
-//                                // 오류 처리
-//                                print("#### 할 일 추가 실패")
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    // 편집
-//                    if tag == 1 {
-//                        // Confirm Button
-//                        guard let text = self.textView.text else { return }
-//                        let isDone = self.isConfirmSwitch.isOn
-//
-//                        viewModel.editTodo(title: text, isDone: isDone) { success in
-//                            if success {
-//                                self.viewModel.previousText = text
-//                                self.eventHandler?(true)
-//                            } else {
-//                                // 오류 처리
-//                                print("#### 할 일 업데이트 실패")
-//                            }
-//                        }
-//
-//                    } else {
-//                        // Cancel Button
-        ////                        self.taskLabel.text = viewModel.previousText
-//                    }
-//                }
-//            })
-//            .disposed(by: viewModel.disposeBag)
     }
 
     /// TextView 관련 Bind 모음
@@ -391,19 +284,6 @@ extension AddViewController {
     @objc private func didTapBackButton(_ sender: UIBarButtonItem) {
         navigationController?.dismiss(animated: true)
     }
-}
-
-// MARK: - Bar Button 관련 모음
-
-extension AddViewController {
-//    private func confirmEditButton() {
-//        editButton = UIBarButtonItem()
-//        editButton.tintColor = .black
-//        editButton.title = "Edit"
-//        editButton.target = self
-//
-//        navigationItem.rightBarButtonItem = editButton
-//    }
 }
 
 // MARK: - 예외처리 알림

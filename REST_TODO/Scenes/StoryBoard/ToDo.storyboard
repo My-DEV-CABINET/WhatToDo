@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="OJT-Yi-wek">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -36,28 +37,6 @@
                                     <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8gt-Ca-ang">
-                                <rect key="frame" x="313" y="668" width="50" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="Xmx-7N-oZm"/>
-                                    <constraint firstAttribute="height" constant="50" id="uTM-IR-fJK"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="A" cornerStyle="capsule">
-                                    <color key="baseBackgroundColor" systemColor="systemPinkColor"/>
-                                </buttonConfiguration>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="T8N-nz-gwq">
-                                <rect key="frame" x="313" y="598" width="50" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="FdI-yk-DKX"/>
-                                    <constraint firstAttribute="width" constant="50" id="sUA-JF-53k"/>
-                                </constraints>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="B" cornerStyle="capsule">
-                                    <color key="baseBackgroundColor" systemColor="tintColor"/>
-                                </buttonConfiguration>
-                            </button>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="zBh-pU-tMg">
                                 <rect key="frame" x="171.66666666666666" y="668" width="50" height="50"/>
                                 <constraints>
@@ -71,26 +50,20 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Vvj-Wd-D0p" secondAttribute="trailing" id="4j0-0e-zLk"/>
-                            <constraint firstItem="8gt-Ca-ang" firstAttribute="top" secondItem="G25-Jr-iYu" secondAttribute="bottom" constant="-120" id="6QB-Dd-pIp"/>
-                            <constraint firstItem="8gt-Ca-ang" firstAttribute="top" secondItem="T8N-nz-gwq" secondAttribute="bottom" constant="20" id="9cw-5X-G3b"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="G25-Jr-iYu" secondAttribute="trailing" constant="30" id="9p0-RD-qpz"/>
                             <constraint firstItem="zBh-pU-tMg" firstAttribute="centerX" secondItem="Vvj-Wd-D0p" secondAttribute="centerX" id="CxS-LR-HyQ"/>
                             <constraint firstItem="G25-Jr-iYu" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-30" id="HMB-Vs-td9"/>
                             <constraint firstItem="zBh-pU-tMg" firstAttribute="bottom" secondItem="Vvj-Wd-D0p" secondAttribute="bottom" constant="-100" id="KXd-r9-Sri"/>
-                            <constraint firstItem="8gt-Ca-ang" firstAttribute="trailing" secondItem="G25-Jr-iYu" secondAttribute="trailing" id="LZF-X5-zD7"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="Vvj-Wd-D0p" secondAttribute="bottom" id="Rqe-4A-PyU"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="kO4-GW-NYN"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="n5N-5e-z7m"/>
-                            <constraint firstItem="T8N-nz-gwq" firstAttribute="leading" secondItem="8gt-Ca-ang" secondAttribute="leading" id="oq0-sP-UJA"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="REST_TODO" id="HHv-HE-4Pi">
                         <barButtonItem key="rightBarButtonItem" title="완료 숨기기" id="fpf-rR-CP9"/>
                     </navigationItem>
                     <connections>
-                        <outlet property="aButton" destination="8gt-Ca-ang" id="X1s-an-lHd"/>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
-                        <outlet property="bButton" destination="T8N-nz-gwq" id="Hgb-0Y-kFq"/>
                         <outlet property="hiddenButton" destination="fpf-rR-CP9" id="vPE-8t-37m"/>
                         <outlet property="indicatorView" destination="zBh-pU-tMg" id="lD1-Qb-pwS"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
@@ -123,12 +96,6 @@
         <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemPinkColor">
-            <color red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="tintColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

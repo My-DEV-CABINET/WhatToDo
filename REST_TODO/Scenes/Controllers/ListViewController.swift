@@ -41,10 +41,6 @@ final class ListViewController: UIViewController {
     @IBOutlet weak var hiddenButton: UIBarButtonItem!
     @IBOutlet weak var indicatorView: UIActivityIndicatorView!
 
-    /// Testing
-    @IBOutlet weak var aButton: UIButton!
-    @IBOutlet weak var bButton: UIButton!
-
     private var viewModel = ListViewModel()
     private var searchVC: UISearchController!
     private var refreshControl: UIRefreshControl!
@@ -114,26 +110,6 @@ extension ListViewController {
         super.viewDidLoad()
         setupUI()
         viewModel.requestGETTodos(completion: {})
-
-        confirmABButton()
-    }
-
-    private func confirmABButton() {
-        aButton.addAction(UIAction(handler: { [weak self] _ in
-            let sb: UIStoryboard = .init(name: "A", bundle: nil)
-            guard let vc = sb.instantiateViewController(identifier: "AViewController") as? AViewController else { return }
-
-            let navigationVC = UINavigationController(rootViewController: vc)
-            self?.present(navigationVC, animated: true)
-        }), for: .touchUpInside)
-
-        bButton.addAction(UIAction(handler: { [weak self] _ in
-            let sb: UIStoryboard = .init(name: "B", bundle: nil)
-            guard let vc = sb.instantiateViewController(identifier: "BViewController") as? BViewController else { return }
-
-            let navigationVC = UINavigationController(rootViewController: vc)
-            self?.present(navigationVC, animated: true)
-        }), for: .touchUpInside)
     }
 }
 
@@ -242,11 +218,11 @@ extension ListViewController {
 
 extension ListViewController {
     private func bind() {
-        // TableView Delegate
+        /// TableView Delegate
         tableView.rx.setDelegate(self)
             .disposed(by: viewModel.disposeBag)
 
-        // RxDataSource에 데이터 주입
+        /// RxDataSource에 데이터 주입
         viewModel.todoBehaviorSubject
             .map { todos in
                 // CreatedAt 기준으로 Dictionary 생성
@@ -265,7 +241,7 @@ extension ListViewController {
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
 
-        // TableView Cell 선택
+        /// TableView Cell 선택
         tableView.rx.itemSelected
             .observe(on: MainScheduler.instance)
             .bind { [weak self] indexPath in
@@ -306,7 +282,7 @@ extension ListViewController {
             }
             .disposed(by: viewModel.disposeBag)
 
-        // TableView RefreshControl 이벤트 처리
+        /// TableView RefreshControl 이벤트 처리
         refreshControl.rx.controlEvent(.valueChanged)
             .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
             .subscribe(onNext: { [weak self] _ in
@@ -347,7 +323,7 @@ extension ListViewController {
             })
             .disposed(by: viewModel.disposeBag)
 
-        // SearchBar 입력 이벤트 처리
+        /// SearchBar 입력 이벤트 처리
         searchVC.searchBar.rx.text.orEmpty
             .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
             .observe(on: MainScheduler.instance)
@@ -369,8 +345,7 @@ extension ListViewController {
                                         self?.searchVC.searchBar.text = text
                                         self?.searchVC.searchBar.becomeFirstResponder()
 
-                                        let indexPath = IndexPath(row: 0, section: 0)
-                                        self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                                        self?.tableView.setContentOffset(.zero, animated: true)
                                     })
                                 }
                             }
@@ -381,8 +356,7 @@ extension ListViewController {
                     customQueue.async {
                         self?.viewModel.requestGETTodos(completion: {
                             DispatchQueue.main.async {
-                                let indexPath = IndexPath(row: 0, section: 0)
-                                self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                                self?.tableView.setContentOffset(.zero, animated: true)
                             }
                         })
                     }
@@ -391,7 +365,7 @@ extension ListViewController {
             })
             .disposed(by: viewModel.disposeBag)
 
-        // SearchBar 취소 이벤트 처리
+        /// SearchBar 취소 이벤트 처리
         searchVC.searchBar.rx.cancelButtonClicked
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
@@ -406,8 +380,7 @@ extension ListViewController {
                 }
 
                 self?.searchVC.searchBar.resignFirstResponder()
-                let indexPath = IndexPath(row: 0, section: 0)
-                self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                self?.tableView.setContentOffset(.zero, animated: true)
             })
             .disposed(by: viewModel.disposeBag)
 
@@ -475,20 +448,19 @@ extension ListViewController {
             })
             .disposed(by: viewModel.disposeBag)
 
-        // 완료 보이기 이벤트 전달
+        /// 완료 보이기 이벤트 전달
         hiddenButton.rx.tap
             .observe(on: MainScheduler.asyncInstance)
             .bind { [weak self] in
                 guard let isHidden = self?.viewModel.hiddenRelay.value else { return }
 
-                let indexPath = IndexPath(row: 0, section: 0)
-                self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                self?.tableView.setContentOffset(.zero, animated: true)
 
                 self?.viewModel.hiddenRelay.accept(!isHidden)
             }
             .disposed(by: viewModel.disposeBag)
 
-        // 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
+        /// 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
         viewModel.validHidden
             .drive(onNext: { [weak self] title in
                 self?.hiddenButton.title = title
