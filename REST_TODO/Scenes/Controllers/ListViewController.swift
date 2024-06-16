@@ -312,7 +312,6 @@ extension ListViewController {
             .subscribe(onNext: { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.viewModel.resetPage()
-                    self?.viewModel.scrollEndRelay.accept(false)
                     self?.indicatorView.isHidden = true
                     let customQueue = DispatchQueue(label: "refresh")
 
@@ -399,7 +398,6 @@ extension ListViewController {
 
                 self?.searchVC.searchBar.text = ""
                 self?.viewModel.resetPage()
-                self?.viewModel.scrollEndRelay.accept(false)
                 self?.viewModel.paginationRelay.accept(false)
 
                 let customQueue = DispatchQueue(label: "searchBarCancel")
@@ -482,11 +480,9 @@ extension ListViewController {
             .observe(on: MainScheduler.asyncInstance)
             .bind { [weak self] in
                 guard let isHidden = self?.viewModel.hiddenRelay.value else { return }
-//                self?.tableView.setContentOffset(.zero, animated: true)
+
                 let indexPath = IndexPath(row: 0, section: 0)
                 self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-
-                self?.viewModel.scrollEndRelay.accept(false)
 
                 self?.viewModel.hiddenRelay.accept(!isHidden)
             }

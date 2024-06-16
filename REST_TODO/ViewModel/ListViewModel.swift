@@ -36,9 +36,6 @@ final class ListViewModel {
     /// 페이지네이션 이벤트 처리
     let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
-    /// 스크롤 이벤트 처리: 스크롤이 끝에 도달했는지 파악
-    let scrollEndRelay: BehaviorRelay<Bool> = .init(value: false)
-
     /// 완료 숨기기 버튼 이벤트 처리
     let hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
 

@@ -54,7 +54,6 @@
                                                 </constraints>
                                             </switch>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="2Ze-lY-viI" secondAttribute="trailing" constant="32" id="0Rg-Ol-3e4"/>
                                             <constraint firstAttribute="trailing" secondItem="U8C-rJ-rUz" secondAttribute="trailing" constant="32" id="7Qc-7J-Cyt"/>
@@ -73,13 +72,13 @@
                                         </constraints>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBlueColor"/>
                                 <constraints>
                                     <constraint firstItem="g2p-1G-7xc" firstAttribute="trailing" secondItem="Q9J-gZ-NUD" secondAttribute="trailing" id="7Bz-BT-v4R"/>
                                     <constraint firstAttribute="trailing" secondItem="Q9J-gZ-NUD" secondAttribute="trailing" id="8gc-5r-TbR"/>
                                     <constraint firstItem="g2p-1G-7xc" firstAttribute="bottom" secondItem="Q9J-gZ-NUD" secondAttribute="bottom" id="I1k-k0-khQ"/>
                                     <constraint firstItem="Q9J-gZ-NUD" firstAttribute="leading" secondItem="qVL-jc-Lr3" secondAttribute="leading" id="Q5e-cI-KZY"/>
                                     <constraint firstItem="Q9J-gZ-NUD" firstAttribute="top" secondItem="qVL-jc-Lr3" secondAttribute="top" id="y4G-cF-4ZL"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="VYT-j8-vmb" secondAttribute="bottom" constant="30" id="yAn-el-Hge"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="LZ7-x7-qBm"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="g2p-1G-7xc"/>
@@ -107,12 +106,6 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
