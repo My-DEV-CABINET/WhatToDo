@@ -128,7 +128,7 @@ extension EditViewController {
 
 extension EditViewController {
     private func confirmNavigationBar() {
-        navigationItem.title = "할일 수정"
+        navigationItem.title = viewModel.todo?.id?.description
         navigationController?.navigationBar.backgroundColor = .systemGray6
     }
 

@@ -34,13 +34,13 @@ final class ListViewModel {
     private var isDone: Bool? // 완료 여부
 
     /// 페이지네이션 이벤트 처리
-    var paginationRelay: BehaviorRelay<Bool> = .init(value: false)
+    let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 스크롤 이벤트 처리: 스크롤이 끝에 도달했는지 파악
-    var scrollEndRelay: BehaviorRelay<Bool> = .init(value: false)
+    let scrollEndRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 완료 숨기기 버튼 이벤트 처리
-    var hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
+    let hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 페이지네이션 이벤트 유효성 검사
     var validPagination: Driver<Bool> {
@@ -185,7 +185,6 @@ final class ListViewModel {
                 self.todos = data
                 completion(self.todos)
                 self.todoBehaviorSubject.onNext(data)
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(data.count)")
             case .failure(let error):
                 print("#### Search Error: \(error)")
                 completion([])
@@ -285,7 +284,7 @@ final class ListViewModel {
     }
 
     // Todos 데이터 추가 요청
-    func requestMoreTodos(completion: @escaping () -> Void) {
+    func requestMoreTodos(completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
         var parameters: [String: String] = [:]
@@ -338,8 +337,9 @@ final class ListViewModel {
                 guard let data = value.data else { return }
                 self.todos += data
                 self.todoBehaviorSubject.onNext(self.todos)
-                completion()
+                completion(true)
             case .failure(let error):
+                completion(false)
                 if error.isSessionTaskError == true {
                     print("#### Pagination Error: \(error)")
                 }

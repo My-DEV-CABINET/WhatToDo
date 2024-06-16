@@ -278,46 +278,6 @@ extension ListViewController {
 
                 SeenManager.shared.insertSeenList(id: id)
 
-//                let sb: UIStoryboard = .init(name: "EDIT", bundle: nil)
-//                guard let vc = sb.instantiateViewController(identifier: "EditViewController") as? EditViewController else { return }
-//                vc.viewModel = AddViewModel()
-//                vc.viewModel.todo = currentItem
-//                vc.viewModel.userAction = .edit
-
-//                vc.eventHandler = { [weak self] _ in
-//                    self?.viewModel.resetPage()
-//
-//                    let customQueue = DispatchQueue(label: "eventHandler-EDIT")
-//
-//                    DispatchQueue.main.async {
-//                        self?.tableView.setContentOffset(.zero, animated: true)
-//                        if self?.searchVC.isActive == true {
-//                            guard let query = self?.searchVC.searchBar.text else { return }
-//                            // 검색창 활성화
-//                            customQueue.async {
-//                                self?.viewModel.searchTodo(query: query, completion: { [weak self] _ in
-//
-//                                    DispatchQueue.main.async {
-//                                        self?.viewModel.paginationRelay.accept(false)
-//                                    }
-//                                })
-//                            }
-//                        } else {
-//                            // 검색창 비활성화
-//                            customQueue.async {
-//                                self?.viewModel.requestGETTodos(completion: {
-//                                    DispatchQueue.main.async {
-//                                        self?.viewModel.paginationRelay.accept(false)
-//                                    }
-//                                })
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                let navigationVC = UINavigationController(rootViewController: vc)
-//                self.present(navigationVC, animated: true)
-
                 let sb: UIStoryboard = .init(name: "EDIT", bundle: nil)
                 guard let vc = sb.instantiateViewController(identifier: "EditViewController") as? EditViewController else { return }
                 vc.viewModel = EditViewModel()
@@ -352,11 +312,13 @@ extension ListViewController {
             .subscribe(onNext: { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.viewModel.resetPage()
+                    self?.viewModel.scrollEndRelay.accept(false)
+                    self?.indicatorView.isHidden = true
+                    let customQueue = DispatchQueue(label: "refresh")
 
                     if self?.searchVC.isActive == true {
                         guard let text = self?.searchVC.searchBar.text else { return }
 
-                        let customQueue = DispatchQueue(label: "refresh")
                         customQueue.async {
                             self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
 
@@ -371,9 +333,9 @@ extension ListViewController {
                                     self?.refreshControl.endRefreshing()
                                 }
                             })
+                            self?.viewModel.paginationRelay.accept(false)
                         }
                     } else {
-                        let customQueue = DispatchQueue(label: "refresh")
                         customQueue.async {
                             self?.viewModel.requestGETTodos(completion: {
                                 DispatchQueue.main.async {
@@ -382,7 +344,6 @@ extension ListViewController {
                             })
                         }
                     }
-                    self?.viewModel.paginationRelay.accept(false)
                 }
             })
             .disposed(by: viewModel.disposeBag)
@@ -393,6 +354,9 @@ extension ListViewController {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] text in
                 self?.viewModel.resetPage()
+                self?.viewModel.paginationRelay.accept(false)
+                self?.indicatorView.isHidden = true
+
                 let customQueue = DispatchQueue(label: "searchBar")
 
                 if self?.searchVC.isActive == true, text.isEmpty != true {
@@ -405,14 +369,11 @@ extension ListViewController {
                                         self?.indicatorView.stopAnimating()
                                         self?.searchVC.searchBar.text = text
                                         self?.searchVC.searchBar.becomeFirstResponder()
-                                        self?.tableView.setContentOffset(.zero, animated: true)
+
+                                        let indexPath = IndexPath(row: 0, section: 0)
+                                        self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                                     })
                                 }
-
-                                self?.viewModel.scrollEndRelay.accept(false)
-                                self?.viewModel.paginationRelay.accept(false)
-                                self?.indicatorView.stopAnimating()
-                                self?.tableView.setContentOffset(.zero, animated: true)
                             }
                         })
                     }
@@ -421,10 +382,8 @@ extension ListViewController {
                     customQueue.async {
                         self?.viewModel.requestGETTodos(completion: {
                             DispatchQueue.main.async {
-                                self?.viewModel.scrollEndRelay.accept(false)
-                                self?.viewModel.paginationRelay.accept(false)
-                                self?.indicatorView.stopAnimating()
-                                self?.tableView.setContentOffset(.zero, animated: true)
+                                let indexPath = IndexPath(row: 0, section: 0)
+                                self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
                             }
                         })
                     }
@@ -440,75 +399,76 @@ extension ListViewController {
 
                 self?.searchVC.searchBar.text = ""
                 self?.viewModel.resetPage()
+                self?.viewModel.scrollEndRelay.accept(false)
+                self?.viewModel.paginationRelay.accept(false)
 
                 let customQueue = DispatchQueue(label: "searchBarCancel")
                 customQueue.async {
-                    self?.viewModel.requestGETTodos(completion: {
-                        DispatchQueue.main.async {
-                            self?.viewModel.scrollEndRelay.accept(false)
-                            self?.viewModel.paginationRelay.accept(false)
-                        }
-                    })
+                    self?.viewModel.requestGETTodos(completion: {})
                 }
 
-                self?.tableView.setContentOffset(.zero, animated: true)
                 self?.searchVC.searchBar.resignFirstResponder()
+                let indexPath = IndexPath(row: 0, section: 0)
+                self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
             })
             .disposed(by: viewModel.disposeBag)
 
-        // 스크롤 이벤트 처리
-        tableView.rx.didScroll
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
+        /// 페이징 처리
+        tableView.rx.willDisplayCell
+            .subscribe(onNext: { [weak self] cell, indexPath in
                 guard let self = self else { return }
-                let currentOffset = self.tableView.contentOffset.y
-                let tableViewHeight = self.tableView.frame.size.height
-                let contentHeight = self.tableView.contentSize.height
+                guard !viewModel.paginationRelay.value else { return } /// True 이면, API 호출하지 않고, 조기 종료
 
-                let paginationOffset = (contentHeight - tableViewHeight - 100) * 0.75
+                let sections = dataSource.sectionModels
+                let totalItemsCount = sections.flatMap { $0.items }.count
+                let currentIndex = sections.prefix(indexPath.section).flatMap { $0.items }.count + indexPath.row
 
-                if Int(currentOffset) == Int(contentHeight - tableViewHeight) {
-                    self.viewModel.scrollEndRelay.accept(true)
-
-                } else if currentOffset > paginationOffset, !self.viewModel.paginationRelay.value, !self.viewModel.scrollEndRelay.value {
-                    self.viewModel.paginationRelay.accept(true)
-                }
-            })
-            .disposed(by: viewModel.disposeBag)
-
-        // 페이지네이션 처리 - 비동기 이벤트 호출 처리
-        viewModel.validPagination
-            .asObservable()
-            .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
-            .subscribe(onNext: { [weak self] valid in
                 let customQueue = DispatchQueue(label: "validPagination")
 
-                DispatchQueue.main.async {
-                    if valid == true, self?.viewModel.paginationRelay.value == true {
-                        self?.indicatorView.startAnimating()
-                        if self?.searchVC.isActive == true {
-                            // 서치바 동작 상태일 때
-                            guard let text = self?.searchVC.searchBar.text else { return }
+                if currentIndex == totalItemsCount - 2, !viewModel.paginationRelay.value {
+                    self.indicatorView.startAnimating()
+                    self.viewModel.increasePage()
+                    if self.searchVC.isActive == true, self.searchVC.searchBar.text?.isEmpty == false {
+                        // 서치바 동작 상태일 때
+                        guard let text = self.searchVC.searchBar.text else { return }
 
-                            customQueue.async {
-                                self?.viewModel.increasePage()
-                                self?.viewModel.requestMoreQueryTodos(query: text) { response in
+                        customQueue.async {
+                            self.viewModel.requestMoreQueryTodos(query: text) { valid in
 
-                                    DispatchQueue.main.async {
-                                        self?.viewModel.paginationRelay.accept(false)
-                                        self?.indicatorView.stopAnimating()
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.viewModel.paginationRelay.accept(true)
                                     }
+
+                                    self.indicatorView.stopAnimating()
                                 }
                             }
-                        } else {
-                            // 서치바 동작 상태 아닐 때
-                            customQueue.async {
-                                self?.viewModel.increasePage()
-                                self?.viewModel.requestMoreTodos {
-                                    DispatchQueue.main.async {
-                                        self?.viewModel.paginationRelay.accept(false)
-                                        self?.indicatorView.stopAnimating()
+                        }
+
+                    } else if self.searchVC.isActive == true, self.searchVC.searchBar.text == "" {
+                        customQueue.async {
+                            self.viewModel.requestMoreTodos { valid in
+
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.viewModel.paginationRelay.accept(true)
                                     }
+
+                                    self.indicatorView.stopAnimating()
+                                }
+                            }
+                        }
+                    } else {
+                        // 서치바 동작 상태 아닐 때
+                        customQueue.async {
+                            self.viewModel.requestMoreTodos { valid in
+
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.viewModel.paginationRelay.accept(true)
+                                    }
+
+                                    self.indicatorView.stopAnimating()
                                 }
                             }
                         }
@@ -522,6 +482,12 @@ extension ListViewController {
             .observe(on: MainScheduler.asyncInstance)
             .bind { [weak self] in
                 guard let isHidden = self?.viewModel.hiddenRelay.value else { return }
+//                self?.tableView.setContentOffset(.zero, animated: true)
+                let indexPath = IndexPath(row: 0, section: 0)
+                self?.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+
+                self?.viewModel.scrollEndRelay.accept(false)
+
                 self?.viewModel.hiddenRelay.accept(!isHidden)
             }
             .disposed(by: viewModel.disposeBag)
@@ -530,31 +496,28 @@ extension ListViewController {
         viewModel.validHidden
             .drive(onNext: { [weak self] title in
                 self?.hiddenButton.title = title
-                self?.tableView.setContentOffset(.zero, animated: true)
                 self?.viewModel.resetPage()
+
                 let customQueue = DispatchQueue(label: "validHidden")
+
                 if self?.searchVC.isActive == true {
                     guard let text = self?.searchVC.searchBar.text else { return }
                     // 검색창 활성화
                     if text == "" {
-                        /// 검색창 빈칸일 시, Alert 창 띄우기
-                        self?.showBlankMessage(title: "검색 오류", message: "검색할 내용을 입력해주세요.", completion: {
-                            self?.searchVC.searchBar.text = text
-                            self?.searchVC.searchBar.becomeFirstResponder()
-                        })
+                        customQueue.async {
+                            self?.viewModel.requestGETTodos(completion: {})
+                        }
                     } else {
                         customQueue.async {
                             self?.viewModel.searchTodo(query: text, completion: { _ in })
                         }
                     }
-
                 } else {
                     // 검색창 비활성화
                     customQueue.async {
                         self?.viewModel.requestGETTodos(completion: {})
                     }
                 }
-
                 self?.viewModel.paginationRelay.accept(false)
 
             })
