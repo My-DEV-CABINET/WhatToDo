@@ -17,7 +17,7 @@ final class DBManager {
     let dataPath: String = "Favorite"
     var db: OpaquePointer?
 
-    // DB 생성
+    /// DB 생성
     func openDataBase() -> OpaquePointer? {
         let filePath = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent(dataPath)
 
@@ -31,7 +31,7 @@ final class DBManager {
         }
     }
 
-    // 테이블 생성
+    /// 테이블 생성
     func createFavoriteTable() {
         let createTableString = """
             CREATE TABLE IF NOT EXISTS Favorite (
@@ -54,7 +54,7 @@ final class DBManager {
         sqlite3_finalize(createTableStatement)
     }
 
-    // 전체 Favorite 데이터 조회
+    /// 전체 Favorite 데이터 조회
     func getAllFavorite() -> [Favorite] {
         let queryStatementString = "SELECT * FROM Favorite;"
         var queryStatement: OpaquePointer?
@@ -74,11 +74,11 @@ final class DBManager {
         return favorites
     }
 
-    // DB 데이터 삽입
+    /// DB 데이터 삽입
     func insertFavorite(id: Int) -> Bool {
         let favorites = getAllFavorite()
 
-        // DB에 해당 ID 가 존재하는지 검사
+        /// DB에 해당 ID 가 존재하는지 검사
         for favorite in favorites {
             if favorite.id == id {
                 return false
@@ -105,7 +105,7 @@ final class DBManager {
         }
     }
 
-    // DB에 해당 ID가 있는지 확인
+    /// DB에 해당 ID가 있는지 확인
     func fetchFavoriteByID(id: Int) -> Bool {
         let queryStatementString = "SELECT id FROM Favorite WHERE id = ?;"
         var queryStatement: OpaquePointer? = nil
@@ -126,7 +126,7 @@ final class DBManager {
         }
     }
 
-    // DB에 해당하는 ID 있으면 삭제
+    /// DB에 해당하는 ID 있으면 삭제
     func deleteFavorite(id: Int) -> Bool {
         let deleteStatementString = "DELETE FROM Favorite WHERE id = ?;"
         var deleteStatement: OpaquePointer? = nil

@@ -55,7 +55,7 @@ final class ListViewController: UIViewController {
                 guard let id = item.id else { return UITableViewCell() }
                 cell.data = item
 
-                // isDone 스위치 이벤트
+                /// isDone 스위치 이벤트
                 cell.checkHandler = { [weak self] data in
                     guard let title = data.title else { return }
                     guard let isDone = data.isDone else { return }
@@ -64,7 +64,7 @@ final class ListViewController: UIViewController {
                     self?.viewModel.editTodo(title: title, isDone: isDone, id: id)
                 }
 
-                // 북마크 스위치 이벤트
+                /// 북마크 스위치 이벤트
                 cell.favoriteHandler = { [weak self] id in
                     guard let exist = self?.viewModel.dbManager.fetchFavoriteByID(id: id) else { return }
 
@@ -218,27 +218,15 @@ extension ListViewController {
 
 extension ListViewController {
     private func bind() {
+        rxDatasourceBind()
+        tableViewBind()
+        searchBind()
+        hiddenBind()
+    }
+
+    private func tableViewBind() {
         /// TableView Delegate
         tableView.rx.setDelegate(self)
-            .disposed(by: viewModel.disposeBag)
-
-        /// RxDataSource에 데이터 주입
-        viewModel.todoBehaviorSubject
-            .map { todos in
-                // CreatedAt 기준으로 Dictionary 생성
-                let groupedDictionary = Dictionary(grouping: todos) { todo in
-                    return todo.createdAt?.dateFormatterForDate() ?? ""
-                }
-
-                // 날짜 정렬
-                let sortedKeys = groupedDictionary.keys.sorted(by: >)
-
-                // SectionOfCustomData 생성
-                return sortedKeys.map { key in
-                    SectionOfCustomData(header: key, items: groupedDictionary[key] ?? [])
-                }
-            }
-            .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
 
         /// TableView Cell 선택
@@ -302,10 +290,11 @@ extension ListViewController {
                                         self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
                                             self?.searchVC.searchBar.text = text
                                             self?.searchVC.searchBar.becomeFirstResponder()
+                                            self?.refreshControl.endRefreshing()
                                         })
+                                    } else {
+                                        self?.refreshControl.endRefreshing()
                                     }
-
-                                    self?.refreshControl.endRefreshing()
                                 }
                             })
                             self?.viewModel.paginationRelay.accept(false)
@@ -323,6 +312,72 @@ extension ListViewController {
             })
             .disposed(by: viewModel.disposeBag)
 
+        /// 페이징 처리
+        tableView.rx.willDisplayCell
+            .subscribe(onNext: { [weak self] cell, indexPath in
+                guard let self = self else { return }
+                guard !viewModel.paginationRelay.value else { return } /// True 이면, API 호출하지 않고, 조기 종료
+
+                let sections = dataSource.sectionModels
+                let totalItemsCount = sections.flatMap { $0.items }.count
+                let currentIndex = sections.prefix(indexPath.section).flatMap { $0.items }.count + indexPath.row
+
+                let customQueue = DispatchQueue(label: "validPagination")
+
+                if currentIndex == totalItemsCount - 2, !viewModel.paginationRelay.value {
+                    self.indicatorView.startAnimating()
+                    self.viewModel.increasePage()
+                    if self.searchVC.isActive == true, self.searchVC.searchBar.text?.isEmpty == false {
+                        /// 서치바 동작 상태일 때
+                        guard let text = self.searchVC.searchBar.text else { return }
+
+                        customQueue.async {
+                            self.viewModel.requestMoreQueryTodos(query: text) { valid in
+
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.viewModel.paginationRelay.accept(true)
+                                    }
+
+                                    self.indicatorView.stopAnimating()
+                                }
+                            }
+                        }
+
+                    } else if self.searchVC.isActive == true, self.searchVC.searchBar.text == "" {
+                        customQueue.async {
+                            self.viewModel.requestMoreTodos { valid in
+
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.viewModel.paginationRelay.accept(true)
+                                    }
+
+                                    self.indicatorView.stopAnimating()
+                                }
+                            }
+                        }
+                    } else {
+                        /// 서치바 동작 상태 아닐 때
+                        customQueue.async {
+                            self.viewModel.requestMoreTodos { valid in
+
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.viewModel.paginationRelay.accept(true)
+                                    }
+
+                                    self.indicatorView.stopAnimating()
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            .disposed(by: viewModel.disposeBag)
+    }
+
+    private func searchBind() {
         /// SearchBar 입력 이벤트 처리
         searchVC.searchBar.rx.text.orEmpty
             .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
@@ -383,71 +438,9 @@ extension ListViewController {
                 self?.tableView.setContentOffset(.zero, animated: true)
             })
             .disposed(by: viewModel.disposeBag)
+    }
 
-        /// 페이징 처리
-        tableView.rx.willDisplayCell
-            .subscribe(onNext: { [weak self] cell, indexPath in
-                guard let self = self else { return }
-                guard !viewModel.paginationRelay.value else { return } /// True 이면, API 호출하지 않고, 조기 종료
-
-                let sections = dataSource.sectionModels
-                let totalItemsCount = sections.flatMap { $0.items }.count
-                let currentIndex = sections.prefix(indexPath.section).flatMap { $0.items }.count + indexPath.row
-
-                let customQueue = DispatchQueue(label: "validPagination")
-
-                if currentIndex == totalItemsCount - 2, !viewModel.paginationRelay.value {
-                    self.indicatorView.startAnimating()
-                    self.viewModel.increasePage()
-                    if self.searchVC.isActive == true, self.searchVC.searchBar.text?.isEmpty == false {
-                        // 서치바 동작 상태일 때
-                        guard let text = self.searchVC.searchBar.text else { return }
-
-                        customQueue.async {
-                            self.viewModel.requestMoreQueryTodos(query: text) { valid in
-
-                                DispatchQueue.main.async {
-                                    if !valid {
-                                        self.viewModel.paginationRelay.accept(true)
-                                    }
-
-                                    self.indicatorView.stopAnimating()
-                                }
-                            }
-                        }
-
-                    } else if self.searchVC.isActive == true, self.searchVC.searchBar.text == "" {
-                        customQueue.async {
-                            self.viewModel.requestMoreTodos { valid in
-
-                                DispatchQueue.main.async {
-                                    if !valid {
-                                        self.viewModel.paginationRelay.accept(true)
-                                    }
-
-                                    self.indicatorView.stopAnimating()
-                                }
-                            }
-                        }
-                    } else {
-                        // 서치바 동작 상태 아닐 때
-                        customQueue.async {
-                            self.viewModel.requestMoreTodos { valid in
-
-                                DispatchQueue.main.async {
-                                    if !valid {
-                                        self.viewModel.paginationRelay.accept(true)
-                                    }
-
-                                    self.indicatorView.stopAnimating()
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-            .disposed(by: viewModel.disposeBag)
-
+    private func hiddenBind() {
         /// 완료 보이기 이벤트 전달
         hiddenButton.rx.tap
             .observe(on: MainScheduler.asyncInstance)
@@ -470,7 +463,7 @@ extension ListViewController {
 
                 if self?.searchVC.isActive == true {
                     guard let text = self?.searchVC.searchBar.text else { return }
-                    // 검색창 활성화
+                    /// 검색창 활성화
                     if text == "" {
                         customQueue.async {
                             self?.viewModel.requestGETTodos(completion: {})
@@ -481,7 +474,7 @@ extension ListViewController {
                         }
                     }
                 } else {
-                    // 검색창 비활성화
+                    /// 검색창 비활성화
                     customQueue.async {
                         self?.viewModel.requestGETTodos(completion: {})
                     }
@@ -489,6 +482,27 @@ extension ListViewController {
                 self?.viewModel.paginationRelay.accept(false)
 
             })
+            .disposed(by: viewModel.disposeBag)
+    }
+
+    private func rxDatasourceBind() {
+        /// RxDataSource에 데이터 주입
+        viewModel.todoBehaviorSubject
+            .map { todos in
+                // CreatedAt 기준으로 Dictionary 생성
+                let groupedDictionary = Dictionary(grouping: todos) { todo in
+                    return todo.createdAt?.dateFormatterForDate() ?? ""
+                }
+
+                // 날짜 정렬
+                let sortedKeys = groupedDictionary.keys.sorted(by: >)
+
+                // SectionOfCustomData 생성
+                return sortedKeys.map { key in
+                    SectionOfCustomData(header: key, items: groupedDictionary[key] ?? [])
+                }
+            }
+            .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
     }
 }

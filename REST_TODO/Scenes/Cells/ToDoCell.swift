@@ -28,7 +28,7 @@ final class ToDoCell: UITableViewCell {
     
     var data: ToDoData?
 
-    // 셀 초기화시 호출
+    /// 셀 초기화시 호출
     override func awakeFromNib() {
         setup()
     }

@@ -99,11 +99,11 @@ final class ListViewModel {
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
         .validate(statusCode: 200 ..< 500)
-        // curl 표시
+        /// curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
         }
-        // 요청하는 URL 전체 주소 표시
+        /// 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
@@ -165,11 +165,11 @@ final class ListViewModel {
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
         .validate()
-        // curl 표시
+        /// curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
         }
-        // 요청하는 URL 전체 주소 표시
+        /// 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
@@ -209,11 +209,11 @@ final class ListViewModel {
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
         .validate(statusCode: 200 ..< 300)
-        // curl 표시
+        /// curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
         }
-        // 요청하는 URL 전체 주소 표시
+        /// 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
@@ -256,11 +256,11 @@ final class ListViewModel {
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
         .validate(statusCode: 200 ..< 500)
-        // curl 표시
+        /// curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
         }
-        // 요청하는 URL 전체 주소 표시
+        /// 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
@@ -319,11 +319,11 @@ final class ListViewModel {
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
         .validate(statusCode: 200 ..< 500)
-        // curl 표시
+        /// curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
         }
-        // 요청하는 URL 전체 주소 표시
+        /// 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
@@ -385,11 +385,11 @@ final class ListViewModel {
         .cacheResponse(using: .cache)
         .redirect(using: .follow)
         .validate(statusCode: 200 ..< 500)
-        // curl 표시
+        /// curl 표시
         .cURLDescription { description in
             print("#### curl -v : \(description)")
         }
-        // 요청하는 URL 전체 주소 표시
+        /// 요청하는 URL 전체 주소 표시
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }

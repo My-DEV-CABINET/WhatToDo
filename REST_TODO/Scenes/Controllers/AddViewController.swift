@@ -43,9 +43,17 @@ extension AddViewController {
         bind()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        /// 키보드 반응
+        setupKeyboard()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.disposeBag = DisposeBag()
+
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 
@@ -298,5 +306,37 @@ extension AddViewController {
         }
         alert.addAction(confirmAlert)
         present(alert, animated: true)
+    }
+}
+
+// MARK: - 키보드 관련 모음
+
+extension AddViewController {
+    private func setupKeyboard() {
+        /// 키보드가 나타난 이후
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+
+        /// 키보드가 사라질 때
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    /// 키보드가 나타난 직후
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        /// 키보드
+        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardHeight = keyboardFrame.cgRectValue.height / 2
+            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(keyboardHeight)")
+            UIView.animate(
+                withDuration: 0.3,
+                animations: {
+                    self.view.transform = CGAffineTransform(translationX: 0, y: -keyboardHeight)
+                }
+            )
+        }
+    }
+
+    /// 키보드가 사라질 때
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        view.transform = .identity
     }
 }
