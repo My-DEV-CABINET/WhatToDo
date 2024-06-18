@@ -247,13 +247,16 @@ extension ListViewController {
                 vc.viewModel = EditViewModel()
                 vc.viewModel.todo = currentItem
 
+                let navigationVC = UINavigationController(rootViewController: vc)
+                present(navigationVC, animated: true)
+
+                self.tableView.deselectRow(at: indexPath, animated: true)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+
                 vc.eventHandler = { [weak self] valid in
                     if valid {
                         self?.viewModel.resetPage()
-
-                        DispatchQueue.main.async {
-                            self?.tableView.setContentOffset(.zero, animated: true)
-                        }
+                        self?.tableView.setContentOffset(.zero, animated: true)
 
                         let customQueue = DispatchQueue(label: "eventHandler-ADD")
                         customQueue.async {
@@ -261,12 +264,6 @@ extension ListViewController {
                         }
                     }
                 }
-
-                let navigationVC = UINavigationController(rootViewController: vc)
-                present(navigationVC, animated: true)
-
-                self.tableView.deselectRow(at: indexPath, animated: true)
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             .disposed(by: viewModel.disposeBag)
 
@@ -470,7 +467,20 @@ extension ListViewController {
                         }
                     } else {
                         customQueue.async {
-                            self?.viewModel.searchTodo(query: text, completion: { _ in })
+                            self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
+                                if todos.count == 0 {
+                                    DispatchQueue.main.async {
+                                        self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
+                                            self?.indicatorView.stopAnimating()
+                                            self?.searchVC.searchBar.text = text
+                                            self?.searchVC.searchBar.becomeFirstResponder()
+
+                                            self?.tableView.setContentOffset(.zero, animated: true)
+
+                                        })
+                                    }
+                                }
+                            })
                         }
                     }
                 } else {
