@@ -45,14 +45,10 @@ extension AddViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        textView.becomeFirstResponder()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
         /// 키보드 반응
         setupKeyboard()
+
+        textView.becomeFirstResponder()
 
         /// 빈 화면 터치시 키보드 내리기
         hideKeyboardWhenTappedAround()
@@ -354,7 +350,7 @@ extension AddViewController {
             let keyboardHeight = keyboardFrame.cgRectValue.height
 
             UIView.animate(
-                withDuration: 0.3,
+                withDuration: 0.1,
                 animations: {
                     self.view.frame.origin.y = -keyboardHeight / 2
                 }
@@ -365,7 +361,7 @@ extension AddViewController {
     /// 키보드가 사라질 때
     @objc private func keyboardWillHide(_ notification: Notification) {
         UIView.animate(
-            withDuration: 0.3,
+            withDuration: 0.1,
             animations: {
                 self.view.frame.origin.y = 0
             }

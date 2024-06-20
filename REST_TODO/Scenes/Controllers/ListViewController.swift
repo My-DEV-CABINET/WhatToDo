@@ -11,6 +11,7 @@ import RxSwift
 
 /// Apple
 import UIKit
+import UserNotifications
 
 // MARK: - RxDataSource Section Model
 
@@ -225,6 +226,27 @@ extension ListViewController {
         hiddenBind()
     }
 
+    private func rxDatasourceBind() {
+        /// RxDataSource에 데이터 주입
+        viewModel.todoBehaviorSubject
+            .map { todos in
+                // CreatedAt 기준으로 Dictionary 생성
+                let groupedDictionary = Dictionary(grouping: todos) { todo in
+                    return todo.updatedAt?.dateFormatterForDate() ?? ""
+                }
+
+                // 날짜 정렬
+                let sortedKeys = groupedDictionary.keys.sorted(by: >)
+
+                // SectionOfCustomData 생성
+                return sortedKeys.map { key in
+                    SectionOfCustomData(header: key, items: groupedDictionary[key] ?? [])
+                }
+            }
+            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: viewModel.disposeBag)
+    }
+
     private func tableViewBind() {
         /// TableView Delegate
         tableView.rx.setDelegate(self)
@@ -275,6 +297,9 @@ extension ListViewController {
                     if valid {
                         self.viewModel.removeTodo(data: currentItem, completion: {
                             _ = self.viewModel.dbManager.deleteFavorite(id: id)
+
+                            guard let details = currentItem.title else { return }
+                            UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)
                         })
                     }
                 }
@@ -508,27 +533,6 @@ extension ListViewController {
             })
             .disposed(by: viewModel.disposeBag)
     }
-
-    private func rxDatasourceBind() {
-        /// RxDataSource에 데이터 주입
-        viewModel.todoBehaviorSubject
-            .map { todos in
-                // CreatedAt 기준으로 Dictionary 생성
-                let groupedDictionary = Dictionary(grouping: todos) { todo in
-                    return todo.createdAt?.dateFormatterForDate() ?? ""
-                }
-
-                // 날짜 정렬
-                let sortedKeys = groupedDictionary.keys.sorted(by: >)
-
-                // SectionOfCustomData 생성
-                return sortedKeys.map { key in
-                    SectionOfCustomData(header: key, items: groupedDictionary[key] ?? [])
-                }
-            }
-            .bind(to: tableView.rx.items(dataSource: dataSource))
-            .disposed(by: viewModel.disposeBag)
-    }
 }
 
 // MARK: - UITableViewDelegate 처리
@@ -543,6 +547,9 @@ extension ListViewController: UITableViewDelegate {
 
             self.viewModel.removeTodo(data: currentItem, completion: {
                 _ = self.viewModel.dbManager.deleteFavorite(id: id)
+
+                guard let details = currentItem.title else { return }
+                UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)
             })
         }
 

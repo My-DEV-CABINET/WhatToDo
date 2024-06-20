@@ -28,7 +28,7 @@ final class ListViewModel {
 
     /// API Query
     private var page = 1
-    private var filter = Filter.createdAt.rawValue
+    private var filter = Filter.updatedAt.rawValue
     private var orderBy = Order.desc.rawValue
     private var perPage = 10
     private var isDone: Bool? // 완료 여부
