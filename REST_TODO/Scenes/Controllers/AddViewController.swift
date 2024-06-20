@@ -43,14 +43,26 @@ extension AddViewController {
         bind()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        textView.becomeFirstResponder()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         /// 키보드 반응
         setupKeyboard()
+
+        /// 빈 화면 터치시 키보드 내리기
+        hideKeyboardWhenTappedAround()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.disposeBag = DisposeBag()
+
+        textView.resignFirstResponder()
 
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -69,9 +81,6 @@ extension AddViewController {
         /// 네비게이션 UI
         confirmNavigationBar()
         confirmBackButton()
-
-        /// 빈 화면 터치시 키보드 내리기
-        hideKeyboardWhenTappedAround()
 
         /// Edit 일 때, 화면 구성
         configure()
@@ -265,7 +274,9 @@ extension AddViewController {
         cancelButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] in
-                self?.navigationController?.dismiss(animated: true)
+                self?.showMessageAlert(title: "취소 확인", message: "취소하시면 이전에 입력하신 내용이 전부 사라집니다.", completion: {
+                    self?.navigationController?.dismiss(animated: true)
+                })
             })
             .disposed(by: viewModel.disposeBag)
     }
@@ -297,7 +308,7 @@ extension AddViewController {
 // MARK: - 예외처리 알림
 
 extension AddViewController {
-    /// TextView 입력 6글자 미만시, 알림
+    /// TextView 입력 6글자 미만시, 알림 - 확인만 있음.
     private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
 
@@ -305,6 +316,22 @@ extension AddViewController {
             completion()
         }
         alert.addAction(confirmAlert)
+        present(alert, animated: true)
+    }
+
+    /// 확인, 취소 존재하는 Alert
+    private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
+            completion()
+        }
+
+        let cancelAlert = UIAlertAction(title: "취소", style: .destructive)
+
+        alert.addAction(confirmAlert)
+        alert.addAction(cancelAlert)
+
         present(alert, animated: true)
     }
 }
@@ -324,12 +351,12 @@ extension AddViewController {
     @objc private func keyboardWillShow(_ notification: Notification) {
         /// 키보드
         if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-            let keyboardHeight = keyboardFrame.cgRectValue.height / 2
-            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(keyboardHeight)")
+            let keyboardHeight = keyboardFrame.cgRectValue.height
+
             UIView.animate(
                 withDuration: 0.3,
                 animations: {
-                    self.view.transform = CGAffineTransform(translationX: 0, y: -keyboardHeight)
+                    self.view.frame.origin.y = -keyboardHeight / 2
                 }
             )
         }
@@ -337,6 +364,11 @@ extension AddViewController {
 
     /// 키보드가 사라질 때
     @objc private func keyboardWillHide(_ notification: Notification) {
-        view.transform = .identity
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                self.view.frame.origin.y = 0
+            }
+        )
     }
 }

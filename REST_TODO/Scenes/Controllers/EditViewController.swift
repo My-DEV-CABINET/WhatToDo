@@ -20,11 +20,14 @@ final class EditViewController: UIViewController {
 
     private var backButton: UIBarButtonItem!
     private var editButton: UIBarButtonItem!
+    private var deleteButton: UIBarButtonItem!
 
     var viewModel: EditViewModel!
 
     /// Edit 이벤트 핸들러
     var eventHandler: ((Bool) -> Void)?
+    /// Delete 이벤트 핸들러
+    var deleteHandler: ((Bool) -> Void)?
 }
 
 // MARK: - View Life Cycle 관련 모음
@@ -51,6 +54,9 @@ extension EditViewController {
         confirmNavigationBar()
         confirmEditButton()
         confirmBackButton()
+        confirmDeleteButton()
+
+        navigationItem.rightBarButtonItems = [deleteButton, editButton]
     }
 
     /// Todo Switch UI
@@ -74,6 +80,7 @@ extension EditViewController {
     private func bind() {
         editButtonBind()
         backButtonBind()
+        deleButtonBind()
     }
 
     /// Edit Button 관련 Bind 모음
@@ -97,6 +104,18 @@ extension EditViewController {
             })
             .disposed(by: viewModel.disposeBag)
     }
+
+    private func deleButtonBind() {
+        deleteButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                self?.showMessageAlert(title: "삭제 알림", message: "삭제하시겠습니까?", completion: {
+                    self?.navigationController?.dismiss(animated: true)
+                    self?.deleteHandler?(true)
+                })
+            })
+            .disposed(by: viewModel.disposeBag)
+    }
 }
 
 // MARK: - 화면이동 관련 모음
@@ -116,6 +135,10 @@ extension EditViewController {
                 self?.todoLabel.text = newText
                 self?.todoSwitch.isOn = newIsDone
                 self?.viewModel.isUpdate = true
+
+                /// View Model 의 todo 동기화
+                self?.viewModel.todo?.title = newText
+                self?.viewModel.todo?.isDone = newIsDone
             }
         }
 
@@ -149,9 +172,33 @@ extension EditViewController {
     private func confirmEditButton() {
         editButton = UIBarButtonItem()
         editButton.tintColor = .black
-        editButton.title = "Edit"
+        editButton.title = "편집"
         editButton.target = self
+    }
 
-        navigationItem.rightBarButtonItem = editButton
+    private func confirmDeleteButton() {
+        deleteButton = UIBarButtonItem()
+        deleteButton.tintColor = .black
+        deleteButton.image = UIImage(systemName: "trash")
+    }
+}
+
+// MARK: - 예외처리 알림
+
+extension EditViewController {
+    /// 확인, 취소 존재하는 Alert
+    private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
+            completion()
+        }
+
+        let cancelAlert = UIAlertAction(title: "취소", style: .destructive)
+
+        alert.addAction(confirmAlert)
+        alert.addAction(cancelAlert)
+
+        present(alert, animated: true)
     }
 }

@@ -72,7 +72,7 @@
                                                         <rect key="frame" x="169.66666666666663" y="0.0" width="159.33333333333337" height="50"/>
                                                         <color key="tintColor" systemColor="systemRedColor"/>
                                                         <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="filled" title="삭제" cornerStyle="capsule">
+                                                        <buttonConfiguration key="configuration" style="filled" title="취소" cornerStyle="capsule">
                                                             <fontDescription key="titleFontDescription" type="boldSystem" pointSize="25"/>
                                                         </buttonConfiguration>
                                                     </button>

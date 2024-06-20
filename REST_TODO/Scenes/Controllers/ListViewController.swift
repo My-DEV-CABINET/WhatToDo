@@ -187,6 +187,7 @@ extension ListViewController {
         }
 
         let navigationVC = UINavigationController(rootViewController: vc)
+        navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
         present(navigationVC, animated: true)
     }
 
@@ -248,11 +249,13 @@ extension ListViewController {
                 vc.viewModel.todo = currentItem
 
                 let navigationVC = UINavigationController(rootViewController: vc)
+                navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
                 present(navigationVC, animated: true)
 
                 self.tableView.deselectRow(at: indexPath, animated: true)
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
 
+                /// EditVC 의 EventHandler 처리
                 vc.eventHandler = { [weak self] valid in
                     if valid {
                         self?.viewModel.resetPage()
@@ -262,6 +265,17 @@ extension ListViewController {
                         customQueue.async {
                             self?.viewModel.requestGETTodos(completion: {})
                         }
+                    }
+                }
+
+                /// EditVC 의 DeleteHandler 처리
+                vc.deleteHandler = { [weak self] valid in
+                    guard let self = self else { return }
+
+                    if valid {
+                        self.viewModel.removeTodo(data: currentItem, completion: {
+                            _ = self.viewModel.dbManager.deleteFavorite(id: id)
+                        })
                     }
                 }
             }
@@ -541,7 +555,7 @@ extension ListViewController: UITableViewDelegate {
 
     /// 셀 높이 설정
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return 150
     }
 
     /// 헤더 설정
