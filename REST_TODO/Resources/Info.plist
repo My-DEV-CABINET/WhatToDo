@@ -2,9 +2,35 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>SCHEME</key>
+	<string>$(SCHEME)</string>
+	<key>HOST</key>
+	<string>$(HOST)</string>
+	<key>PATH</key>
+	<string>$(PATH)</string>
+	<key>SEARCH_PATH</key>
+	<string>$(SEARCH_PATH)</string>
+	<key>POST_PATH</key>
+	<string>$(POST_PATH)</string>
+	<key>ACCEPT</key>
+	<string>$(ACCEPT)</string>
+	<key>CONTENT_TYPE</key>
+	<string>$(CONTENT_TYPE)</string>
+	<key>APPLICATION_JSON</key>
+	<string>$(APPLICATION_JSON)</string>
+	<key>MULTIPART_FROM_DATA</key>
+	<string>$(MULTIPART_FROM_DATA)</string>
+	<key>APPLICATION_X_WWW_FORM_URLENCODED</key>
+	<string>$(APPLICATION_X_WWW_FORM_URLENCODED)</string>
+	<key>X_CSRF_TOKEN</key>
+	<string>$(X_CSRF_TOKEN)</string>
+	<key>TOKEN</key>
+	<string>$(TOKEN)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UIApplicationSupportsTabbedSceneCollection</key>
 		<false/>
 		<key>UISceneConfigurations</key>
 		<dict>

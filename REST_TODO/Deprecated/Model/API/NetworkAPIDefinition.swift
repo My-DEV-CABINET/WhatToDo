@@ -25,8 +25,8 @@ enum Filter: String {
 }
 
 enum Order: String {
-    case desc = "desc"
-    case asc = "asc"
+    case desc
+    case asc
 }
 
 enum NetworkAPI {}

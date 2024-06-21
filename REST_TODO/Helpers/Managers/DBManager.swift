@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import sqlite3
+import SQLite3
 
 final class DBManager {
     init() {
