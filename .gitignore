@@ -107,7 +107,7 @@ xcuserdata
 
 
 ### Xcode ###
-Secrets.xcconfig
+REST_TODO/Resources/Secrets.xcconfig
 
 ## Xcode 8 and earlier
 
