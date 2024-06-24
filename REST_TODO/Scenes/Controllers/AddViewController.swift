@@ -45,13 +45,10 @@ extension AddViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        /// 키보드 반응
-        setupKeyboard()
-
         textView.becomeFirstResponder()
 
-        /// 빈 화면 터치시 키보드 내리기
-        hideKeyboardWhenTappedAround()
+        /// 키보드 반응
+        setupKeyboard()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -80,6 +77,9 @@ extension AddViewController {
 
         /// Edit 일 때, 화면 구성
         configure()
+
+        /// 빈 화면 터치시 키보드 내리기
+        hideKeyboardWhenTappedAround()
     }
 
     /// 데이터 주입 처리
@@ -272,6 +272,8 @@ extension AddViewController {
             .drive(onNext: { [weak self] in
                 self?.showMessageAlert(title: "취소 확인", message: "취소하시면 이전에 입력하신 내용이 전부 사라집니다.", completion: {
                     self?.navigationController?.dismiss(animated: true)
+                }, cancel: {
+                    self?.textView.becomeFirstResponder()
                 })
             })
             .disposed(by: viewModel.disposeBag)
@@ -316,14 +318,16 @@ extension AddViewController {
     }
 
     /// 확인, 취소 존재하는 Alert
-    private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void) {
+    private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void, cancel: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
         let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
             completion()
         }
 
-        let cancelAlert = UIAlertAction(title: "취소", style: .destructive)
+        let cancelAlert = UIAlertAction(title: "취소", style: .destructive) { _ in
+            cancel()
+        }
 
         alert.addAction(confirmAlert)
         alert.addAction(cancelAlert)

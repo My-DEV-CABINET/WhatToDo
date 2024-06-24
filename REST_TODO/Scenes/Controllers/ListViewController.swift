@@ -438,6 +438,8 @@ extension ListViewController {
 
                                         self?.tableView.setContentOffset(.zero, animated: true)
                                     })
+                                } else {
+                                    self?.searchVC.searchBar.resignFirstResponder()
                                 }
                             }
                         })
