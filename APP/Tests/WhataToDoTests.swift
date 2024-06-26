@@ -1,6 +1,6 @@
 //
-//  REST_TODOTests.swift
-//  REST_TODOTests
+//  WhataToDoTests.swift
+//  WhataToDoTests
 //
 //  Created by 준우의 MacBook 16 on 5/18/24.
 //
@@ -14,7 +14,7 @@ struct ToDoDataDTO: Codable {
     let content: String
 }
 
-final class REST_TODOTests: XCTestCase {
+final class WhataToDoTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // 테스트 준비 코드

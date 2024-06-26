@@ -1,0 +1,29 @@
+#include "Secrets.xcconfig"
+
+ASSETCATALOG_COMPILER_APPICON_NAME=AppIcon
+ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME=AccentColor
+CODE_SIGN_STYLE=Automatic
+CURRENT_PROJECT_VERSION=1
+DEVELOPMENT_TEAM=4MN45GZSDT
+ENABLE_USER_SCRIPT_SANDBOXING=NO
+GENERATE_INFOPLIST_FILE=YES
+INFOPLIST_FILE=REST_TODO/Resources/Info.plist
+INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents=YES
+INFOPLIST_KEY_UILaunchStoryboardName=LaunchScreen
+INFOPLIST_KEY_UIMainStoryboardFile=ToDo
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad=UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone=UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+IPHONEOS_DEPLOYMENT_TARGET=16.0
+MARKETING_VERSION=1.0
+PRODUCT_BUNDLE_IDENTIFIER=com.Junwoo.Jununu.REST-TODO
+PRODUCT_NAME=$(TARGET_NAME)
+SUPPORTED_PLATFORMS=iphoneos iphonesimulator
+SUPPORTS_MACCATALYST=NO
+SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD=NO
+SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD=NO
+SWIFT_EMIT_LOC_STRINGS=YES
+SWIFT_VERSION=5.0
+TARGETED_DEVICE_FAMILY=1,2
+
+LD_RUNPATH_SEARCH_PATHS[config=Debug]=$(inherited) @executable_path/Frameworks
+LD_RUNPATH_SEARCH_PATHS[config=Release]=$(inherited) @executable_path/Frameworks
