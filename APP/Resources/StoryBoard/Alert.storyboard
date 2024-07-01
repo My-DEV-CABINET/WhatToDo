@@ -20,38 +20,55 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2UL-3b-fyF">
                                 <rect key="frame" x="46.666666666666657" y="263.66666666666669" width="300" height="350.00000000000006"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="252" translatesAutoresizingMaskIntoConstraints="NO" id="INz-j7-xCS">
-                                        <rect key="frame" x="20" y="20" width="260" height="260"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="INz-j7-xCS">
+                                        <rect key="frame" x="67.999999999999986" y="20" width="163.66666666666663" height="163.66666666666666"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="INz-j7-xCS" secondAttribute="height" multiplier="1:1" id="RrR-bZ-Kxo"/>
                                         </constraints>
                                     </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9b-SJ-bru">
-                                        <rect key="frame" x="20" y="299.99999999999994" width="260" height="30"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9b-SJ-bru">
+                                        <rect key="frame" x="20" y="295.66666666666669" width="260" height="34.333333333333314"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3sY-cO-Wx7">
-                                                <rect key="frame" x="0.0" y="0.0" width="125" height="30"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="125" height="34.333333333333336"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="확인"/>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u77-EV-B8d">
-                                                <rect key="frame" x="135" y="0.0" width="125" height="30"/>
+                                                <rect key="frame" x="135" y="0.0" width="125" height="34.333333333333336"/>
                                                 <color key="tintColor" systemColor="systemRedColor"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="취소"/>
                                             </button>
                                         </subviews>
                                     </stackView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="네트워크 에러" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KDP-Ev-5I5">
+                                        <rect key="frame" x="10" y="198.66666666666663" width="280" height="26.333333333333343"/>
+                                        <fontDescription key="fontDescription" type="system" weight="black" pointSize="22"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="네트워크 연결이 불안정합니다. 네트워크 연결을 확인해주세요." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2S-Dw-80j">
+                                        <rect key="frame" x="10" y="239.99999999999997" width="280" height="40.666666666666657"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstItem="INz-j7-xCS" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="20" id="1f8-Ta-ArX"/>
+                                    <constraint firstItem="S2S-Dw-80j" firstAttribute="top" secondItem="KDP-Ev-5I5" secondAttribute="bottom" constant="15" id="0cT-PH-Arw"/>
+                                    <constraint firstItem="S2S-Dw-80j" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="8QF-6w-aYT"/>
+                                    <constraint firstItem="S2S-Dw-80j" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="10" id="Bdf-gf-dW6"/>
+                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="top" secondItem="INz-j7-xCS" secondAttribute="bottom" constant="15" id="IVk-5B-LjG"/>
+                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="JAu-Cy-O7Z"/>
                                     <constraint firstAttribute="width" constant="300" id="PSU-Ss-vRg"/>
                                     <constraint firstItem="r9b-SJ-bru" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="PwE-dD-aOf"/>
+                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="10" id="W2r-64-pRE"/>
                                     <constraint firstItem="r9b-SJ-bru" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="20" id="Wca-IS-dpE"/>
+                                    <constraint firstItem="r9b-SJ-bru" firstAttribute="top" secondItem="S2S-Dw-80j" secondAttribute="bottom" constant="15" id="Wpc-zu-Ge3"/>
                                     <constraint firstItem="INz-j7-xCS" firstAttribute="top" secondItem="2UL-3b-fyF" secondAttribute="top" constant="20" id="bND-V2-xAa"/>
                                     <constraint firstAttribute="height" constant="350" id="ek6-KH-vmb"/>
-                                    <constraint firstItem="r9b-SJ-bru" firstAttribute="top" secondItem="INz-j7-xCS" secondAttribute="bottom" constant="20" id="oTx-Av-76N"/>
                                     <constraint firstAttribute="bottom" secondItem="r9b-SJ-bru" secondAttribute="bottom" constant="20" id="xGV-8N-9DJ"/>
                                     <constraint firstItem="INz-j7-xCS" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="xWV-7Y-Z8f"/>
                                 </constraints>
@@ -75,7 +92,7 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

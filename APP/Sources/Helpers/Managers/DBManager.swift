@@ -14,7 +14,7 @@ final class DBManager {
         createFavoriteTable()
     }
 
-    let dataPath: String = "Favorite"
+    let dataPath: String = "Favorite" /// 즐겨찾기 테이블 경로
     var db: OpaquePointer?
 
     /// DB 생성
