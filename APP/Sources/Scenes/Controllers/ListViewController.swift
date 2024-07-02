@@ -39,7 +39,8 @@ extension SectionOfCustomData: SectionModelType {
 final class ListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var hiddenButton: UIBarButtonItem!
+    @IBOutlet weak var filterButton: UIBarButtonItem!
+    @IBOutlet weak var settingButton: UIBarButtonItem!
     @IBOutlet weak var indicatorView: UIActivityIndicatorView!
 
     private var viewModel = ListViewModel()
@@ -112,13 +113,17 @@ extension ListViewController {
         setupUI()
         viewModel.requestGETTodos(completion: {})
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        view.backgroundColor = .white
+        navigationController?.navigationBar.backgroundColor = .white
+    }
 }
 
 // MARK: - View Setting 관련 메서드 모음
 
 extension ListViewController {
     private func setupUI() {
-        view.backgroundColor = .white
         registerCell()
         confirmTableView()
         confirmRefreshControl()
@@ -144,7 +149,7 @@ extension ListViewController {
         tableView.register(haderCell, forHeaderFooterViewReuseIdentifier: Identifier.headerView.rawValue)
     }
 
-    /// Alert 페이지
+    /// Alert 메시지
     private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
@@ -153,6 +158,44 @@ extension ListViewController {
         }
         alert.addAction(confirmAlert)
         present(alert, animated: true)
+    }
+
+    /// Alert 페이지
+    private func pushAlertVC(title: String, detail: String, image: String) {
+        let sb: UIStoryboard = .init(name: "Alert", bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: "AlertViewController") as? AlertViewController else { return }
+        vc.configure(title: title, detail: detail, image: image)
+
+        let navigationVC = UINavigationController(rootViewController: vc)
+        navigationVC.modalTransitionStyle = .crossDissolve
+        navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
+        present(navigationVC, animated: true)
+    }
+
+    /// Setting 페이지
+    private func pushSettingVC() {
+        let sb: UIStoryboard = .init(name: "Setting", bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: "SettingViewController") as? SettingViewController else { return }
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    /// Filter 페이지
+    private func pushFilterVC() {
+        let sb: UIStoryboard = .init(name: "Filter", bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: "FilterViewController") as? FilterViewController else { return }
+        vc.eventHandler = { [weak self] isDone, order in
+            self?.viewModel.isDone = isDone
+            self?.viewModel.orderBy = order.rawValue
+
+            self?.viewModel.paginationRelay.accept(false)
+            self?.viewModel.resetPage()
+            self?.viewModel.requestGETTodos(completion: {})
+        }
+
+        let navigationVC = UINavigationController(rootViewController: vc)
+        navigationVC.modalPresentationStyle = .formSheet
+        navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
+        present(navigationVC, animated: true)
     }
 
     /// Floatting 버튼 구성 및 화면 이동 로직
@@ -170,7 +213,7 @@ extension ListViewController {
 
     /// Add 페이지 화면 이동
     private func pushAddVC() {
-        let sb: UIStoryboard = .init(name: "ADD", bundle: nil)
+        let sb: UIStoryboard = .init(name: "Add", bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: "AddViewController") as? AddViewController else { return }
         vc.viewModel = AddViewModel()
 
@@ -223,7 +266,8 @@ extension ListViewController {
         rxDatasourceBind()
         tableViewBind()
         searchBind()
-        hiddenBind()
+        filterBind()
+        settingButtonBind()
     }
 
     private func rxDatasourceBind() {
@@ -265,17 +309,12 @@ extension ListViewController {
 
                 SeenManager.shared.insertSeenList(id: id)
 
-                let sb: UIStoryboard = .init(name: "EDIT", bundle: nil)
+                let sb: UIStoryboard = .init(name: "Edit", bundle: nil)
                 guard let vc = sb.instantiateViewController(identifier: "EditViewController") as? EditViewController else { return }
                 vc.viewModel = EditViewModel()
                 vc.viewModel.todo = currentItem
 
-                let navigationVC = UINavigationController(rootViewController: vc)
-                navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
-                present(navigationVC, animated: true)
-
-                self.tableView.deselectRow(at: indexPath, animated: true)
-                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+                navigationController?.pushViewController(vc, animated: true)
 
                 /// EditVC 의 EventHandler 처리
                 vc.eventHandler = { [weak self] valid in
@@ -303,6 +342,9 @@ extension ListViewController {
                         })
                     }
                 }
+
+                self.tableView.deselectRow(at: indexPath, animated: true)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             .disposed(by: viewModel.disposeBag)
 
@@ -397,9 +439,11 @@ extension ListViewController {
                         /// 서치바 동작 상태 아닐 때
                         customQueue.async {
                             self.viewModel.requestMoreTodos { valid in
+                                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(valid)")
 
                                 DispatchQueue.main.async {
                                     if !valid {
+                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
                                         self.viewModel.paginationRelay.accept(true)
                                     }
 
@@ -478,60 +522,64 @@ extension ListViewController {
             .disposed(by: viewModel.disposeBag)
     }
 
-    private func hiddenBind() {
-        /// 완료 보이기 이벤트 전달
-        hiddenButton.rx.tap
+    private func filterBind() {
+        filterButton.rx.tap
             .observe(on: MainScheduler.asyncInstance)
             .bind { [weak self] in
-                guard let isHidden = self?.viewModel.hiddenRelay.value else { return }
-
-                self?.tableView.setContentOffset(.zero, animated: true)
-
-                self?.viewModel.hiddenRelay.accept(!isHidden)
+                self?.pushFilterVC()
             }
             .disposed(by: viewModel.disposeBag)
 
-        /// 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
-        viewModel.validHidden
-            .drive(onNext: { [weak self] title in
-                self?.hiddenButton.title = title
-                self?.viewModel.resetPage()
+//        /// 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
+//        viewModel.validHidden
+//            .drive(onNext: { [weak self] title in
+//                self?.filterButton.title = title
+//                self?.viewModel.resetPage()
+//
+//                let customQueue = DispatchQueue(label: "validHidden")
+//
+//                if self?.searchVC.isActive == true {
+//                    guard let text = self?.searchVC.searchBar.text else { return }
+//                    /// 검색창 활성화
+//                    if text == "" {
+//                        customQueue.async {
+//                            self?.viewModel.requestGETTodos(completion: {})
+//                        }
+//                    } else {
+//                        customQueue.async {
+//                            self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
+//                                if todos.count == 0 {
+//                                    DispatchQueue.main.async {
+//                                        self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
+//                                            self?.indicatorView.stopAnimating()
+//                                            self?.searchVC.searchBar.text = text
+//                                            self?.searchVC.searchBar.becomeFirstResponder()
+//
+//                                            self?.tableView.setContentOffset(.zero, animated: true)
+//
+//                                        })
+//                                    }
+//                                }
+//                            })
+//                        }
+//                    }
+//                } else {
+//                    /// 검색창 비활성화
+//                    customQueue.async {
+//                        self?.viewModel.requestGETTodos(completion: {})
+//                    }
+//                }
+//                self?.viewModel.paginationRelay.accept(false)
+//
+//            })
+//            .disposed(by: viewModel.disposeBag)
+    }
 
-                let customQueue = DispatchQueue(label: "validHidden")
-
-                if self?.searchVC.isActive == true {
-                    guard let text = self?.searchVC.searchBar.text else { return }
-                    /// 검색창 활성화
-                    if text == "" {
-                        customQueue.async {
-                            self?.viewModel.requestGETTodos(completion: {})
-                        }
-                    } else {
-                        customQueue.async {
-                            self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-                                if todos.count == 0 {
-                                    DispatchQueue.main.async {
-                                        self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                                            self?.indicatorView.stopAnimating()
-                                            self?.searchVC.searchBar.text = text
-                                            self?.searchVC.searchBar.becomeFirstResponder()
-
-                                            self?.tableView.setContentOffset(.zero, animated: true)
-
-                                        })
-                                    }
-                                }
-                            })
-                        }
-                    }
-                } else {
-                    /// 검색창 비활성화
-                    customQueue.async {
-                        self?.viewModel.requestGETTodos(completion: {})
-                    }
-                }
-                self?.viewModel.paginationRelay.accept(false)
-
+    private func settingButtonBind() {
+        settingButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.pushSettingVC()
             })
             .disposed(by: viewModel.disposeBag)
     }

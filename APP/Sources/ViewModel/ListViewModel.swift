@@ -22,20 +22,20 @@ final class ListViewModel {
 
     let dbManager = DBManager()
     private var todos: [ToDoData] = []
-    var isHidden: Bool = true
+//    var isHidden: Bool = true
 
     /// API Query
-    private var page = 1
-    private var filter = Filter.updatedAt.rawValue
-    private var orderBy = Order.desc.rawValue
-    private var perPage = 10
-    private var isDone: Bool? // 완료 여부
+    var page = 1
+    var filter = Filter.updatedAt.rawValue
+    var orderBy = Order.desc.rawValue
+    var perPage = 10
+    var isDone: Bool? // 완료 여부
 
     /// 페이지네이션 이벤트 처리
     let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 완료 숨기기 버튼 이벤트 처리
-    let hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
+//    let hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 페이지네이션 이벤트 유효성 검사
     var validPagination: Driver<Bool> {
@@ -45,15 +45,15 @@ final class ListViewModel {
     }
 
     /// 완료 숨기기 이벤트 유효성 검사
-    var validHidden: Driver<String> {
-        return hiddenRelay
-            .distinctUntilChanged()
-            .scan(false) { isHidden, _ in !isHidden }
-            .map { isHidden in
-                return isHidden ? "완료 숨기기" : "완료 보이기"
-            }
-            .asDriver(onErrorJustReturn: "완료 숨기기")
-    }
+//    var validHidden: Driver<String> {
+//        return hiddenRelay
+//            .distinctUntilChanged()
+//            .scan(false) { isHidden, _ in !isHidden }
+//            .map { isHidden in
+//                return isHidden ? "완료 숨기기" : "완료 보이기"
+//            }
+//            .asDriver(onErrorJustReturn: "완료 숨기기")
+//    }
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
     func requestGETTodos(completion: @escaping () -> Void?) {
@@ -63,8 +63,8 @@ final class ListViewModel {
 
         let manager = NetworkReachabilityManager(host: url)
 
-        if hiddenRelay.value == false {
-            /// 완료 여부 보이기
+        if isDone == nil {
+            /// 모두 보기
             parameters = [
                 "page": page.description,
                 "filter": filter,
@@ -72,12 +72,13 @@ final class ListViewModel {
                 "per_page": perPage.description
             ]
         } else {
-            /// 완료 여부 숨기기
+            guard let isDone = isDone?.description else { return }
+            /// 완료 or 미완료 보기
             parameters = [
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
-                "is_done": false.description,
+                "is_done": isDone,
                 "per_page": perPage.description
             ]
         }
@@ -131,8 +132,8 @@ final class ListViewModel {
         ]
         var parameters: [String: String] = [:]
 
-        if hiddenRelay.value == false {
-            /// 완료 여부 보이기
+        if isDone == nil {
+            /// 모두 보기
             parameters = [
                 "query": query,
                 "page": page.description,
@@ -141,13 +142,14 @@ final class ListViewModel {
                 "per_page": perPage.description
             ]
         } else {
-            /// 완료 여부 숨기기
+            guard let isDone = isDone?.description else { return }
+            /// 완료 or 미완료 보기
             parameters = [
                 "query": query,
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
-                "is_done": false.description,
+                "is_done": isDone,
                 "per_page": perPage.description
             ]
         }
@@ -284,7 +286,7 @@ final class ListViewModel {
         let url = Constants.scheme + Constants.host + Constants.path
         var parameters: [String: String] = [:]
 
-        if hiddenRelay.value == false {
+        if isDone == nil {
             /// 완료 여부 보이기
             parameters = [
                 "page": page.description,
@@ -293,12 +295,13 @@ final class ListViewModel {
                 "per_page": perPage.description
             ]
         } else {
+            guard let isDone = isDone?.description else { return }
             /// 완료 여부 숨기기
             parameters = [
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
-                "is_done": false.description,
+                "is_done": isDone,
                 "per_page": perPage.description
             ]
         }
@@ -351,7 +354,7 @@ final class ListViewModel {
         ]
         var parameters: [String: String] = [:]
 
-        if hiddenRelay.value == false {
+        if isDone == nil {
             /// 완료 여부 보이기
             parameters = [
                 "query": query,
@@ -361,13 +364,14 @@ final class ListViewModel {
                 "per_page": perPage.description
             ]
         } else {
+            guard let isDone = isDone?.description else { return }
             /// 완료 여부 숨기기
             parameters = [
                 "query": query,
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
-                "is_done": false.description,
+                "is_done": isDone,
                 "per_page": perPage.description
             ]
         }

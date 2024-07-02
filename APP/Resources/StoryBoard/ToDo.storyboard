@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--REST_TODO-->
+        <!--WhatTodo-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
                 <viewController id="Y6W-OH-hqX" customClass="ListViewController" customModule="WhatToDo" customModuleProvider="target" sceneMemberID="viewController">
@@ -59,7 +59,7 @@
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="n5N-5e-z7m"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="REST_TODO" id="HHv-HE-4Pi">
+                    <navigationItem key="navigationItem" title="WhatTodo" id="HHv-HE-4Pi">
                         <rightBarButtonItems>
                             <barButtonItem title="Item" image="gearshape" catalog="system" id="Ezu-6q-oW5"/>
                             <barButtonItem title="완료 숨기기" image="slider.horizontal.3" catalog="system" id="fpf-rR-CP9"/>
@@ -67,8 +67,9 @@
                     </navigationItem>
                     <connections>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
-                        <outlet property="hiddenButton" destination="fpf-rR-CP9" id="vPE-8t-37m"/>
+                        <outlet property="filterButton" destination="fpf-rR-CP9" id="vPE-8t-37m"/>
                         <outlet property="indicatorView" destination="zBh-pU-tMg" id="lD1-Qb-pwS"/>
+                        <outlet property="settingButton" destination="Ezu-6q-oW5" id="J9U-EW-jX2"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>
                 </viewController>

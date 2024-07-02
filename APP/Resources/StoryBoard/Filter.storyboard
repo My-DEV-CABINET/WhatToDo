@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_5" orientation="portrait" appearance="light"/>
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
@@ -9,19 +9,19 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Filter View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController id="Y6W-OH-hqX" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FilterViewController" id="Y6W-OH-hqX" customClass="FilterViewController" customModule="WhatToDo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZdR-QL-JN6">
-                                <rect key="frame" x="40" y="225" width="334" height="306"/>
+                                <rect key="frame" x="40" y="285.66666666666669" width="313" height="306.00000000000006"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="보기 옵션" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="plu-1H-u5y">
-                                        <rect key="frame" x="25" y="25" width="284" height="30"/>
+                                        <rect key="frame" x="25" y="25" width="263" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="9hT-cC-Fhv"/>
                                         </constraints>
@@ -30,7 +30,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="정렬" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nG0-pW-gLJ">
-                                        <rect key="frame" x="25" y="136" width="284" height="30"/>
+                                        <rect key="frame" x="25" y="136" width="263" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="30" id="h3o-JV-dTV"/>
                                         </constraints>
@@ -39,7 +39,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="pRM-ac-dAj">
-                                        <rect key="frame" x="22" y="80" width="290" height="32"/>
+                                        <rect key="frame" x="22" y="80" width="269" height="32"/>
                                         <segments>
                                             <segment title="모두 보기"/>
                                             <segment title="완료"/>
@@ -47,14 +47,14 @@
                                         </segments>
                                     </segmentedControl>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="bVG-3W-g4R">
-                                        <rect key="frame" x="25" y="191" width="284" height="32"/>
+                                        <rect key="frame" x="25" y="191" width="263" height="32"/>
                                         <segments>
                                             <segment title="내림차순"/>
                                             <segment title="오름차순"/>
                                         </segments>
                                     </segmentedControl>
                                     <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zYq-xK-Uqv">
-                                        <rect key="frame" x="22" y="247" width="290" height="34"/>
+                                        <rect key="frame" x="22" y="246.99999999999994" width="269" height="34"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="filled" title="확인"/>
                                     </button>
@@ -88,6 +88,12 @@
                             <constraint firstItem="ZdR-QL-JN6" firstAttribute="centerX" secondItem="vDu-zF-Fre" secondAttribute="centerX" id="RFZ-sW-iY4"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="baseView" destination="ZdR-QL-JN6" id="Se1-ld-9AT"/>
+                        <outlet property="confirmButton" destination="zYq-xK-Uqv" id="OSj-H0-VmX"/>
+                        <outlet property="hiddenSegmentControl" destination="pRM-ac-dAj" id="SMo-6u-Hpr"/>
+                        <outlet property="orderSegmentControl" destination="bVG-3W-g4R" id="Va7-Zg-kmu"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

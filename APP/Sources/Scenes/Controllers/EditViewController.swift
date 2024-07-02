@@ -38,6 +38,15 @@ extension EditViewController {
         setupUI()
         bind()
     }
+
+    override func viewWillAppear(_ animated: Bool) {
+        view.backgroundColor = .white
+        navigationController?.navigationBar.backgroundColor = .white
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        viewModel.disposeBag = DisposeBag()
+    }
 }
 
 // MARK: - UI 관련 모음
@@ -99,7 +108,7 @@ extension EditViewController {
             .asDriver()
             .drive(onNext: { [weak self] in
                 guard let isUpdate = self?.viewModel.isUpdate else { return }
-                self?.navigationController?.dismiss(animated: true)
+                self?.navigationController?.popViewController(animated: true)
                 self?.eventHandler?(isUpdate)
             })
             .disposed(by: viewModel.disposeBag)
@@ -123,7 +132,7 @@ extension EditViewController {
 extension EditViewController {
     /// Add 페이지 화면 이동
     private func pushAddVC() {
-        let sb: UIStoryboard = .init(name: "ADD", bundle: nil)
+        let sb: UIStoryboard = .init(name: "Add", bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: "AddViewController") as? AddViewController else { return }
         vc.viewModel = AddViewModel()
         vc.viewModel.todo = viewModel.todo

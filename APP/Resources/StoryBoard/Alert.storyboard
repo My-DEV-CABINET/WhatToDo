@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Alert View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController id="Y6W-OH-hqX" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AlertViewController" id="Y6W-OH-hqX" customClass="AlertViewController" customModule="WhatToDo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -21,35 +21,30 @@
                                 <rect key="frame" x="46.666666666666657" y="263.66666666666669" width="300" height="350.00000000000006"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="INz-j7-xCS">
-                                        <rect key="frame" x="67.999999999999986" y="20" width="163.66666666666663" height="163.66666666666666"/>
+                                        <rect key="frame" x="70" y="20" width="160" height="160"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="INz-j7-xCS" secondAttribute="height" multiplier="1:1" id="RrR-bZ-Kxo"/>
+                                            <constraint firstAttribute="width" constant="160" id="m1i-Dl-sJb"/>
                                         </constraints>
                                     </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9b-SJ-bru">
-                                        <rect key="frame" x="20" y="295.66666666666669" width="260" height="34.333333333333314"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" ambiguous="YES" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9b-SJ-bru">
+                                        <rect key="frame" x="20" y="295.66666666666674" width="260" height="34.333333333333314"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3sY-cO-Wx7">
-                                                <rect key="frame" x="0.0" y="0.0" width="125" height="34.333333333333336"/>
+                                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3sY-cO-Wx7">
+                                                <rect key="frame" x="0.0" y="0.0" width="260" height="34.333333333333336"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="확인"/>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u77-EV-B8d">
-                                                <rect key="frame" x="135" y="0.0" width="125" height="34.333333333333336"/>
-                                                <color key="tintColor" systemColor="systemRedColor"/>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="취소"/>
                                             </button>
                                         </subviews>
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="네트워크 에러" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KDP-Ev-5I5">
-                                        <rect key="frame" x="10" y="198.66666666666663" width="280" height="26.333333333333343"/>
+                                        <rect key="frame" x="10" y="195" width="280" height="26.333333333333343"/>
                                         <fontDescription key="fontDescription" type="system" weight="black" pointSize="22"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="네트워크 연결이 불안정합니다. 네트워크 연결을 확인해주세요." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2S-Dw-80j">
-                                        <rect key="frame" x="10" y="239.99999999999997" width="280" height="40.666666666666657"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" text="네트워크 연결이 불안정합니다. 네트워크 연결을 확인해주세요." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2S-Dw-80j">
+                                        <rect key="frame" x="10" y="240" width="280" height="40.666666666666629"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -81,6 +76,13 @@
                             <constraint firstItem="2UL-3b-fyF" firstAttribute="centerX" secondItem="vDu-zF-Fre" secondAttribute="centerX" id="mVf-h7-51V"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="baseView" destination="2UL-3b-fyF" id="36t-UX-Kny"/>
+                        <outlet property="confirmButton" destination="3sY-cO-Wx7" id="nEQ-V6-u8G"/>
+                        <outlet property="detailLabel" destination="S2S-Dw-80j" id="QrZ-kl-VRI"/>
+                        <outlet property="imageView" destination="INz-j7-xCS" id="Own-tr-cxH"/>
+                        <outlet property="titleLabel" destination="KDP-Ev-5I5" id="nLd-Ig-wbI"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -90,9 +92,6 @@
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
