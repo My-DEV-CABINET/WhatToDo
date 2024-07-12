@@ -160,18 +160,6 @@ extension ListViewController {
         present(alert, animated: true)
     }
 
-    /// Alert 페이지
-    private func pushAlertVC(title: String, detail: String, image: String) {
-        let sb: UIStoryboard = .init(name: "Alert", bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: "AlertViewController") as? AlertViewController else { return }
-        vc.configure(title: title, detail: detail, image: image)
-
-        let navigationVC = UINavigationController(rootViewController: vc)
-        navigationVC.modalTransitionStyle = .crossDissolve
-        navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
-        present(navigationVC, animated: true)
-    }
-
     /// Setting 페이지
     private func pushSettingVC() {
         let sb: UIStoryboard = .init(name: "Setting", bundle: nil)
@@ -244,7 +232,6 @@ extension ListViewController {
 
     private func confirmRefreshControl() {
         refreshControl = UIRefreshControl()
-
         tableView.refreshControl = refreshControl
     }
 

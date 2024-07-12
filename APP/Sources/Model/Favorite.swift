@@ -10,3 +10,4 @@ import Foundation
 struct Favorite {
     let id: Int
 }
+
