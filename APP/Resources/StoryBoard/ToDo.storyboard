@@ -37,23 +37,13 @@
                                     <color key="baseBackgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </buttonConfiguration>
                             </button>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="zBh-pU-tMg">
-                                <rect key="frame" x="171.66666666666666" y="668" width="50" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="5oj-Gd-bTy"/>
-                                    <constraint firstAttribute="height" constant="50" id="llw-90-eFJ"/>
-                                </constraints>
-                                <color key="color" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Vvj-Wd-D0p" secondAttribute="trailing" id="4j0-0e-zLk"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="G25-Jr-iYu" secondAttribute="trailing" constant="30" id="9p0-RD-qpz"/>
-                            <constraint firstItem="zBh-pU-tMg" firstAttribute="centerX" secondItem="Vvj-Wd-D0p" secondAttribute="centerX" id="CxS-LR-HyQ"/>
                             <constraint firstItem="G25-Jr-iYu" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-30" id="HMB-Vs-td9"/>
-                            <constraint firstItem="zBh-pU-tMg" firstAttribute="bottom" secondItem="Vvj-Wd-D0p" secondAttribute="bottom" constant="-100" id="KXd-r9-Sri"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="Vvj-Wd-D0p" secondAttribute="bottom" id="Rqe-4A-PyU"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="kO4-GW-NYN"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="n5N-5e-z7m"/>
@@ -68,7 +58,6 @@
                     <connections>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
                         <outlet property="filterButton" destination="fpf-rR-CP9" id="vPE-8t-37m"/>
-                        <outlet property="indicatorView" destination="zBh-pU-tMg" id="lD1-Qb-pwS"/>
                         <outlet property="settingButton" destination="Ezu-6q-oW5" id="J9U-EW-jX2"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>

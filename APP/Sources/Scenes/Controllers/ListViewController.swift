@@ -41,7 +41,6 @@ final class ListViewController: UIViewController {
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var filterButton: UIBarButtonItem!
     @IBOutlet weak var settingButton: UIBarButtonItem!
-    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
 
     private var viewModel = ListViewModel()
     private var searchVC: UISearchController!
@@ -129,7 +128,6 @@ extension ListViewController {
         registerCell()
         confirmTableView()
         confirmRefreshControl()
-        confirmActivityView()
         confirmSearchVC()
         confirmAddButton()
 
@@ -194,11 +192,6 @@ extension ListViewController {
             guard let self = self else { return }
             pushAddVC()
         }), for: .touchUpInside)
-    }
-
-    /// ActivityIndicatorView 설정
-    private func confirmActivityView() {
-        indicatorView.hidesWhenStopped = true
     }
 
     /// Add 페이지 화면 이동
@@ -269,7 +262,7 @@ extension ListViewController {
                 }
 
                 // 날짜 정렬
-                let sortedKeys = groupedDictionary.keys.sorted(by: >)
+                let sortedKeys = groupedDictionary.keys.sorted(by: { self.viewModel.orderBy == Order.desc.rawValue ? $0 > $1 : $0 < $1 })
 
                 // SectionOfCustomData 생성
                 return sortedKeys.map { key in
@@ -343,7 +336,6 @@ extension ListViewController {
             .subscribe(onNext: { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.viewModel.resetPage()
-                    self?.indicatorView.isHidden = true
                     guard let text = self?.searchVC.searchBar.text else { return }
 
                     let customQueue = DispatchQueue(label: "refresh")
@@ -381,85 +373,17 @@ extension ListViewController {
                 }
             })
             .disposed(by: viewModel.disposeBag)
-
-        /// 페이징 처리
-        tableView.rx.willDisplayCell
-            .subscribe(onNext: { [weak self] cell, indexPath in
-                guard let self = self else { return }
-                guard !viewModel.paginationRelay.value else { return } /// True 이면, API 호출하지 않고, 조기 종료
-
-                let sections = dataSource.sectionModels
-                let totalItemsCount = sections.flatMap { $0.items }.count
-                let currentIndex = sections.prefix(indexPath.section).flatMap { $0.items }.count + indexPath.row
-
-                let customQueue = DispatchQueue(label: "validPagination")
-
-                if currentIndex == totalItemsCount - 2, !viewModel.paginationRelay.value {
-                    self.indicatorView.startAnimating()
-                    self.viewModel.increasePage()
-                    if self.searchVC.isActive == true, self.searchVC.searchBar.text?.isEmpty == false {
-                        /// 서치바 동작 상태일 때
-                        guard let text = self.searchVC.searchBar.text else { return }
-
-                        customQueue.async {
-                            self.viewModel.requestMoreQueryTodos(query: text) { valid in
-
-                                DispatchQueue.main.async {
-                                    if !valid {
-                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
-                                        self.viewModel.paginationRelay.accept(true)
-                                    }
-
-                                    self.indicatorView.stopAnimating()
-                                }
-                            }
-                        }
-
-                    } else if self.searchVC.isActive == true, self.searchVC.searchBar.text == "" {
-                        customQueue.async {
-                            self.viewModel.requestMoreTodos { valid in
-
-                                DispatchQueue.main.async {
-                                    if !valid {
-                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
-                                        self.viewModel.paginationRelay.accept(true)
-                                    }
-
-                                    self.indicatorView.stopAnimating()
-                                }
-                            }
-                        }
-                    } else {
-                        /// 서치바 동작 상태 아닐 때
-                        customQueue.async {
-                            self.viewModel.requestMoreTodos { valid in
-                                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(valid)")
-
-                                DispatchQueue.main.async {
-                                    if !valid {
-                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
-                                        self.viewModel.paginationRelay.accept(true)
-                                    }
-
-                                    self.indicatorView.stopAnimating()
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-            .disposed(by: viewModel.disposeBag)
     }
 
     private func searchBind() {
         /// SearchBar 입력 이벤트 처리
-        searchVC.searchBar.rx.text.orEmpty
+        searchVC.searchBar.rx.text
+            .orEmpty
             .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] text in
                 self?.viewModel.resetPage()
                 self?.viewModel.paginationRelay.accept(false)
-                self?.indicatorView.isHidden = true
 
                 let customQueue = DispatchQueue(label: "searchBar")
 
@@ -470,7 +394,6 @@ extension ListViewController {
                             DispatchQueue.main.async {
                                 if todos.count == 0, self?.searchVC.searchBar.isFirstResponder == true {
                                     self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                                        self?.indicatorView.stopAnimating()
                                         self?.searchVC.searchBar.text = text
                                         self?.searchVC.searchBar.becomeFirstResponder()
 
@@ -538,6 +461,88 @@ extension ListViewController {
 // MARK: - UITableViewDelegate 처리
 
 extension ListViewController: UITableViewDelegate {
+    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        let currentOffset = scrollView.contentOffset.y
+        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
+
+        if maximumOffset < currentOffset {
+            loadMoreData()
+        }
+    }
+
+    private func loadMoreData() {
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.startAnimating()
+        spinner.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 44)
+        tableView.tableFooterView = spinner
+
+        guard !viewModel.paginationRelay.value else {
+            // 데이터 로드 및 테이블 뷰 갱신 로직
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                // 데이터 추가 로드 후
+                spinner.stopAnimating()
+                self.tableView.tableFooterView = nil
+            }
+
+            return
+        } /// True 이면, API 호출하지 않고, 조기 종료
+
+        let customQueue = DispatchQueue(label: "validPagination")
+
+        if !viewModel.paginationRelay.value {
+            viewModel.increasePage()
+
+            if searchVC.isActive == true, searchVC.searchBar.text?.isEmpty == false {
+                /// 서치바 동작 상태일 때
+                guard let text = searchVC.searchBar.text else { return }
+
+                customQueue.async {
+                    self.viewModel.requestMoreQueryTodos(query: text) { valid in
+
+                        if !valid {
+                            DispatchQueue.main.async {
+                                self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
+                                self.viewModel.paginationRelay.accept(true)
+                            }
+                        }
+                    }
+                }
+
+            } else if searchVC.isActive == true, searchVC.searchBar.text == "" {
+                customQueue.async {
+                    self.viewModel.requestMoreTodos { valid in
+                        if !valid {
+                            DispatchQueue.main.async {
+                                self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
+                                self.viewModel.paginationRelay.accept(true)
+                            }
+                        }
+                    }
+                }
+            } else {
+                /// 서치바 동작 상태 아닐 때
+                customQueue.async {
+                    self.viewModel.requestMoreTodos { valid in
+                        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(valid)")
+                        if !valid {
+                            DispatchQueue.main.async {
+                                self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
+                                self.viewModel.paginationRelay.accept(true)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 데이터 로드 및 테이블 뷰 갱신 로직
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            // 데이터 추가 로드 후
+            spinner.stopAnimating()
+            self.tableView.tableFooterView = nil
+        }
+    }
+
     /// 셀 삭제
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { action, view, perform in

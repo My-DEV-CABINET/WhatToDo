@@ -17,10 +17,19 @@ import RxSwift
 import Foundation
 
 final class ListViewModel {
+    var todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
+    var disposeBag = DisposeBag()
+
     let dbManager = DBManager()
     private var todos: [ToDoData] = []
 
-    let todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
+    /// API Query
+    var page = 1
+    var filter = Filter.updatedAt.rawValue
+    var orderBy = Order.desc.rawValue
+    var perPage = 10
+    var isDone: Bool? // 완료 여부
+
     /// 페이지네이션 이벤트 처리
     let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
 
@@ -30,15 +39,6 @@ final class ListViewModel {
             .distinctUntilChanged()
             .asDriver(onErrorJustReturn: false)
     }
-
-    var disposeBag = DisposeBag()
-
-    /// API Query
-    var page = 1
-    var filter = Filter.updatedAt.rawValue
-    var orderBy = Order.desc.rawValue
-    var perPage = 10
-    var isDone: Bool? // 완료 여부
 
     /// Parameters 분기처리 - 보기옵션에 따라 API 요청 변경
     private func confirmParameters(isDone: Bool?) -> [String: String] {
@@ -59,6 +59,37 @@ final class ListViewModel {
 
             /// 완료 or 미완료 보기
             parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": isDone,
+                "per_page": perPage.description
+            ]
+
+            return parameters
+        }
+    }
+
+    /// 검색 Parameters 분기처리 - 보기옵션에 따라 API 요청 변경
+    private func confirmParameters(isDone: Bool?, query: String) -> [String: String] {
+        var parameters: [String: String] = [:]
+
+        if isDone == nil {
+            /// 모두 보기
+            parameters = [
+                "query": query,
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "per_page": perPage.description
+            ]
+
+            return parameters
+        } else {
+            guard let isDone = isDone?.description else { return [:] }
+            /// 완료 or 미완료 보기
+            parameters = [
+                "query": query,
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
@@ -125,7 +156,7 @@ final class ListViewModel {
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
         ]
-        let parameters = confirmParameters(isDone: isDone)
+        let parameters = confirmParameters(isDone: isDone, query: query)
 
         AF.request(
             url,
@@ -258,6 +289,7 @@ final class ListViewModel {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
         let parameters = confirmParameters(isDone: isDone)
+
         let headers: HTTPHeaders = [
             .accept("\(Constants.applicationJson)")
         ]
@@ -305,7 +337,7 @@ final class ListViewModel {
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
         ]
-        let parameters = confirmParameters(isDone: isDone)
+        let parameters = confirmParameters(isDone: isDone, query: query)
 
         AF.request(
             url,
