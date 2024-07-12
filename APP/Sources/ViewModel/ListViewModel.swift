@@ -17,25 +17,12 @@ import RxSwift
 import Foundation
 
 final class ListViewModel {
-    var todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
-    var disposeBag = DisposeBag()
-
     let dbManager = DBManager()
     private var todos: [ToDoData] = []
-//    var isHidden: Bool = true
 
-    /// API Query
-    var page = 1
-    var filter = Filter.updatedAt.rawValue
-    var orderBy = Order.desc.rawValue
-    var perPage = 10
-    var isDone: Bool? // 완료 여부
-
+    let todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
     /// 페이지네이션 이벤트 처리
     let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
-
-    /// 완료 숨기기 버튼 이벤트 처리
-//    let hiddenRelay: BehaviorRelay<Bool> = .init(value: false)
 
     /// 페이지네이션 이벤트 유효성 검사
     var validPagination: Driver<Bool> {
@@ -44,24 +31,18 @@ final class ListViewModel {
             .asDriver(onErrorJustReturn: false)
     }
 
-    /// 완료 숨기기 이벤트 유효성 검사
-//    var validHidden: Driver<String> {
-//        return hiddenRelay
-//            .distinctUntilChanged()
-//            .scan(false) { isHidden, _ in !isHidden }
-//            .map { isHidden in
-//                return isHidden ? "완료 숨기기" : "완료 보이기"
-//            }
-//            .asDriver(onErrorJustReturn: "완료 숨기기")
-//    }
+    var disposeBag = DisposeBag()
 
-    /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
-    func requestGETTodos(completion: @escaping () -> Void?) {
-        let utilityQueue = DispatchQueue.global(qos: .utility)
-        let url = Constants.scheme + Constants.host + Constants.path
+    /// API Query
+    var page = 1
+    var filter = Filter.updatedAt.rawValue
+    var orderBy = Order.desc.rawValue
+    var perPage = 10
+    var isDone: Bool? // 완료 여부
+
+    /// Parameters 분기처리 - 보기옵션에 따라 API 요청 변경
+    private func confirmParameters(isDone: Bool?) -> [String: String] {
         var parameters: [String: String] = [:]
-
-        let manager = NetworkReachabilityManager(host: url)
 
         if isDone == nil {
             /// 모두 보기
@@ -71,8 +52,11 @@ final class ListViewModel {
                 "order_by": orderBy,
                 "per_page": perPage.description
             ]
+
+            return parameters
         } else {
-            guard let isDone = isDone?.description else { return }
+            guard let isDone = isDone?.description else { return [:] }
+
             /// 완료 or 미완료 보기
             parameters = [
                 "page": page.description,
@@ -81,7 +65,18 @@ final class ListViewModel {
                 "is_done": isDone,
                 "per_page": perPage.description
             ]
+
+            return parameters
         }
+    }
+
+    /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
+    func requestGETTodos(completion: @escaping () -> Void?) {
+        let utilityQueue = DispatchQueue.global(qos: .utility)
+        let url = Constants.scheme + Constants.host + Constants.path
+
+        let manager = NetworkReachabilityManager(host: url)
+        let parameters = confirmParameters(isDone: isDone)
 
         let headers: HTTPHeaders = [
             .accept("\(Constants.applicationJson)")
@@ -130,29 +125,7 @@ final class ListViewModel {
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
         ]
-        var parameters: [String: String] = [:]
-
-        if isDone == nil {
-            /// 모두 보기
-            parameters = [
-                "query": query,
-                "page": page.description,
-                "filter": filter,
-                "order_by": orderBy,
-                "per_page": perPage.description
-            ]
-        } else {
-            guard let isDone = isDone?.description else { return }
-            /// 완료 or 미완료 보기
-            parameters = [
-                "query": query,
-                "page": page.description,
-                "filter": filter,
-                "order_by": orderBy,
-                "is_done": isDone,
-                "per_page": perPage.description
-            ]
-        }
+        let parameters = confirmParameters(isDone: isDone)
 
         AF.request(
             url,
@@ -284,27 +257,7 @@ final class ListViewModel {
     func requestMoreTodos(completion: @escaping (Bool) -> Void) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
-        var parameters: [String: String] = [:]
-
-        if isDone == nil {
-            /// 완료 여부 보이기
-            parameters = [
-                "page": page.description,
-                "filter": filter,
-                "order_by": orderBy,
-                "per_page": perPage.description
-            ]
-        } else {
-            guard let isDone = isDone?.description else { return }
-            /// 완료 여부 숨기기
-            parameters = [
-                "page": page.description,
-                "filter": filter,
-                "order_by": orderBy,
-                "is_done": isDone,
-                "per_page": perPage.description
-            ]
-        }
+        let parameters = confirmParameters(isDone: isDone)
         let headers: HTTPHeaders = [
             .accept("\(Constants.applicationJson)")
         ]
@@ -352,29 +305,7 @@ final class ListViewModel {
         let headers: HTTPHeaders = [
             Constants.accept: Constants.applicationJson
         ]
-        var parameters: [String: String] = [:]
-
-        if isDone == nil {
-            /// 완료 여부 보이기
-            parameters = [
-                "query": query,
-                "page": page.description,
-                "filter": filter,
-                "order_by": orderBy,
-                "per_page": perPage.description
-            ]
-        } else {
-            guard let isDone = isDone?.description else { return }
-            /// 완료 여부 숨기기
-            parameters = [
-                "query": query,
-                "page": page.description,
-                "filter": filter,
-                "order_by": orderBy,
-                "is_done": isDone,
-                "per_page": perPage.description
-            ]
-        }
+        let parameters = confirmParameters(isDone: isDone)
 
         AF.request(
             url,

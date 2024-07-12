@@ -344,11 +344,11 @@ extension ListViewController {
                 DispatchQueue.main.async {
                     self?.viewModel.resetPage()
                     self?.indicatorView.isHidden = true
+                    guard let text = self?.searchVC.searchBar.text else { return }
+
                     let customQueue = DispatchQueue(label: "refresh")
 
-                    if self?.searchVC.isActive == true {
-                        guard let text = self?.searchVC.searchBar.text else { return }
-
+                    if self?.searchVC.isActive == true, text != "" {
                         customQueue.async {
                             self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
 
@@ -358,6 +358,7 @@ extension ListViewController {
                                             self?.searchVC.searchBar.text = text
                                             self?.searchVC.searchBar.becomeFirstResponder()
                                             self?.refreshControl.endRefreshing()
+                                            return
                                         })
                                     } else {
                                         self?.refreshControl.endRefreshing()
@@ -366,6 +367,8 @@ extension ListViewController {
                             })
                             self?.viewModel.paginationRelay.accept(false)
                         }
+                    } else if self?.searchVC.isActive == true, text == "" {
+                        self?.refreshControl.endRefreshing()
                     } else {
                         customQueue.async {
                             self?.viewModel.requestGETTodos(completion: {
@@ -403,6 +406,7 @@ extension ListViewController {
 
                                 DispatchQueue.main.async {
                                     if !valid {
+                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
                                         self.viewModel.paginationRelay.accept(true)
                                     }
 
@@ -417,6 +421,7 @@ extension ListViewController {
 
                                 DispatchQueue.main.async {
                                     if !valid {
+                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
                                         self.viewModel.paginationRelay.accept(true)
                                     }
 
@@ -518,50 +523,6 @@ extension ListViewController {
                 self?.pushFilterVC()
             }
             .disposed(by: viewModel.disposeBag)
-
-//        /// 완료 보이기 여부에 따라서 버튼명 변경 및 Todos 데이터 호출
-//        viewModel.validHidden
-//            .drive(onNext: { [weak self] title in
-//                self?.filterButton.title = title
-//                self?.viewModel.resetPage()
-//
-//                let customQueue = DispatchQueue(label: "validHidden")
-//
-//                if self?.searchVC.isActive == true {
-//                    guard let text = self?.searchVC.searchBar.text else { return }
-//                    /// 검색창 활성화
-//                    if text == "" {
-//                        customQueue.async {
-//                            self?.viewModel.requestGETTodos(completion: {})
-//                        }
-//                    } else {
-//                        customQueue.async {
-//                            self?.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-//                                if todos.count == 0 {
-//                                    DispatchQueue.main.async {
-//                                        self?.showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-//                                            self?.indicatorView.stopAnimating()
-//                                            self?.searchVC.searchBar.text = text
-//                                            self?.searchVC.searchBar.becomeFirstResponder()
-//
-//                                            self?.tableView.setContentOffset(.zero, animated: true)
-//
-//                                        })
-//                                    }
-//                                }
-//                            })
-//                        }
-//                    }
-//                } else {
-//                    /// 검색창 비활성화
-//                    customQueue.async {
-//                        self?.viewModel.requestGETTodos(completion: {})
-//                    }
-//                }
-//                self?.viewModel.paginationRelay.accept(false)
-//
-//            })
-//            .disposed(by: viewModel.disposeBag)
     }
 
     private func settingButtonBind() {
