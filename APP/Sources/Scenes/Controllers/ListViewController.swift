@@ -496,7 +496,7 @@ extension ListViewController: UITableViewDelegate {
                 /// 서치바 동작 상태일 때
                 guard let text = searchVC.searchBar.text else { return }
 
-                customQueue.async {
+                customQueue.asyncAfter(deadline: .now() + 0.5) {
                     self.viewModel.requestMoreQueryTodos(query: text) { valid in
 
                         if !valid {
@@ -509,7 +509,7 @@ extension ListViewController: UITableViewDelegate {
                 }
 
             } else if searchVC.isActive == true, searchVC.searchBar.text == "" {
-                customQueue.async {
+                customQueue.asyncAfter(deadline: .now() + 0.5) {
                     self.viewModel.requestMoreTodos { valid in
                         if !valid {
                             DispatchQueue.main.async {
@@ -521,7 +521,7 @@ extension ListViewController: UITableViewDelegate {
                 }
             } else {
                 /// 서치바 동작 상태 아닐 때
-                customQueue.async {
+                customQueue.asyncAfter(deadline: .now() + 0.5) {
                     self.viewModel.requestMoreTodos { valid in
                         print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(valid)")
                         if !valid {
