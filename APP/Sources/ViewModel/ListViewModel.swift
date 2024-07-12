@@ -26,9 +26,14 @@ final class ListViewModel {
     /// API Query
     var page = 1
     var filter = Filter.updatedAt.rawValue
-    var orderBy = Order.desc.rawValue
+    var orderBy: String {
+        return SettingManager.shared.order
+    }
+
     var perPage = 10
-    var isDone: Bool? // 완료 여부
+    var isDone: String {
+        return SettingManager.shared.done
+    }
 
     /// 페이지네이션 이벤트 처리
     let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
@@ -41,10 +46,10 @@ final class ListViewModel {
     }
 
     /// Parameters 분기처리 - 보기옵션에 따라 API 요청 변경
-    private func confirmParameters(isDone: Bool?) -> [String: String] {
+    private func confirmParameters(isDone: String) -> [String: String] {
         var parameters: [String: String] = [:]
-
-        if isDone == nil {
+        print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(isDone)")
+        if isDone == Done.all.rawValue {
             /// 모두 보기
             parameters = [
                 "page": page.description,
@@ -54,15 +59,24 @@ final class ListViewModel {
             ]
 
             return parameters
-        } else {
-            guard let isDone = isDone?.description else { return [:] }
-
-            /// 완료 or 미완료 보기
+        } else if isDone == Done.onlyCompleted.rawValue {
+            /// 완료만 보기
             parameters = [
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
-                "is_done": isDone,
+                "is_done": true.description,
+                "per_page": perPage.description
+            ]
+
+            return parameters
+        } else {
+            /// 미완료만 보기
+            parameters = [
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": false.description,
                 "per_page": perPage.description
             ]
 
@@ -71,10 +85,10 @@ final class ListViewModel {
     }
 
     /// 검색 Parameters 분기처리 - 보기옵션에 따라 API 요청 변경
-    private func confirmParameters(isDone: Bool?, query: String) -> [String: String] {
+    private func confirmParameters(isDone: String, query: String) -> [String: String] {
         var parameters: [String: String] = [:]
 
-        if isDone == nil {
+        if isDone == Done.all.rawValue {
             /// 모두 보기
             parameters = [
                 "query": query,
@@ -85,15 +99,26 @@ final class ListViewModel {
             ]
 
             return parameters
-        } else {
-            guard let isDone = isDone?.description else { return [:] }
-            /// 완료 or 미완료 보기
+        } else if isDone == Done.onlyCompleted.rawValue {
+            /// 완료만 보기
             parameters = [
                 "query": query,
                 "page": page.description,
                 "filter": filter,
                 "order_by": orderBy,
-                "is_done": isDone,
+                "is_done": true.description,
+                "per_page": perPage.description
+            ]
+
+            return parameters
+        } else {
+            /// 미완료만 보기
+            parameters = [
+                "query": query,
+                "page": page.description,
+                "filter": filter,
+                "order_by": orderBy,
+                "is_done": false.description,
                 "per_page": perPage.description
             ]
 

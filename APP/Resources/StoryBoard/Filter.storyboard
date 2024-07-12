@@ -90,7 +90,7 @@
                     </view>
                     <connections>
                         <outlet property="baseView" destination="ZdR-QL-JN6" id="Se1-ld-9AT"/>
-                        <outlet property="confirmButton" destination="zYq-xK-Uqv" id="OSj-H0-VmX"/>
+                        <outlet property="confirmButton" destination="zYq-xK-Uqv" id="y3O-xZ-FQu"/>
                         <outlet property="hiddenSegmentControl" destination="pRM-ac-dAj" id="SMo-6u-Hpr"/>
                         <outlet property="orderSegmentControl" destination="bVG-3W-g4R" id="Va7-Zg-kmu"/>
                     </connections>

@@ -13,9 +13,9 @@ final class FilterViewController: UIViewController {
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var baseView: UIView!
 
-    var selectedHidden: Bool? = nil
-    var selectedOrder: Order = .desc
-    var eventHandler: ((_ hidden: Bool?, _ order: Order) -> Void)?
+    var selectedDone: String?
+    var selectedOrder: String?
+    var eventHandler: (() -> Void)?
 }
 
 // MARK: - View Life Cycle
@@ -24,6 +24,14 @@ extension FilterViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+
+        let orderValue = SettingManager.shared.order
+        orderSegmentControl.selectedSegmentIndex = convertOrderTag(value: orderValue)
+        selectedOrder = orderValue
+
+        let doneValue = SettingManager.shared.done
+        hiddenSegmentControl.selectedSegmentIndex = convertDoneTag(value: doneValue)
+        selectedDone = doneValue
     }
 }
 
@@ -32,27 +40,31 @@ extension FilterViewController {
 extension FilterViewController {
     private func setupUI() {
         baseView.layer.cornerRadius = 10
-        confirmConfirmButton()
-        confirmHiddenSegmentControl()
+        confirmDoneSegmentControl()
         confirmOrderSegmentControl()
+        confirmConfirmButton()
     }
 
     private func confirmConfirmButton() {
-        confirmButton.addAction(UIAction(handler: { [weak self] _ in
-            guard let order = self?.selectedOrder else { return }
-
-            self?.eventHandler?(self?.selectedHidden, order)
-            self?.dismiss(animated: true)
-        }), for: .touchUpInside)
+        confirmButton.addTarget(self, action: #selector(didTapConfirmButton(_:)), for: .touchUpInside)
     }
 
-    private func confirmHiddenSegmentControl() {
+    @objc private func didTapConfirmButton(_ sender: UIButton) {
+        guard let done = selectedDone else { return }
+        guard let order = selectedOrder else { return }
+
+        SettingManager.saveDoneAndOrder(done: done, order: order)
+        eventHandler?()
+        dismiss(animated: true)
+    }
+
+    private func confirmDoneSegmentControl() {
         hiddenSegmentControl.addAction(UIAction(handler: { [weak self] action in
             guard let self = self else { return }
             let selectedIndex = self.hiddenSegmentControl.selectedSegmentIndex
             let selectedTitle = self.hiddenSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
 
-            selectedHidden = convertFilterOption(title: selectedTitle)
+            selectedDone = convertFilterOption(title: selectedTitle).rawValue
             print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 선택된 Index: \(selectedIndex), 선택된 Title: \(selectedTitle)")
         }), for: .valueChanged)
     }
@@ -63,21 +75,21 @@ extension FilterViewController {
             let selectedIndex = self.orderSegmentControl.selectedSegmentIndex
             let selectedTitle = self.orderSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
 
-            selectedOrder = convertOrderOption(title: selectedTitle)
+            selectedOrder = convertOrderOption(title: selectedTitle).rawValue
             print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 선택된 Index: \(selectedIndex), 선택된 Title: \(selectedTitle)")
         }), for: .valueChanged)
     }
 
-    private func convertFilterOption(title: String) -> Bool? {
+    private func convertFilterOption(title: String) -> Done {
         switch title {
         case "모두보기":
-            return nil
+            return .all
         case "완료":
-            return true
+            return .onlyCompleted
         case "미완료":
-            return false
+            return .onlyNonCompleted
         default:
-            return nil
+            return .all
         }
     }
 
@@ -89,6 +101,30 @@ extension FilterViewController {
             return .asc
         default:
             return .desc
+        }
+    }
+
+    private func convertDoneTag(value: String) -> Int {
+        switch value {
+        case Done.all.rawValue:
+            return 0
+        case Done.onlyCompleted.rawValue:
+            return 1
+        case Done.onlyNonCompleted.rawValue:
+            return 2
+        default:
+            return 0
+        }
+    }
+
+    private func convertOrderTag(value: String) -> Int {
+        switch value {
+        case Order.desc.rawValue:
+            return 0
+        case Order.asc.rawValue:
+            return 1
+        default:
+            return 0
         }
     }
 }

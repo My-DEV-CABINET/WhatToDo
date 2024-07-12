@@ -171,10 +171,8 @@ extension ListViewController {
     private func pushFilterVC() {
         let sb: UIStoryboard = .init(name: "Filter", bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: "FilterViewController") as? FilterViewController else { return }
-        vc.eventHandler = { [weak self] isDone, order in
-            self?.viewModel.isDone = isDone
-            self?.viewModel.orderBy = order.rawValue
 
+        vc.eventHandler = { [weak self] in
             self?.viewModel.paginationRelay.accept(false)
             self?.viewModel.resetPage()
             self?.viewModel.requestGETTodos(completion: {})

@@ -16,3 +16,9 @@ enum Order: String {
     case desc
     case asc
 }
+
+enum Done: String {
+    case all
+    case onlyCompleted
+    case onlyNonCompleted
+}
