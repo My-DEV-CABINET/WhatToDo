@@ -80,7 +80,9 @@ final class ListViewController: UIViewController {
                     self?.tableView.reloadData()
                 }
 
-                cell.configure(data: item, isExistFavorite: self.viewModel.dbManager.fetchFavoriteByID(id: id))
+                let isSeen = self.viewModel.dbManager.fetchSeenByID(id: id)
+
+                cell.configure(data: item, isExistFavorite: self.viewModel.dbManager.fetchFavoriteByID(id: id), isExistSeen: isSeen)
                 return cell
             })
 
@@ -294,7 +296,7 @@ extension ListViewController {
 
                 guard let id = currentItem.id else { return }
 
-                SeenManager.shared.insertSeenList(id: id)
+                _ = self.viewModel.dbManager.insertSeen(id: id)
 
                 let sb: UIStoryboard = .init(name: "Edit", bundle: nil)
                 guard let vc = sb.instantiateViewController(identifier: "EditViewController") as? EditViewController else { return }
@@ -584,6 +586,7 @@ extension ListViewController: UITableViewDelegate {
 
             self.viewModel.removeTodo(data: currentItem, completion: {
                 _ = self.viewModel.dbManager.deleteFavorite(id: id)
+                _ = self.viewModel.dbManager.deleteSeen(id: id)
 
                 guard let details = currentItem.title else { return }
                 UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)

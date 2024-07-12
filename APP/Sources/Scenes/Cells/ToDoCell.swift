@@ -65,15 +65,13 @@ final class ToDoCell: UITableViewCell {
         }), for: .touchUpInside)
     }
     
-    func configure(data: ToDoData, isExistFavorite: Bool) {
-        guard let id = data.id else { return }
+    func configure(data: ToDoData, isExistFavorite: Bool, isExistSeen: Bool) {
         guard let isDone = data.isDone else { return }
         
         titleLabel.text = data.title
         dateLabel.text = data.updatedAt?.dateFormatterForTime()
         
-        SeenManager.shared.id = id
-        seenLabel.isHidden = SeenManager.shared.existCheckInList
+        seenLabel.isHidden = !isExistSeen
         
         let checkImage = isDone ? "checkmark.square.fill" : "square"
         checkButton.setImage(UIImage(systemName: checkImage), for: .normal)

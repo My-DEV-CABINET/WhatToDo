@@ -11,11 +11,15 @@ import SQLite3
 final class DBManager {
     init() {
         favoriteDB = openFavoriteDB()
+        seenDB = openSeenDB()
+
         createFavoriteTable()
+        createSeenTable()
     }
 
     let favoriteDataPath: String = "Favorite" /// 즐겨찾기 테이블 경로
     let seenDataPath: String = "Seen" /// 조회여부 테이블 경로
+
     var favoriteDB: OpaquePointer? /// 즐겨찾기 DB
     var seenDB: OpaquePointer? /// 조회 여부 DB
 }
