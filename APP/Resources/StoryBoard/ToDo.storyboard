@@ -50,15 +50,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="WhatTodo" id="HHv-HE-4Pi">
-                        <rightBarButtonItems>
-                            <barButtonItem title="Item" image="gearshape" catalog="system" id="Ezu-6q-oW5"/>
-                            <barButtonItem title="완료 숨기기" image="slider.horizontal.3" catalog="system" id="fpf-rR-CP9"/>
-                        </rightBarButtonItems>
+                        <barButtonItem key="rightBarButtonItem" title="완료 숨기기" image="slider.horizontal.3" catalog="system" id="fpf-rR-CP9"/>
                     </navigationItem>
                     <connections>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
                         <outlet property="filterButton" destination="fpf-rR-CP9" id="vPE-8t-37m"/>
-                        <outlet property="settingButton" destination="Ezu-6q-oW5" id="J9U-EW-jX2"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>
                 </viewController>
@@ -86,7 +82,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="gearshape" catalog="system" width="128" height="123"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="slider.horizontal.3" catalog="system" width="128" height="99"/>
         <systemColor name="systemBackgroundColor">

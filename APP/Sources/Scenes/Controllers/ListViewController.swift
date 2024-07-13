@@ -40,7 +40,7 @@ final class ListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var filterButton: UIBarButtonItem!
-    @IBOutlet weak var settingButton: UIBarButtonItem!
+//    @IBOutlet weak var settingButton: UIBarButtonItem!
 
     private var viewModel = ListViewModel()
     private var searchVC: UISearchController!
@@ -247,7 +247,7 @@ extension ListViewController {
         tableViewBind()
         searchBind()
         filterBind()
-        settingButtonBind()
+//        settingButtonBind()
     }
 
     private func rxDatasourceBind() {
@@ -396,10 +396,13 @@ extension ListViewController {
                                         self?.searchVC.searchBar.becomeFirstResponder()
 
                                         self?.tableView.setContentOffset(.zero, animated: true)
+
                                     })
                                 } else {
                                     self?.searchVC.searchBar.resignFirstResponder()
                                 }
+
+                                return
                             }
                         })
                     }
@@ -446,14 +449,14 @@ extension ListViewController {
             .disposed(by: viewModel.disposeBag)
     }
 
-    private func settingButtonBind() {
-        settingButton.rx.tap
-            .asDriver()
-            .drive(onNext: { [weak self] _ in
-                self?.pushSettingVC()
-            })
-            .disposed(by: viewModel.disposeBag)
-    }
+//    private func settingButtonBind() {
+//        settingButton.rx.tap
+//            .asDriver()
+//            .drive(onNext: { [weak self] _ in
+//                self?.pushSettingVC()
+//            })
+//            .disposed(by: viewModel.disposeBag)
+//    }
 }
 
 // MARK: - UITableViewDelegate 처리
@@ -463,7 +466,7 @@ extension ListViewController: UITableViewDelegate {
         let currentOffset = scrollView.contentOffset.y
         let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
 
-        if maximumOffset < currentOffset {
+        if maximumOffset < currentOffset, currentOffset > 0 {
             loadMoreData()
         }
     }
