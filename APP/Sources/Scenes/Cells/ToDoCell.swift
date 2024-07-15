@@ -30,6 +30,7 @@ final class ToDoCell: UITableViewCell {
 
     /// 셀 초기화시 호출
     override func awakeFromNib() {
+        super.awakeFromNib()
         setup()
     }
     

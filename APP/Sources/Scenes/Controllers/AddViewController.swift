@@ -193,74 +193,17 @@ extension AddViewController {
 
     /// SaveButton 관련 Bind 모음
     private func saveButtonBind() {
-        /// SaveButton 누를 시, 예외처리 및 성공처리
         saveButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
                 guard let text = self.textView.text else { return }
+
+                let customQueue = DispatchQueue(label: QueueCollection.save.rawValue, qos: .userInitiated)
                 let isDone = self.todoSwitch.isOn
 
-                if self.textView.text.count < 6 {
-                    self.showBlankMessage(
-                        title: "할일 추가 ERROR",
-                        message: "할일 내용이 너무 짧습니다. 6글자 이상 입력해주세요.",
-                        completion: {}
-                    )
-                } else if (self.textView.text == """
-                저장하고 싶은 할일 내용을 입력해주세요.
-                """ || self.textView.text == nil) {
-                    self.showBlankMessage(
-                        title: "할일 추가 ERROR",
-                        message: "할일 내용이 없습니다. 내용을 입력해주세요.",
-                        completion: {}
-                    )
-                } else {
-                    let queue = DispatchQueue(label: "queue", qos: .userInitiated)
-                    if viewModel.userAction == .add {
-                        /// UserAction 이 Add 일 때,
-                        queue.async {
-                            self.viewModel.createTodo(title: text, isDone: isDone) { success in
-                                if success {
-                                    self.eventHandler?(true)
-                                    DispatchQueue.main.async {
-                                        self.navigationController?.dismiss(animated: true)
-                                    }
-                                } else {
-                                    // 오류 처리
-                                    DispatchQueue.main.async {
-                                        self.showBlankMessage(
-                                            title: "할일 추가 ERROR",
-                                            message: "할일 추가에 실패하였습니다. 다시 시도해주세요.",
-                                            completion: {}
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        /// UserAction 이 Edit 일 때,
-                        queue.async {
-                            self.viewModel.editTodo(title: text, isDone: isDone) { success in
-                                if success {
-                                    self.editHandler?(text, isDone)
-                                    DispatchQueue.main.async {
-                                        self.navigationController?.dismiss(animated: true)
-                                    }
-                                } else {
-                                    // 오류 처리
-                                    DispatchQueue.main.async {
-                                        self.showBlankMessage(
-                                            title: "할일 수정 ERROR",
-                                            message: "할일 수정에 실패하였습니다. 다시 시도해주세요.",
-                                            completion: {}
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                textException(text: text, isDone: isDone, queue: customQueue)
+
             })
             .disposed(by: viewModel.disposeBag)
     }
@@ -280,7 +223,79 @@ extension AddViewController {
     }
 }
 
-// MARK: - Navigation 관련 모음
+// MARK: - 장풍 코드 리팩토링 메서드 모음
+
+extension AddViewController {
+    /// SaveButton 누를 시, 예외처리 및 성공처리
+    private func textException(text: String, isDone: Bool, queue: DispatchQueue) {
+        if text.count < 6 {
+            showBlankMessage(
+                title: "할일 추가 ERROR",
+                message: "할일 내용이 너무 짧습니다. 6글자 이상 입력해주세요.",
+                completion: {}
+            )
+        } else if (text == """
+        저장하고 싶은 할일 내용을 입력해주세요.
+        """ || text == nil) {
+            showBlankMessage(
+                title: "할일 추가 ERROR",
+                message: "할일 내용이 없습니다. 내용을 입력해주세요.",
+                completion: {}
+            )
+        } else {
+            providerUserAction(userAction: viewModel.userAction, queue: queue, text: text, isDone: isDone)
+        }
+    }
+
+    /// UserAction 분기처리
+    private func providerUserAction(userAction: UserAction, queue: DispatchQueue, text: String, isDone: Bool) {
+        if userAction == .add {
+            /// UserAction 이 Add 일 때,
+            queue.async {
+                self.viewModel.createTodo(title: text, isDone: isDone) { success in
+                    if success {
+                        self.eventHandler?(true)
+                        DispatchQueue.main.async {
+                            self.navigationController?.dismiss(animated: true)
+                        }
+                    } else {
+                        // 오류 처리
+                        DispatchQueue.main.async {
+                            self.showBlankMessage(
+                                title: "할일 추가 ERROR",
+                                message: "할일 추가에 실패하였습니다. 다시 시도해주세요.",
+                                completion: {}
+                            )
+                        }
+                    }
+                }
+            }
+        } else {
+            /// UserAction 이 Edit 일 때,
+            queue.async {
+                self.viewModel.editTodo(title: text, isDone: isDone) { success in
+                    if success {
+                        self.editHandler?(text, isDone)
+                        DispatchQueue.main.async {
+                            self.navigationController?.dismiss(animated: true)
+                        }
+                    } else {
+                        // 오류 처리
+                        DispatchQueue.main.async {
+                            self.showBlankMessage(
+                                title: "할일 수정 ERROR",
+                                message: "할일 수정에 실패하였습니다. 다시 시도해주세요.",
+                                completion: {}
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Navigation Bar 관련 모음
 
 extension AddViewController {
     private func confirmNavigationBar() {

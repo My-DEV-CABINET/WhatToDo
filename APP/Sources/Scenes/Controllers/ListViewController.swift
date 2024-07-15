@@ -90,12 +90,14 @@ extension ListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        viewModel.requestGETTodos(completion: {
+            self.tableView.reloadData()
+        })
     }
 
     override func viewWillAppear(_ animated: Bool) {
         view.backgroundColor = .white
         navigationController?.navigationBar.backgroundColor = .white
-        viewModel.requestGETTodos(completion: {})
     }
 }
 

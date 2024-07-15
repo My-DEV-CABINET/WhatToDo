@@ -15,6 +15,7 @@ enum QueueCollection: String {
     case search
     case searchCancel
     case paging
+    case save
 }
 
 /// ViewController Identifier 모음
