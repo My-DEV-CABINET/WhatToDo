@@ -52,9 +52,7 @@ final class AddViewModel {
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
-            guard let self = self else { return }
-
+        .responseDecodable(of: ToDo.self, queue: utilityQueue) { response in
             switch response.result {
             case .success:
                 completion(true)
@@ -98,8 +96,8 @@ final class AddViewModel {
         .onURLRequestCreation { request in
             print("#### 전체 URL은 \(request)")
         }
-        .responseDecodable(of: ToDo.self, queue: utilityQueue) { [weak self] response in
-            guard let self = self else { return }
+        .responseDecodable(of: ToDo.self, queue: utilityQueue) { response in
+
             switch response.result {
             case .success:
                 completion(true)
