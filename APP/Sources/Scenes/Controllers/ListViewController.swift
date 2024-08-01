@@ -210,9 +210,9 @@ extension ListViewController {
             }
         }
 
-        let navigationVC = UINavigationController(rootViewController: vc)
-        navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
-        present(navigationVC, animated: true)
+        vc.modalPresentationStyle = .pageSheet
+        vc.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
+        present(vc, animated: true)
     }
 }
 

@@ -15,6 +15,8 @@ final class AddViewController: UIViewController {
     /// TextField
     @IBOutlet weak var textView: UITextView!
 
+    @IBOutlet weak var baseView: UIView!
+
     /// Button
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
@@ -80,6 +82,9 @@ extension AddViewController {
 
         /// 빈 화면 터치시 키보드 내리기
         hideKeyboardWhenTappedAround()
+
+        baseView.layer.cornerRadius = 10
+        saveButton.layer.cornerRadius = 10
     }
 
     /// 데이터 주입 처리
@@ -106,7 +111,7 @@ extension AddViewController {
 
     private func confirmCancelButton() {
         if viewModel.userAction == .add {
-            cancelButton.isHidden = true
+            cancelButton.isHidden = false
         } else {
             cancelButton.isHidden = false
         }
@@ -203,7 +208,7 @@ extension AddViewController {
                 let isDone = self.todoSwitch.isOn
 
                 textException(text: text, isDone: isDone, queue: customQueue)
-
+                self.navigationController?.dismiss(animated: true)
             })
             .disposed(by: viewModel.disposeBag)
     }
