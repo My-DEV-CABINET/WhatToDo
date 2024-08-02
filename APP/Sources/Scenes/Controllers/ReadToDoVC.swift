@@ -15,7 +15,7 @@ import UserNotifications
 
 // MARK: - ToDoViewController
 
-final class ListViewController: UIViewController {
+final class ReadToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var filterButton: UIBarButtonItem!
@@ -86,7 +86,7 @@ final class ListViewController: UIViewController {
 
 // MARK: - View Life Cycle 관련 메서드 모음
 
-extension ListViewController {
+extension ReadToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -103,7 +103,7 @@ extension ListViewController {
 
 // MARK: - View Setting 관련 메서드 모음
 
-extension ListViewController {
+extension ReadToDoVC {
     private func setupUI() {
         registerCell()
         confirmTableView()
@@ -173,11 +173,11 @@ extension ListViewController {
 
 // MARK: - 화면 이동 메서드 모음
 
-extension ListViewController {
+extension ReadToDoVC {
     /// Filter 페이지 이동
     private func pushFilterVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.filterSB.id, bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.filterVC.id) as? FilterViewController else { return }
+        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.filterVC.id) as? FilterToDoVC else { return }
 
         vc.eventHandler = { [weak self] in
             self?.viewModel.paginationRelay.accept(false)
@@ -194,7 +194,7 @@ extension ListViewController {
     /// Add 페이지 화면 이동
     private func pushAddVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.addSB.id, bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.addVC.id) as? AddViewController else { return }
+        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.addVC.id) as? CreateToDoVC else { return }
         vc.viewModel = AddViewModel()
 
         vc.eventHandler = { [weak self] _ in
@@ -218,7 +218,7 @@ extension ListViewController {
 
 // MARK: - ViewModel Rx Binding 관련 처리 메서드 모음
 
-extension ListViewController {
+extension ReadToDoVC {
     private func bind() {
         rxDatasourceBind()
         tableViewBind()
@@ -267,7 +267,7 @@ extension ListViewController {
                 _ = self.viewModel.dbManager.insertSeen(id: id)
 
                 let sb: UIStoryboard = .init(name: StoryBoardCollection.editSB.id, bundle: nil)
-                guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.editVC.id) as? EditViewController else { return }
+                guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.editVC.id) as? UpdateToDoVC else { return }
                 vc.viewModel = EditViewModel()
                 vc.viewModel.todo = currentItem
                 navigationController?.pushViewController(vc, animated: true)
@@ -390,7 +390,7 @@ extension ListViewController {
 
 // MARK: - 장풍 코드 리팩토링 메서드 모음
 
-extension ListViewController {
+extension ReadToDoVC {
     /// 검색 결과 아무것도 없을 시, 오류 메시지 VC 표시
     private func returnNonTodosAtSearching(todos: [ToDoData], searchBarText: String) {
         if todos.count == 0, searchVC.searchBar.isFirstResponder == true {
@@ -501,7 +501,7 @@ extension ListViewController {
 
 // MARK: - UITableViewDelegate 처리
 
-extension ListViewController: UITableViewDelegate {
+extension ReadToDoVC: UITableViewDelegate {
     func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
         let currentOffset = scrollView.contentOffset.y
         let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height

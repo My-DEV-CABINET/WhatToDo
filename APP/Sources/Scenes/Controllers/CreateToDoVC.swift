@@ -11,7 +11,7 @@ import RxSwift
 /// Apple
 import UIKit
 
-final class AddViewController: UIViewController {
+final class CreateToDoVC: UIViewController {
     /// TextField
     @IBOutlet weak var textView: UITextView!
 
@@ -38,7 +38,7 @@ final class AddViewController: UIViewController {
 
 // MARK: - View Life Cycle 관련 모음
 
-extension AddViewController {
+extension CreateToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -66,7 +66,7 @@ extension AddViewController {
 
 // MARK: - View UI 설정 관련 모음
 
-extension AddViewController {
+extension CreateToDoVC {
     private func setupUI() {
         /// 기본 UI 처리
         confirmTextView()
@@ -124,7 +124,7 @@ extension AddViewController {
 
 // MARK: - ViewModel Rx Binding 관련 모음
 
-extension AddViewController {
+extension CreateToDoVC {
     private func bind() {
         textViewBind()
         saveButtonBind()
@@ -230,7 +230,7 @@ extension AddViewController {
 
 // MARK: - 장풍 코드 리팩토링 메서드 모음
 
-extension AddViewController {
+extension CreateToDoVC {
     /// SaveButton 누를 시, 예외처리 및 성공처리
     private func textException(text: String, isDone: Bool, queue: DispatchQueue) {
         if text.count < 6 {
@@ -302,7 +302,7 @@ extension AddViewController {
 
 // MARK: - Navigation Bar 관련 모음
 
-extension AddViewController {
+extension CreateToDoVC {
     private func confirmNavigationBar() {
         navigationItem.title = viewModel.userAction == .edit ? "할일 수정" : "할일 추가"
         navigationController?.navigationBar.backgroundColor = .systemGray6
@@ -325,7 +325,7 @@ extension AddViewController {
 
 // MARK: - 예외처리 알림
 
-extension AddViewController {
+extension CreateToDoVC {
     /// TextView 입력 6글자 미만시, 알림 - 확인만 있음.
     private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
@@ -358,7 +358,7 @@ extension AddViewController {
 
 // MARK: - 키보드 관련 모음
 
-extension AddViewController {
+extension CreateToDoVC {
     private func setupKeyboard() {
         /// 키보드가 나타난 이후
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)

@@ -11,7 +11,7 @@ import RxSwift
 /// Apple
 import UIKit
 
-final class EditViewController: UIViewController {
+final class UpdateToDoVC: UIViewController {
     /// Label
     @IBOutlet weak var todoLabel: UILabel!
 
@@ -32,7 +32,7 @@ final class EditViewController: UIViewController {
 
 // MARK: - View Life Cycle 관련 모음
 
-extension EditViewController {
+extension UpdateToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -51,7 +51,7 @@ extension EditViewController {
 
 // MARK: - UI 관련 모음
 
-extension EditViewController {
+extension UpdateToDoVC {
     private func setupUI() {
         confirmTodoSwitch()
         setupNavigator()
@@ -85,7 +85,7 @@ extension EditViewController {
 
 // MARK: - Bind 관련 모음
 
-extension EditViewController {
+extension UpdateToDoVC {
     private func bind() {
         editButtonBind()
         backButtonBind()
@@ -129,11 +129,11 @@ extension EditViewController {
 
 // MARK: - 화면이동 관련 모음
 
-extension EditViewController {
+extension UpdateToDoVC {
     /// Add 페이지 화면 이동
     private func pushAddVC() {
         let sb: UIStoryboard = .init(name: "Add", bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: "AddViewController") as? AddViewController else { return }
+        guard let vc = sb.instantiateViewController(identifier: "AddViewController") as? CreateToDoVC else { return }
         vc.viewModel = AddViewModel()
         vc.viewModel.todo = viewModel.todo
         vc.viewModel.userAction = .edit
@@ -158,7 +158,7 @@ extension EditViewController {
 
 // MARK: - Navigation 관련 모음
 
-extension EditViewController {
+extension UpdateToDoVC {
     private func confirmNavigationBar() {
         navigationItem.title = viewModel.todo?.id?.description
         navigationController?.navigationBar.backgroundColor = .systemGray6
@@ -194,7 +194,7 @@ extension EditViewController {
 
 // MARK: - 예외처리 알림
 
-extension EditViewController {
+extension UpdateToDoVC {
     /// 확인, 취소 존재하는 Alert
     private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

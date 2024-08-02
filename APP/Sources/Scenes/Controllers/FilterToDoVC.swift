@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class FilterViewController: UIViewController {
+final class FilterToDoVC: UIViewController {
     @IBOutlet weak var hiddenSegmentControl: UISegmentedControl!
     @IBOutlet weak var orderSegmentControl: UISegmentedControl!
     @IBOutlet weak var confirmButton: UIButton!
@@ -20,7 +20,7 @@ final class FilterViewController: UIViewController {
 
 // MARK: - View Life Cycle
 
-extension FilterViewController {
+extension FilterToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -37,7 +37,7 @@ extension FilterViewController {
 
 // MARK: - Setting Up UI
 
-extension FilterViewController {
+extension FilterToDoVC {
     private func setupUI() {
         baseView.layer.cornerRadius = 10
         confirmDoneSegmentControl()

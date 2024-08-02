@@ -10,7 +10,7 @@ import UIKit
 extension UIViewController {
     func pushAlertVC(title: String, detail: String, image: String) {
         let sb: UIStoryboard = .init(name: "Alert", bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: "AlertViewController") as? AlertViewController else { return }
+        guard let vc = sb.instantiateViewController(identifier: "AlertViewController") as? AlertVC else { return }
         vc.configure(title: title, detail: detail, image: image)
 
         let navigationVC = UINavigationController(rootViewController: vc)

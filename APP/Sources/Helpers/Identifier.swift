@@ -10,4 +10,5 @@ import Foundation
 enum Identifier: String {
     case todoCell = "ToDoCell"
     case headerView = "HeaderView"
+    case searchCell = "SearchCell"
 }

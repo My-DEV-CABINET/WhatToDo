@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AlertViewController: UIViewController {
+final class AlertVC: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var detailLabel: UILabel!
@@ -21,7 +21,7 @@ final class AlertViewController: UIViewController {
 
 // MARK: - View Life Cycle
 
-extension AlertViewController {
+extension AlertVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -31,7 +31,7 @@ extension AlertViewController {
 
 // MARK: - Setting Up UI
 
-extension AlertViewController {
+extension AlertVC {
     private func setupUI() {
         baseView.layer.cornerRadius = 10
         confirmConfirmButton()

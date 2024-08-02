@@ -20,36 +20,36 @@ enum QueueCollection: String {
 
 /// ViewController Identifier 모음
 enum ViewControllerCollection {
-    case filterVC
-    case addVC
-    case editVC
+    case filter
+    case create
+    case update
 
     var id: String {
         switch self {
-        case .filterVC:
-            return "FilterViewController"
-        case .addVC:
-            return "AddViewController"
-        case .editVC:
-            return "EditViewController"
+        case .filter:
+            return "FilterToDoVC"
+        case .create:
+            return "CreateToDoVC"
+        case .update:
+            return "UpdateToDoVC"
         }
     }
 }
 
 /// StoryBoard Identifier 모음
 enum StoryBoardCollection {
-    case filterSB
-    case addSB
-    case editSB
+    case filter
+    case create
+    case update
 
     var id: String {
         switch self {
-        case .filterSB:
-            return "Filter"
-        case .addSB:
-            return "Add"
-        case .editSB:
-            return "Edit"
+        case .filter:
+            return "FilterTodo"
+        case .create:
+            return "CreateTodo"
+        case .update:
+            return "UpdateTodo"
         }
     }
 }
