@@ -5,6 +5,11 @@
 //  Created by 준우의 MacBook 16 on 6/30/24.
 //
 
+// Rx
+import RxCocoa
+import RxSwift
+
+// Apple
 import UIKit
 
 final class FilterToDoVC: UIViewController {
@@ -14,9 +19,11 @@ final class FilterToDoVC: UIViewController {
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var baseView: UIView!
 
-    var selectedDone: String?
-    var selectedOrder: String?
-    var eventHandler: (() -> Void)?
+    let eventSubject = PublishSubject<Void>()
+    var disposeBag = DisposeBag()
+
+    private var selectedDone: String?
+    private var selectedOrder: String?
 }
 
 // MARK: - View Life Cycle
@@ -25,14 +32,11 @@ extension FilterToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+    }
 
-        let orderValue = SettingManager.shared.order
-        orderSegmentControl.selectedSegmentIndex = convertOrderTag(value: orderValue)
-        selectedOrder = orderValue
-
-        let doneValue = SettingManager.shared.done
-        hiddenSegmentControl.selectedSegmentIndex = convertDoneTag(value: doneValue)
-        selectedDone = doneValue
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        disposeBag = DisposeBag()
     }
 }
 
@@ -40,54 +44,19 @@ extension FilterToDoVC {
 
 extension FilterToDoVC {
     private func setupUI() {
+        initialSegmentValue()
         baseView.layer.cornerRadius = 10
-        confirmDoneSegmentControl()
-        confirmOrderSegmentControl()
-        confirmConfirmButton()
-        confirmCancelButton()
+        bind()
     }
 
-    private func confirmConfirmButton() {
-        confirmButton.addTarget(self, action: #selector(didTapConfirmButton(_:)), for: .touchUpInside)
-    }
+    private func initialSegmentValue() {
+        let orderValue = SettingManager.shared.order
+        orderSegmentControl.selectedSegmentIndex = convertOrderTag(value: orderValue)
+        selectedOrder = orderValue
 
-    @objc private func didTapConfirmButton(_ sender: UIButton) {
-        guard let done = selectedDone else { return }
-        guard let order = selectedOrder else { return }
-
-        SettingManager.saveDoneAndOrder(done: done, order: order)
-        eventHandler?()
-        dismiss(animated: true)
-    }
-
-    private func confirmCancelButton() {
-        cancelButton.addTarget(self, action: #selector(didTapCancelButton(_:)), for: .touchUpInside)
-    }
-
-    @objc private func didTapCancelButton(_ sender: UIButton) {
-        dismiss(animated: true)
-    }
-
-    private func confirmDoneSegmentControl() {
-        hiddenSegmentControl.addAction(UIAction(handler: { [weak self] action in
-            guard let self = self else { return }
-            let selectedIndex = self.hiddenSegmentControl.selectedSegmentIndex
-            let selectedTitle = self.hiddenSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
-
-            selectedDone = convertFilterOption(title: selectedTitle).rawValue
-            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 선택된 Index: \(selectedIndex), 선택된 Title: \(selectedTitle)")
-        }), for: .valueChanged)
-    }
-
-    private func confirmOrderSegmentControl() {
-        orderSegmentControl.addAction(UIAction(handler: { [weak self] action in
-            guard let self = self else { return }
-            let selectedIndex = self.orderSegmentControl.selectedSegmentIndex
-            let selectedTitle = self.orderSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
-
-            selectedOrder = convertOrderOption(title: selectedTitle).rawValue
-            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 선택된 Index: \(selectedIndex), 선택된 Title: \(selectedTitle)")
-        }), for: .valueChanged)
+        let doneValue = SettingManager.shared.done
+        hiddenSegmentControl.selectedSegmentIndex = convertDoneTag(value: doneValue)
+        selectedDone = doneValue
     }
 
     private func convertFilterOption(title: String) -> Done {
@@ -136,5 +105,56 @@ extension FilterToDoVC {
         default:
             return 0
         }
+    }
+}
+
+// MARK: - View Binding
+
+extension FilterToDoVC {
+    private func bind() {
+        // Confirm Button
+        confirmButton.rx.tap
+            .asDriver()
+            .drive { _ in
+                guard let done = self.selectedDone else { return }
+                guard let order = self.selectedOrder else { return }
+
+                SettingManager.saveDoneAndOrder(done: done, order: order)
+                self.eventSubject.onNext(())
+                self.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        // Cancel Button
+        cancelButton.rx.tap
+            .asDriver()
+            .drive { _ in
+                self.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        // Done SegmentControl
+        hiddenSegmentControl.rx.value.changed
+            .asDriver()
+            .drive { [weak self] _ in
+                guard let self = self else { return }
+                let selectedIndex = self.hiddenSegmentControl.selectedSegmentIndex
+                let selectedTitle = self.hiddenSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
+
+                selectedDone = convertFilterOption(title: selectedTitle).rawValue
+            }
+            .disposed(by: disposeBag)
+
+        // Order SegmentControl
+        orderSegmentControl.rx.value.changed
+            .asDriver()
+            .drive { [weak self] _ in
+                guard let self = self else { return }
+                let selectedIndex = self.orderSegmentControl.selectedSegmentIndex
+                let selectedTitle = self.orderSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
+
+                selectedOrder = convertOrderOption(title: selectedTitle).rawValue
+            }
+            .disposed(by: disposeBag)
     }
 }

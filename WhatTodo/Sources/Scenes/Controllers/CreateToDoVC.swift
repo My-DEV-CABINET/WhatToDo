@@ -6,6 +6,7 @@
 //
 
 /// Rx
+import RxCocoa
 import RxSwift
 
 /// Apple
@@ -25,13 +26,16 @@ final class CreateToDoVC: UIViewController {
     /// BarButtonItem
     private var backButton: UIBarButtonItem!
 
+    var disposeBag = DisposeBag()
+
     /// Add ViewModel
     var viewModel: CreateTodoViewModel!
 
     /// Add 후 ToDoVC 이벤트 처리 클로저
-    var eventHandler: ((Bool) -> Void)?
+    var addSubject: PublishSubject<Bool> = .init()
+
     /// Edit 후 EditVC 이벤트 처리 클로저
-    var editHandler: ((String, Bool) -> Void)?
+    var editSubject: PublishSubject<(String, Bool)> = .init()
 }
 
 // MARK: - View Life Cycle 관련 모음
@@ -45,17 +49,23 @@ extension CreateToDoVC {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        textView.becomeFirstResponder()
-
         /// 키보드 반응
         setupKeyboard()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        viewModel.disposeBag = DisposeBag()
-
         textView.resignFirstResponder()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        viewModel.disposeBag = DisposeBag()
+        disposeBag = DisposeBag()
 
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -124,6 +134,7 @@ extension CreateToDoVC {
         textViewBind()
         saveButtonBind()
         cancelButtonBind()
+        backButtonBind()
     }
 
     /// TextView 관련 Bind 모음
@@ -211,13 +222,28 @@ extension CreateToDoVC {
     /// CancelButton 버튼 관련 Bind 모음
     private func cancelButtonBind() {
         cancelButton.rx.tap
+            .flatMapLatest { [weak self] _ -> Observable<Bool> in
+                guard let self = self else { return Observable.just(false) }
+                return self.showMessageAlert(title: "취소 확인", message: "취소하시면 이전에 입력하신 내용이 전부 사라집니다.")
+            }
+            .subscribe(onNext: { [weak self] confirmed in
+                guard let self = self else { return }
+
+                if confirmed {
+                    self.navigationController?.dismiss(animated: true)
+                } else {
+                    self.textView.becomeFirstResponder()
+                }
+            })
+            .disposed(by: viewModel.disposeBag)
+    }
+
+    private func backButtonBind() {
+        backButton.rx.tap
             .asDriver()
-            .drive(onNext: { [weak self] in
-                self?.showMessageAlert(title: "취소 확인", message: "취소하시면 이전에 입력하신 내용이 전부 사라집니다.", completion: {
-                    self?.navigationController?.dismiss(animated: true)
-                }, cancel: {
-                    self?.textView.becomeFirstResponder()
-                })
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.navigationController?.dismiss(animated: true)
             })
             .disposed(by: viewModel.disposeBag)
     }
@@ -254,7 +280,7 @@ extension CreateToDoVC {
             queue.async {
                 self.viewModel.createTodo(title: text, isDone: isDone) { success in
                     if success {
-                        self.eventHandler?(true)
+                        self.addSubject.onNext(true)
                         DispatchQueue.main.async {
                             self.navigationController?.dismiss(animated: true)
                         }
@@ -275,7 +301,8 @@ extension CreateToDoVC {
             queue.async {
                 self.viewModel.editTodo(title: text, isDone: isDone) { success in
                     if success {
-                        self.editHandler?(text, isDone)
+                        self.editSubject.onNext((text, isDone))
+
                         DispatchQueue.main.async {
                             self.navigationController?.dismiss(animated: true)
                         }
@@ -308,13 +335,7 @@ extension CreateToDoVC {
         backButton.tintColor = .black
         backButton.title = "닫기"
         backButton.target = self
-        backButton.action = #selector(didTapBackButton)
-
         navigationItem.leftBarButtonItem = backButton
-    }
-
-    @objc private func didTapBackButton(_ sender: UIBarButtonItem) {
-        navigationController?.dismiss(animated: true)
     }
 }
 
@@ -333,21 +354,29 @@ extension CreateToDoVC {
     }
 
     /// 확인, 취소 존재하는 Alert
-    private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void, cancel: @escaping () -> Void) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    private func showMessageAlert(title: String, message: String) -> Observable<Bool> {
+        return Observable<Bool>.create { [weak self] observer in
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
-            completion()
+            let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
+                observer.onNext(true)
+                observer.onCompleted()
+            }
+
+            let cancelAlert = UIAlertAction(title: "취소", style: .destructive) { _ in
+                observer.onNext(false)
+                observer.onCompleted()
+            }
+
+            alert.addAction(confirmAlert)
+            alert.addAction(cancelAlert)
+
+            self?.present(alert, animated: true, completion: nil)
+
+            return Disposables.create {
+                alert.dismiss(animated: true, completion: nil)
+            }
         }
-
-        let cancelAlert = UIAlertAction(title: "취소", style: .destructive) { _ in
-            cancel()
-        }
-
-        alert.addAction(confirmAlert)
-        alert.addAction(cancelAlert)
-
-        present(alert, animated: true)
     }
 }
 
@@ -355,35 +384,36 @@ extension CreateToDoVC {
 
 extension CreateToDoVC {
     private func setupKeyboard() {
-        /// 키보드가 나타난 이후
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        textView.becomeFirstResponder()
+
+        /// 키보드가 나타난 직후
+        NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { (owner, notification) in
+                /// 키보드
+                if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+                    let keyboardHeight = keyboardFrame.cgRectValue.height
+                    UIView.animate(
+                        withDuration: 0.1,
+                        animations: {
+                            self.view.frame.origin.y = -keyboardHeight / 2
+                        }
+                    )
+                }
+            })
+            .disposed(by: disposeBag)
 
         /// 키보드가 사라질 때
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-
-    /// 키보드가 나타난 직후
-    @objc private func keyboardWillShow(_ notification: Notification) {
-        /// 키보드
-        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-            let keyboardHeight = keyboardFrame.cgRectValue.height
-
-            UIView.animate(
-                withDuration: 0.1,
-                animations: {
-                    self.view.frame.origin.y = -keyboardHeight / 2
+        NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { (owner, notification) in
+                /// 키보드
+                UIView.animate(withDuration: 0.1) {
+                    self.view.frame.origin.y = 0
                 }
-            )
-        }
-    }
-
-    /// 키보드가 사라질 때
-    @objc private func keyboardWillHide(_ notification: Notification) {
-        UIView.animate(
-            withDuration: 0.1,
-            animations: {
-                self.view.frame.origin.y = 0
-            }
-        )
+            })
+            .disposed(by: disposeBag)
     }
 }

@@ -18,7 +18,7 @@ final class ToDoCell: UITableViewCell {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var historyLabel: UILabel!
-    
+    @IBOutlet weak var baseView: UIView!
     @IBOutlet weak var checkButton: UIButton!
     
     /// CheckHandler 방식 변경 필요
@@ -57,13 +57,14 @@ final class ToDoCell: UITableViewCell {
     
     func configure(data: ToDoData, isInquire: Bool) {
         guard let isDone = data.isDone else { return }
+        baseView.layer.cornerRadius = 10
         
         titleLabel.text = data.title
         dateLabel.text = data.updatedAt?.dateFormatterForTime()
         
         historyLabel.isHidden = !isInquire
         
-        let checkImage = isDone ? "checkmark.square.fill" : "square"
+        let checkImage = isDone ? "checkmark.circle.fill" : "circle"
         checkButton.setImage(UIImage(systemName: checkImage), for: .normal)
     }
 }

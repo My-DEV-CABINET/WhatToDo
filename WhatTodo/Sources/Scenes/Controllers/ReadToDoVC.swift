@@ -23,44 +23,12 @@ final class ReadToDoVC: UIViewController {
     @IBOutlet weak var historyButton: UIBarButtonItem!
 
     private var viewModel = ReadTodoViewModel()
-    private var searchVC: UISearchController!
+    private var searchController: UISearchController!
     private var refreshControl: UIRefreshControl!
 
     typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
 
-    lazy var dataSource: ToDoSectionDataSource = {
-        let db = ToDoSectionDataSource(
-            configureCell: { datasource, tableView, indexPath, item in
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
-
-                guard let id = item.id else { return UITableViewCell() }
-                cell.data = item
-
-                /// isDone 스위치 이벤트
-                cell.checkHandler = { [weak self] data in
-                    guard let title = data.title else { return }
-                    guard let isDone = data.isDone else { return }
-                    guard let id = data.id else { return }
-
-                    self?.viewModel.editTodo(title: title, isDone: isDone, id: id)
-                }
-
-                let inquires = self.viewModel.dbManager.inquireHistories
-                let isInquire = inquires.contains(where: { $0.todoID == id })
-                cell.configure(data: item, isInquire: isInquire)
-                return cell
-            })
-
-        db.canEditRowAtIndexPath = { dataSource, indexPath in
-            return true
-        }
-
-        db.canMoveRowAtIndexPath = { dataSource, indexPath in
-            return true
-        }
-
-        return db
-    }()
+    private var dataSource: ToDoSectionDataSource!
 
     deinit {
         print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: TodoVC deinitialize")
@@ -89,9 +57,9 @@ extension ReadToDoVC {
 extension ReadToDoVC {
     private func setupUI() {
         registerCell()
+        confirmDatasource()
         confirmTableView()
         confirmRefreshControl()
-        confirmAddButton()
         //        confirmSearchVC()
 
         /// 화면 터치시, 키보드 내리기
@@ -110,6 +78,40 @@ extension ReadToDoVC {
         /// TableView Header Cell
         let haderCell = UINib(nibName: Identifier.headerView.rawValue, bundle: nil)
         tableView.register(haderCell, forHeaderFooterViewReuseIdentifier: Identifier.headerView.rawValue)
+    }
+
+    private func confirmDatasource() {
+        dataSource = ToDoSectionDataSource(
+            configureCell: { datasource, tableView, indexPath, item in
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
+
+                guard let id = item.id else { return UITableViewCell() }
+                cell.data = item
+
+                /// isDone 스위치 이벤트
+                cell.checkHandler = { [weak self] data in
+                    guard let title = data.title else { return }
+                    guard let isDone = data.isDone else { return }
+                    guard let id = data.id else { return }
+
+                    self?.viewModel.editTodo(title: title, isDone: isDone, id: id)
+                }
+
+                let inquires = self.viewModel.dbManager.inquireHistories
+                let isInquire = inquires.contains(where: { $0.todoID == id })
+                cell.configure(data: item, isInquire: isInquire)
+
+                cell.backgroundColor = .clear
+                return cell
+            })
+
+        dataSource?.canEditRowAtIndexPath = { dataSource, indexPath in
+            return true
+        }
+
+        dataSource?.canMoveRowAtIndexPath = { dataSource, indexPath in
+            return true
+        }
     }
 
     private func confirmTableView() {
@@ -134,14 +136,6 @@ extension ReadToDoVC {
 //        navigationItem.searchController = searchVC
 //    }
 
-    /// Add 버튼 클릭시, AddVC 로 화면이동
-    private func confirmAddButton() {
-        addButton.addAction(UIAction(handler: { [weak self] _ in
-            guard let self = self else { return }
-            pushAddVC()
-        }), for: .touchUpInside)
-    }
-
     /// Alert 메시지 표시
     private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -162,11 +156,15 @@ extension ReadToDoVC {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.filter.id, bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.filter.id) as? FilterToDoVC else { return }
 
-        vc.eventHandler = { [weak self] in
-            self?.viewModel.paginationRelay.accept(false)
-            self?.viewModel.resetPage()
-            self?.viewModel.requestGETTodos(completion: {})
-        }
+        vc.eventSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe { (owner, _) in
+                owner.viewModel.paginationRelay.accept(false)
+                owner.viewModel.resetPage()
+                owner.viewModel.requestGETTodos(completion: {})
+            }
+            .disposed(by: vc.disposeBag)
 
         let navigationVC = UINavigationController(rootViewController: vc)
         navigationVC.modalPresentationStyle = .formSheet
@@ -180,18 +178,22 @@ extension ReadToDoVC {
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.create.id) as? CreateToDoVC else { return }
         vc.viewModel = CreateTodoViewModel()
 
-        vc.eventHandler = { [weak self] _ in
-            self?.viewModel.resetPage()
+        vc.addSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { (owner, value) in
+                owner.viewModel.resetPage()
 
-            DispatchQueue.main.async {
-                self?.tableView.setContentOffset(.zero, animated: true)
-            }
+                DispatchQueue.main.async {
+                    owner.tableView.setContentOffset(.zero, animated: true)
+                }
 
-            let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
-            customQueue.async {
-                self?.viewModel.requestGETTodos(completion: {})
-            }
-        }
+                let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
+                customQueue.async {
+                    owner.viewModel.requestGETTodos(completion: {})
+                }
+            })
+            .disposed(by: vc.disposeBag)
 
         let navigationVC = UINavigationController(rootViewController: vc)
         navigationVC.modalPresentationStyle = .pageSheet
@@ -220,12 +222,45 @@ extension ReadToDoVC {
 
 extension ReadToDoVC {
     private func bind() {
+        viewBind()
         rxDatasourceBind()
         tableViewBind()
-        filterBind()
-        searchBind()
-        historyBind()
         //        searchBind()
+    }
+
+    private func viewBind() {
+        /// Add 버튼 클릭시, AddVC 로 화면이동
+        addButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.pushAddVC()
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        filterButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.pushFilterVC()
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        searchButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.pushSearchVC()
+            })
+            .disposed(by: viewModel.disposeBag)
+
+        historyButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.pushHistoryVC()
+            })
+            .disposed(by: viewModel.disposeBag)
     }
 
     private func rxDatasourceBind() {
@@ -397,36 +432,6 @@ extension ReadToDoVC {
 //            })
 //            .disposed(by: viewModel.disposeBag)
 //    }
-
-    private func filterBind() {
-        filterButton.rx.tap
-            .observe(on: MainScheduler.asyncInstance)
-            .bind { [weak self] in
-                guard let self = self else { return }
-                self.pushFilterVC()
-            }
-            .disposed(by: viewModel.disposeBag)
-    }
-
-    private func searchBind() {
-        searchButton.rx.tap
-            .observe(on: MainScheduler.asyncInstance)
-            .bind { [weak self] in
-                guard let self = self else { return }
-                self.pushSearchVC()
-            }
-            .disposed(by: viewModel.disposeBag)
-    }
-
-    private func historyBind() {
-        historyButton.rx.tap
-            .observe(on: MainScheduler.asyncInstance)
-            .bind { [weak self] in
-                guard let self = self else { return }
-                self.pushHistoryVC()
-            }
-            .disposed(by: viewModel.disposeBag)
-    }
 }
 
 // MARK: - 장풍 코드 리팩토링 메서드 모음
@@ -434,14 +439,14 @@ extension ReadToDoVC {
 extension ReadToDoVC {
     /// 검색 결과 아무것도 없을 시, 오류 메시지 VC 표시
     private func returnNonTodosAtSearching(todos: [ToDoData], searchBarText: String) {
-        if todos.count == 0, searchVC.searchBar.isFirstResponder == true {
+        if todos.count == 0, searchController.searchBar.isFirstResponder == true {
             showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                self.searchVC.searchBar.text = searchBarText
-                self.searchVC.searchBar.becomeFirstResponder()
+                self.searchController.searchBar.text = searchBarText
+                self.searchController.searchBar.becomeFirstResponder()
                 self.tableView.setContentOffset(.zero, animated: true)
             })
         } else {
-            searchVC.searchBar.resignFirstResponder()
+            searchController.searchBar.resignFirstResponder()
         }
 
         return
@@ -451,8 +456,8 @@ extension ReadToDoVC {
     private func returnNonTodosAtRefreshControl(todos: [ToDoData], searchBarText: String) {
         if todos.count == 0 {
             showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                self.searchVC.searchBar.text = searchBarText
-                self.searchVC.searchBar.becomeFirstResponder()
+                self.searchController.searchBar.text = searchBarText
+                self.searchController.searchBar.becomeFirstResponder()
                 self.refreshControl.endRefreshing()
                 return
             })
@@ -593,6 +598,7 @@ extension ReadToDoVC: UITableViewDelegate {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { action, view, perform in
             let currentSection = self.dataSource.sectionModels[indexPath.section]
             let currentItem = currentSection.items[indexPath.row]
+
             guard let id = currentItem.id else { return }
             self.viewModel.dbManager.deleteInquireHistory(todoId: id)
 

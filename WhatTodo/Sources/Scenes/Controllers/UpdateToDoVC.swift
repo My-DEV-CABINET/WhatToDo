@@ -132,24 +132,31 @@ extension UpdateToDoVC {
 extension UpdateToDoVC {
     /// Add 페이지 화면 이동
     private func pushAddVC() {
-        let sb: UIStoryboard = .init(name: "Add", bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: "AddViewController") as? CreateToDoVC else { return }
+        let sb: UIStoryboard = .init(name: StoryBoardCollection.create.id, bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.create.id) as? CreateToDoVC else { return }
         vc.viewModel = CreateTodoViewModel()
         vc.viewModel.todo = viewModel.todo
         vc.viewModel.userAction = .edit
 
         /// AddVC EventHandler
-        vc.editHandler = { [weak self] newText, newIsDone in
-            DispatchQueue.main.async {
-                self?.todoLabel.text = newText
-                self?.todoSwitch.isOn = newIsDone
-                self?.viewModel.isUpdate = true
+        vc.editSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { (owner, results) in
+                let newText = results.0
+                let newIsDone = results.1
+
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(results)")
+
+                owner.todoLabel.text = newText
+                owner.todoSwitch.isOn = newIsDone
+                owner.viewModel.isUpdate = true
 
                 /// View Model 의 todo 동기화
-                self?.viewModel.todo?.title = newText
-                self?.viewModel.todo?.isDone = newIsDone
-            }
-        }
+                owner.viewModel.todo?.title = newText
+                owner.viewModel.todo?.isDone = newIsDone
+            })
+            .disposed(by: vc.disposeBag)
 
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)

@@ -5,6 +5,10 @@
 //  Created by 준우의 MacBook 16 on 6/30/24.
 //
 
+/// Rx
+import RxCocoa
+import RxSwift
+
 /// Apple
 import UIKit
 
@@ -18,6 +22,8 @@ final class AlertVC: UIViewController {
     private var alertTitle: String?
     private var alertDetail: String?
     private var alertImage: String?
+
+    private var disposeBag = DisposeBag()
 }
 
 // MARK: - View Life Cycle
@@ -28,6 +34,11 @@ extension AlertVC {
         setupUI()
         updateUI()
     }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        disposeBag = DisposeBag()
+    }
 }
 
 // MARK: - Setting Up UI
@@ -35,13 +46,14 @@ extension AlertVC {
 extension AlertVC {
     private func setupUI() {
         baseView.layer.cornerRadius = 10
-        confirmConfirmButton()
         confirmImageView()
+        bind()
     }
 
     private func updateUI() {
         titleLabel.text = alertTitle
         detailLabel.text = alertDetail
+
         if let imageName = alertImage {
             imageView.image = UIImage(systemName: imageName)
         }
@@ -53,14 +65,18 @@ extension AlertVC {
         alertImage = image
     }
 
-    private func confirmConfirmButton() {
-        confirmButton.addAction(UIAction(handler: { [weak self] _ in
-            self?.dismiss(animated: true)
-        }), for: .touchUpInside)
-    }
-
     private func confirmImageView() {
         imageView.layer.masksToBounds = true
         imageView.layer.cornerRadius = 10
+    }
+
+    private func bind() {
+        confirmButton.rx.tap
+            .asDriver()
+            .drive { [weak self] _ in
+                guard let self = self else { return }
+                self.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 }
