@@ -54,4 +54,52 @@ extension String {
 
         return "n/a"
     }
+
+    func convertFilterOption() -> Done {
+        switch self {
+        case "모두보기":
+            return .all
+        case "완료":
+            return .onlyCompleted
+        case "미완료":
+            return .onlyNonCompleted
+        default:
+            return .all
+        }
+    }
+
+    func convertOrderOption() -> Order {
+        switch self {
+        case "내림차순":
+            return .desc
+        case "오름차순":
+            return .asc
+        default:
+            return .desc
+        }
+    }
+
+    func convertDoneTag() -> Int {
+        switch self {
+        case Done.all.rawValue:
+            return 0
+        case Done.onlyCompleted.rawValue:
+            return 1
+        case Done.onlyNonCompleted.rawValue:
+            return 2
+        default:
+            return 0
+        }
+    }
+
+    func convertOrderTag() -> Int {
+        switch self {
+        case Order.desc.rawValue:
+            return 0
+        case Order.asc.rawValue:
+            return 1
+        default:
+            return 0
+        }
+    }
 }

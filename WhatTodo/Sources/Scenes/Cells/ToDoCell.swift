@@ -22,7 +22,8 @@ final class ToDoCell: UITableViewCell {
     @IBOutlet weak var checkButton: UIButton!
     
     /// CheckHandler 방식 변경 필요
-    var checkHandler: ((_ data: ToDoData) -> Void)?
+    var checkActionObservable: Observable<(id: Int, isDone: Bool)> = Observable.empty()
+    var disposeBag = DisposeBag()
    
     var data: ToDoData?
 
@@ -43,16 +44,17 @@ final class ToDoCell: UITableViewCell {
     
     private func reset() {
         data = nil
-        checkHandler = nil
+        disposeBag = DisposeBag()
     }
     
     private func confirmCheckButton() {
-        checkButton.addAction(UIAction(handler: { [weak self] _ in
-            guard var data = self?.data else { return }
-            guard let isDone = data.isDone else { return }
-            data.isDone = !isDone
-            self?.checkHandler?(data)
-        }), for: .touchUpInside)
+        checkActionObservable = checkButton.rx.tap
+            .map { [weak self] in
+                guard let self = self, let id = self.data?.id, let isDone = self.data?.isDone else {
+                    return (id: 0, isDone: false)
+                }
+                return (id: id, isDone: !isDone)
+            }
     }
     
     func configure(data: ToDoData, isInquire: Bool) {

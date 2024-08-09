@@ -299,11 +299,11 @@ final class ReadTodoViewModel {
             switch response.result {
             case .success(let value):
                 guard let data = value.data else { return }
-
-                if let index = self.todos.firstIndex(where: { $0.id == id }) {
-                    self.todos[index] = data
-                    self.todoBehaviorSubject.onNext(self.todos)
-                }
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(data)")
+//                if let index = self.todos.firstIndex(where: { $0.id == id }) {
+//                    self.todos[index] = data
+//                    self.todoBehaviorSubject.onNext(self.todos)
+//                }
             case .failure(let error):
                 print("#### Edit Error: \(error)")
             }

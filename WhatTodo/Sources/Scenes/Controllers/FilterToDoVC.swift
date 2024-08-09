@@ -51,60 +51,12 @@ extension FilterToDoVC {
 
     private func initialSegmentValue() {
         let orderValue = SettingManager.shared.order
-        orderSegmentControl.selectedSegmentIndex = convertOrderTag(value: orderValue)
+        orderSegmentControl.selectedSegmentIndex = orderValue.convertOrderTag()
         selectedOrder = orderValue
 
         let doneValue = SettingManager.shared.done
-        hiddenSegmentControl.selectedSegmentIndex = convertDoneTag(value: doneValue)
+        hiddenSegmentControl.selectedSegmentIndex = doneValue.convertDoneTag()
         selectedDone = doneValue
-    }
-
-    private func convertFilterOption(title: String) -> Done {
-        switch title {
-        case "모두보기":
-            return .all
-        case "완료":
-            return .onlyCompleted
-        case "미완료":
-            return .onlyNonCompleted
-        default:
-            return .all
-        }
-    }
-
-    private func convertOrderOption(title: String) -> Order {
-        switch title {
-        case "내림차순":
-            return .desc
-        case "오름차순":
-            return .asc
-        default:
-            return .desc
-        }
-    }
-
-    private func convertDoneTag(value: String) -> Int {
-        switch value {
-        case Done.all.rawValue:
-            return 0
-        case Done.onlyCompleted.rawValue:
-            return 1
-        case Done.onlyNonCompleted.rawValue:
-            return 2
-        default:
-            return 0
-        }
-    }
-
-    private func convertOrderTag(value: String) -> Int {
-        switch value {
-        case Order.desc.rawValue:
-            return 0
-        case Order.asc.rawValue:
-            return 1
-        default:
-            return 0
-        }
     }
 }
 
@@ -140,8 +92,7 @@ extension FilterToDoVC {
                 guard let self = self else { return }
                 let selectedIndex = self.hiddenSegmentControl.selectedSegmentIndex
                 let selectedTitle = self.hiddenSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
-
-                selectedDone = convertFilterOption(title: selectedTitle).rawValue
+                selectedDone = selectedTitle.convertFilterOption().rawValue
             }
             .disposed(by: disposeBag)
 
@@ -152,8 +103,7 @@ extension FilterToDoVC {
                 guard let self = self else { return }
                 let selectedIndex = self.orderSegmentControl.selectedSegmentIndex
                 let selectedTitle = self.orderSegmentControl.titleForSegment(at: selectedIndex) ?? "No title"
-
-                selectedOrder = convertOrderOption(title: selectedTitle).rawValue
+                selectedOrder = selectedTitle.convertOrderOption().rawValue
             }
             .disposed(by: disposeBag)
     }

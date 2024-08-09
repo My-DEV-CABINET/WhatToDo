@@ -6,6 +6,7 @@
 //
 
 /// Rx
+import RxCocoa
 import RxSwift
 
 /// Apple
@@ -23,11 +24,12 @@ final class UpdateToDoVC: UIViewController {
     private var deleteButton: UIBarButtonItem!
 
     var viewModel: UpdateTodoViewModel!
+    var disposeBag = DisposeBag()
 
     /// Edit 이벤트 핸들러
-    var eventHandler: ((Bool) -> Void)?
+    var editSubject: PublishSubject<Bool> = .init()
     /// Delete 이벤트 핸들러
-    var deleteHandler: ((Bool) -> Void)?
+    var deleteSubject: PublishSubject<Bool> = .init()
 }
 
 // MARK: - View Life Cycle 관련 모음
@@ -109,7 +111,8 @@ extension UpdateToDoVC {
             .drive(onNext: { [weak self] in
                 guard let isUpdate = self?.viewModel.isUpdate else { return }
                 self?.navigationController?.popViewController(animated: true)
-                self?.eventHandler?(isUpdate)
+
+                self?.editSubject.onNext(isUpdate)
             })
             .disposed(by: viewModel.disposeBag)
     }
@@ -120,7 +123,8 @@ extension UpdateToDoVC {
             .drive(onNext: { [weak self] in
                 self?.showMessageAlert(title: "삭제 알림", message: "삭제하시겠습니까?", completion: {
                     self?.navigationController?.dismiss(animated: true)
-                    self?.deleteHandler?(true)
+
+                    self?.deleteSubject.onNext(true)
                 })
             })
             .disposed(by: viewModel.disposeBag)
@@ -145,8 +149,6 @@ extension UpdateToDoVC {
             .subscribe(onNext: { (owner, results) in
                 let newText = results.0
                 let newIsDone = results.1
-
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(results)")
 
                 owner.todoLabel.text = newText
                 owner.todoSwitch.isOn = newIsDone

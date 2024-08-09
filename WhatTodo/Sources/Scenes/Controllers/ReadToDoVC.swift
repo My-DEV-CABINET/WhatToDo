@@ -85,17 +85,32 @@ extension ReadToDoVC {
             configureCell: { datasource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
 
-                guard let id = item.id else { return UITableViewCell() }
+                guard let id = item.id, let title = item.title else { return UITableViewCell() }
                 cell.data = item
 
                 /// isDone 스위치 이벤트
-                cell.checkHandler = { [weak self] data in
-                    guard let title = data.title else { return }
-                    guard let isDone = data.isDone else { return }
-                    guard let id = data.id else { return }
+                cell.checkActionObservable
+                    .withUnretained(self)
+                    .subscribe(onNext: { (owner, data) in
+                        let (id, isDone) = data
 
-                    self?.viewModel.editTodo(title: title, isDone: isDone, id: id)
-                }
+                        var currentSection = owner.dataSource.sectionModels[indexPath.section]
+
+                        if let index = currentSection.items.firstIndex(where: { $0.id == id }) {
+                            currentSection.items[index].isDone = isDone
+                        }
+
+                        var updatedSections = owner.dataSource.sectionModels
+                        updatedSections[indexPath.section] = currentSection
+
+                        owner.dataSource.setSections(updatedSections)
+                        owner.viewModel.editTodo(title: title, isDone: data.isDone, id: data.id)
+
+                        UIView.performWithoutAnimation {
+                            owner.tableView.reloadRows(at: [indexPath], with: .none)
+                        }
+                    })
+                    .disposed(by: cell.disposeBag)
 
                 let inquires = self.viewModel.dbManager.inquireHistories
                 let isInquire = inquires.contains(where: { $0.todoID == id })
@@ -205,6 +220,7 @@ extension ReadToDoVC {
     private func pushSearchVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.search.id, bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.search.id) as? SearchToDoVC else { return }
+        // TODO: SearchVC ViewModel 작업
 
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -213,6 +229,7 @@ extension ReadToDoVC {
     private func pushHistoryVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.history.id, bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.history.id) as? HistoryToDoVC else { return }
+        // TODO: HistoryVC ViewModel 작업
 
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -238,6 +255,7 @@ extension ReadToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
 
+        /// Filter 버튼 클릭시, FilterVC 로 화면표시
         filterButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] in
@@ -246,6 +264,7 @@ extension ReadToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
 
+        /// Search 버튼 클릭시, SearchVC 로 화면이동
         searchButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] in
@@ -254,6 +273,7 @@ extension ReadToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
 
+        /// History 버튼 클릭시, HistoryVC 로 화면이동
         historyButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] in
@@ -309,32 +329,36 @@ extension ReadToDoVC {
                 navigationController?.pushViewController(vc, animated: true)
 
                 /// EditVC 의 EventHandler 처리
-                vc.eventHandler = { [weak self] valid in
-                    guard let self = self else { return }
+                vc.editSubject
+                    .withUnretained(self)
+                    .observe(on: MainScheduler.asyncInstance)
+                    .subscribe(onNext: { (owner, valid) in
+                        if valid {
+                            self.viewModel.resetPage()
+                            self.tableView.setContentOffset(.zero, animated: true)
 
-                    if valid {
-                        self.viewModel.resetPage()
-                        self.tableView.setContentOffset(.zero, animated: true)
-
-                        customQueue.async {
-                            self.viewModel.requestGETTodos(completion: {})
+                            customQueue.async {
+                                self.viewModel.requestGETTodos(completion: {})
+                            }
                         }
-                    }
-                }
+                    })
+                    .disposed(by: vc.disposeBag)
 
                 /// EditVC 의 DeleteHandler 처리
-                vc.deleteHandler = { [weak self] valid in
-                    guard let self = self else { return }
-
-                    if valid {
-                        customQueue.async {
-                            self.viewModel.removeTodo(data: currentItem, completion: {
-                                guard let details = currentItem.title else { return }
-                                UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)
-                            })
+                vc.deleteSubject
+                    .withUnretained(self)
+                    .observe(on: MainScheduler.asyncInstance)
+                    .subscribe(onNext: { (owner, valid) in
+                        if valid {
+                            customQueue.async {
+                                self.viewModel.removeTodo(data: currentItem, completion: {
+                                    guard let details = currentItem.title else { return }
+                                    UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)
+                                })
+                            }
                         }
-                    }
-                }
+                    })
+                    .disposed(by: vc.disposeBag)
 
                 self.tableView.deselectRow(at: indexPath, animated: true)
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
