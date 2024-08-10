@@ -76,6 +76,7 @@ enum IdentifierCollection: String {
     case todoCell = "ToDoCell"
     case headerView = "HeaderView"
     case searchCell = "SearchCell"
+    case historyCell = "HistoryCell"
 }
 
 enum UserActionCollection {
