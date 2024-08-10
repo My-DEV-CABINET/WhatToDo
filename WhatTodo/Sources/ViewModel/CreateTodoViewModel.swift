@@ -20,7 +20,7 @@ final class CreateTodoViewModel {
     var disposeBag = DisposeBag()
 
     var todo: ToDoData?
-    var userAction: UserAction = .add
+    var userAction: UserActionCollection = .add
     let textViewInputRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
 
     /// Todo 데이터 생성

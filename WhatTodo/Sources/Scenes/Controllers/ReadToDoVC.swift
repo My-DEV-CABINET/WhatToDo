@@ -16,6 +16,8 @@ import UserNotifications
 // MARK: - ReadToDoVC
 
 final class ReadToDoVC: UIViewController {
+    typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfToDoData>
+
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
 
@@ -26,8 +28,6 @@ final class ReadToDoVC: UIViewController {
     private var filterButton: UIBarButtonItem!
     private var searchButton: UIBarButtonItem!
     private var historyButton: UIBarButtonItem!
-
-    typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfToDoData>
 
     private var dataSource: ToDoSectionDataSource!
 
@@ -74,18 +74,18 @@ extension ReadToDoVC {
     /// Xib 셀 등록
     private func registerCell() {
         /// TableView Cell
-        let todoCell = UINib(nibName: Identifier.todoCell.rawValue, bundle: nil)
-        tableView.register(todoCell, forCellReuseIdentifier: Identifier.todoCell.rawValue)
+        let todoCell = UINib(nibName: IdentifierCollection.todoCell.rawValue, bundle: nil)
+        tableView.register(todoCell, forCellReuseIdentifier: IdentifierCollection.todoCell.rawValue)
 
         /// TableView Header Cell
-        let haderCell = UINib(nibName: Identifier.headerView.rawValue, bundle: nil)
-        tableView.register(haderCell, forHeaderFooterViewReuseIdentifier: Identifier.headerView.rawValue)
+        let haderCell = UINib(nibName: IdentifierCollection.headerView.rawValue, bundle: nil)
+        tableView.register(haderCell, forHeaderFooterViewReuseIdentifier: IdentifierCollection.headerView.rawValue)
     }
 
     private func confirmDatasource() {
         dataSource = ToDoSectionDataSource(
             configureCell: { datasource, tableView, indexPath, item in
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: Identifier.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: IdentifierCollection.todoCell.rawValue, for: indexPath) as? ToDoCell else { return UITableViewCell() }
 
                 guard let id = item.id, let title = item.title else { return UITableViewCell() }
                 cell.data = item
@@ -152,16 +152,6 @@ extension ReadToDoVC {
         navigationController?.navigationBar.backgroundColor = .clear
         navigationItem.rightBarButtonItems = [historyButton, searchButton, filterButton]
     }
-
-//    private func confirmSearchVC() {
-//        searchVC = UISearchController(searchResultsController: nil)
-//        searchVC.obscuresBackgroundDuringPresentation = false
-//        searchVC.hidesNavigationBarDuringPresentation = false
-//        searchVC.automaticallyShowsCancelButton = true
-//
-//        navigationItem.hidesSearchBarWhenScrolling = false
-//        navigationItem.searchController = searchVC
-//    }
 
     /// Alert 메시지 표시
     private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
@@ -658,7 +648,7 @@ extension ReadToDoVC: UITableViewDelegate {
 
     /// 헤더 설정
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: Identifier.headerView.rawValue) as? HeaderView else { return UIView() }
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: IdentifierCollection.headerView.rawValue) as? HeaderView else { return UIView() }
         header.dateLabel.text = dataSource.sectionModels[section].header
         return header
     }

@@ -262,7 +262,7 @@ extension CreateToDoVC {
             )
         } else if (text == """
         저장하고 싶은 할일 내용을 입력해주세요.
-        """ || text == nil) {
+        """ || text.isEmpty) {
             showBlankMessage(
                 title: "할일 추가 ERROR",
                 message: "할일 내용이 없습니다. 내용을 입력해주세요.",
@@ -274,7 +274,7 @@ extension CreateToDoVC {
     }
 
     /// UserAction 분기처리
-    private func providerUserAction(userAction: UserAction, queue: DispatchQueue, text: String, isDone: Bool) {
+    private func providerUserAction(userAction: UserActionCollection, queue: DispatchQueue, text: String, isDone: Bool) {
         if userAction == .add {
             /// UserAction 이 Add 일 때,
             queue.async {

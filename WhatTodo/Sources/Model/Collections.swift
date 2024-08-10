@@ -71,3 +71,14 @@ enum StoryBoardCollection {
         }
     }
 }
+
+enum IdentifierCollection: String {
+    case todoCell = "ToDoCell"
+    case headerView = "HeaderView"
+    case searchCell = "SearchCell"
+}
+
+enum UserActionCollection {
+    case add /// 데이터 추가
+    case edit /// 데이터 편집
+}

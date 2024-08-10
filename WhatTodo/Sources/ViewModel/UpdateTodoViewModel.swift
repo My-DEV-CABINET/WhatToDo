@@ -16,7 +16,7 @@ import Foundation
 final class UpdateTodoViewModel {
     var disposeBag = DisposeBag()
 
-    var userAction: UserAction = .edit
+    var userAction: UserActionCollection = .edit
     var todo: ToDoData?
     var isUpdate: Bool = false
 }
