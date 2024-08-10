@@ -1,5 +1,5 @@
 //
-//  RxDatasource.swift
+//  RxDatasource - ToDo.swift
 //  WhatToDo
 //
 //  Created by 준우의 MacBook 16 on 7/15/24.
@@ -13,7 +13,7 @@ import Foundation
 
 // MARK: - RxDataSource Section Model
 
-struct SectionOfCustomData {
+struct SectionOfToDoData {
     var header: String
     var items: [ToDoData]
 
@@ -23,10 +23,10 @@ struct SectionOfCustomData {
     }
 }
 
-extension SectionOfCustomData: SectionModelType {
+extension SectionOfToDoData: SectionModelType {
     typealias Item = ToDoData
 
-    init(original: SectionOfCustomData, items: [Item]) {
+    init(original: SectionOfToDoData, items: [Item]) {
         self = original
         self.items = items
     }

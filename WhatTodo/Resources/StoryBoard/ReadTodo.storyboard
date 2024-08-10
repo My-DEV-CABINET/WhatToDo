@@ -48,27 +48,9 @@
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="n5N-5e-z7m"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="HHv-HE-4Pi">
-                        <barButtonItem key="leftBarButtonItem" title="WhatToDo" style="done" id="pNm-FZ-9IX">
-                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </barButtonItem>
-                        <rightBarButtonItems>
-                            <barButtonItem title="Item" image="bell" catalog="system" id="NwX-tm-26h">
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </barButtonItem>
-                            <barButtonItem title="Item" image="magnifyingglass" catalog="system" id="FAh-Z6-ycn">
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </barButtonItem>
-                            <barButtonItem title="완료 숨기기" image="slider.horizontal.3" catalog="system" id="fpf-rR-CP9">
-                                <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </barButtonItem>
-                        </rightBarButtonItems>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="HHv-HE-4Pi"/>
                     <connections>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
-                        <outlet property="filterButton" destination="fpf-rR-CP9" id="vPE-8t-37m"/>
-                        <outlet property="historyButton" destination="NwX-tm-26h" id="sCm-ty-Mrh"/>
-                        <outlet property="searchButton" destination="FAh-Z6-ycn" id="ray-Pl-Jtf"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>
                 </viewController>
@@ -96,10 +78,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="bell" catalog="system" width="125" height="128"/>
-        <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="plus" catalog="system" width="128" height="113"/>
-        <image name="slider.horizontal.3" catalog="system" width="128" height="99"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -18,15 +18,16 @@ import UserNotifications
 final class ReadToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var filterButton: UIBarButtonItem!
-    @IBOutlet weak var searchButton: UIBarButtonItem!
-    @IBOutlet weak var historyButton: UIBarButtonItem!
 
     private var viewModel = ReadTodoViewModel()
     private var searchController: UISearchController!
     private var refreshControl: UIRefreshControl!
 
-    typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>
+    private var filterButton: UIBarButtonItem!
+    private var searchButton: UIBarButtonItem!
+    private var historyButton: UIBarButtonItem!
+
+    typealias ToDoSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfToDoData>
 
     private var dataSource: ToDoSectionDataSource!
 
@@ -41,14 +42,14 @@ extension ReadToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        viewModel.requestGETTodos(completion: {
-            self.tableView.reloadData()
-        })
     }
 
     override func viewWillAppear(_ animated: Bool) {
         view.backgroundColor = .white
         navigationController?.navigationBar.backgroundColor = .white
+        viewModel.requestGETTodos(completion: {
+            self.tableView.reloadData()
+        })
     }
 }
 
@@ -60,6 +61,7 @@ extension ReadToDoVC {
         confirmDatasource()
         confirmTableView()
         confirmRefreshControl()
+        confirmNavigationBarItem()
         //        confirmSearchVC()
 
         /// 화면 터치시, 키보드 내리기
@@ -139,6 +141,16 @@ extension ReadToDoVC {
     private func confirmRefreshControl() {
         refreshControl = UIRefreshControl()
         tableView.refreshControl = refreshControl
+    }
+
+    private func confirmNavigationBarItem() {
+        filterButton = UIBarButtonItem(image: UIImage(systemName: "slider.horizontal.3"), style: .plain, target: self, action: nil)
+        searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: nil)
+        historyButton = UIBarButtonItem(image: UIImage(systemName: "bell"), style: .plain, target: self, action: nil)
+
+        navigationController?.navigationBar.tintColor = .black
+        navigationController?.navigationBar.backgroundColor = .clear
+        navigationItem.rightBarButtonItems = [historyButton, searchButton, filterButton]
     }
 
 //    private func confirmSearchVC() {
@@ -297,7 +309,7 @@ extension ReadToDoVC {
 
                 // SectionOfCustomData 생성
                 return sortedKeys.map { key in
-                    SectionOfCustomData(header: key, items: groupedDictionary[key] ?? [])
+                    SectionOfToDoData(header: key, items: groupedDictionary[key] ?? [])
                 }
             }
             .bind(to: tableView.rx.items(dataSource: dataSource))

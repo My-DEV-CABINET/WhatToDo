@@ -21,7 +21,6 @@ final class ToDoCell: UITableViewCell {
     @IBOutlet weak var baseView: UIView!
     @IBOutlet weak var checkButton: UIButton!
     
-    /// CheckHandler 방식 변경 필요
     var checkActionObservable: Observable<(id: Int, isDone: Bool)> = Observable.empty()
     var disposeBag = DisposeBag()
    
