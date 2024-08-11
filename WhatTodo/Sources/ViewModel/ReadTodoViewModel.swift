@@ -18,11 +18,24 @@ import Foundation
 
 final class ReadTodoViewModel {
     var todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
+    var searchModeRelay: BehaviorRelay<Bool> = .init(value: false)
+
+    /// 페이지네이션 이벤트 처리
+    let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
+
+    /// 페이지네이션 이벤트 유효성 검사
+    var validPagination: Driver<Bool> {
+        return paginationRelay
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: false)
+    }
+
     var disposeBag = DisposeBag()
 
     var dbManager = DBManager(read: .all)
 
     private var todos: [ToDoData] = []
+    var searchText: String? = nil
 
     /// API Query
     var page = 1
@@ -34,16 +47,6 @@ final class ReadTodoViewModel {
     var perPage = 10
     var isDone: String {
         return SettingManager.shared.done
-    }
-
-    /// 페이지네이션 이벤트 처리
-    let paginationRelay: BehaviorRelay<Bool> = .init(value: false)
-
-    /// 페이지네이션 이벤트 유효성 검사
-    var validPagination: Driver<Bool> {
-        return paginationRelay
-            .distinctUntilChanged()
-            .asDriver(onErrorJustReturn: false)
     }
 
     /// Parameters 분기처리 - 보기옵션에 따라 API 요청 변경

@@ -22,7 +22,6 @@ final class ReadToDoVC: UIViewController {
     @IBOutlet weak var addButton: UIButton!
 
     private var viewModel = ReadTodoViewModel()
-    private var searchController: UISearchController!
     private var refreshControl: UIRefreshControl!
 
     private var filterButton: UIBarButtonItem!
@@ -47,9 +46,25 @@ extension ReadToDoVC {
     override func viewWillAppear(_ animated: Bool) {
         view.backgroundColor = .white
         navigationController?.navigationBar.backgroundColor = .white
-        viewModel.requestGETTodos(completion: {
-            self.tableView.reloadData()
-        })
+        viewModel.searchModeRelay
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { (owner, searchMode) in
+                owner.filterButton.isHidden = !searchMode
+                if !searchMode {
+                    // SearchMode 가 아닐 때,
+                    owner.viewModel.requestGETTodos(completion: {
+                        owner.tableView.reloadData()
+                    })
+                } else {
+                    guard let searchText = owner.viewModel.searchText else { return }
+                    owner.viewModel.searchTodo(query: searchText, completion: { _ in
+                        owner.tableView.reloadData()
+                    })
+                }
+
+            })
+            .disposed(by: viewModel.disposeBag)
     }
 }
 
@@ -381,14 +396,27 @@ extension ReadToDoVC {
 
                 if currentIndex == totalItemsCount - 2 {
                     viewModel.increasePage()
-                    customQueue.async {
-                        self.viewModel.requestMoreTodos { valid in
-                            DispatchQueue.main.async {
+                    if !self.viewModel.searchModeRelay.value {
+                        // Search 모드가 아닐 때,
+                        customQueue.async {
+                            self.viewModel.requestMoreTodos { valid in
+                                DispatchQueue.main.async {
+                                    if !valid {
+                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
+                                        self.viewModel.paginationRelay.accept(true)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        guard let searchText = self.viewModel.searchText else { return }
+                        customQueue.async {
+                            self.viewModel.requestMoreQueryTodos(query: searchText, completion: { valid in
                                 if !valid {
                                     self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
                                     self.viewModel.paginationRelay.accept(true)
                                 }
-                            }
+                            })
                         }
                     }
                 }
@@ -417,73 +445,25 @@ extension ReadToDoVC {
             })
             .disposed(by: viewModel.disposeBag)
     }
-
-//    private func searchBind() {
-//        /// SearchBar 입력 이벤트 처리
-//        searchVC.searchBar.rx.text
-//            .orEmpty
-//            .debounce(.milliseconds(1000), scheduler: MainScheduler.instance)
-//            .observe(on: MainScheduler.instance)
-//            .subscribe(onNext: { [weak self] text in
-//                guard let self = self else { return }
-//
-//                self.viewModel.resetPage()
-//                self.viewModel.paginationRelay.accept(false)
-//
-//                let customQueue = DispatchQueue(label: QueueCollection.search.rawValue)
-//
-//                if self.searchVC.isActive == true {
-//                    self.searchBarIsEmpty(text: text, isEmpty: text.isEmpty, queue: customQueue)
-//                }
-//            })
-//            .disposed(by: viewModel.disposeBag)
-//
-//        /// SearchBar 취소 이벤트 처리
-//        searchVC.searchBar.rx.cancelButtonClicked
-//            .observe(on: MainScheduler.instance)
-//            .subscribe(onNext: { [weak self] in
-//                guard let self = self else { return }
-//
-//                let customQueue = DispatchQueue(label: QueueCollection.searchCancel.rawValue)
-//                self.searchVC.searchBar.text = ""
-//                self.viewModel.resetPage()
-//                self.viewModel.paginationRelay.accept(false)
-//
-//                customQueue.async {
-//                    self.viewModel.requestGETTodos(completion: {})
-//                }
-//
-//                self.searchVC.searchBar.resignFirstResponder()
-//                self.tableView.setContentOffset(.zero, animated: true)
-//            })
-//            .disposed(by: viewModel.disposeBag)
-//    }
 }
 
 // MARK: - 장풍 코드 리팩토링 메서드 모음
 
 extension ReadToDoVC {
     /// 검색 결과 아무것도 없을 시, 오류 메시지 VC 표시
-    private func returnNonTodosAtSearching(todos: [ToDoData], searchBarText: String) {
-        if todos.count == 0, searchController.searchBar.isFirstResponder == true {
+    private func returnNonTodosAtSearching(todos: [ToDoData]) {
+        if todos.count == 0 {
             showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                self.searchController.searchBar.text = searchBarText
-                self.searchController.searchBar.becomeFirstResponder()
                 self.tableView.setContentOffset(.zero, animated: true)
             })
-        } else {
-            searchController.searchBar.resignFirstResponder()
         }
-
         return
     }
 
     /// Refresh Control 동작시, 오류 메시지 VC 표시
-    private func returnNonTodosAtRefreshControl(todos: [ToDoData], searchBarText: String) {
+    private func returnNonTodosAtRefreshControl(todos: [ToDoData]) {
         if todos.count == 0 {
             showBlankMessage(title: "찾은 건수 \(todos.count)개", message: "검색 결과를 찾을 수 없습니다.", completion: {
-                self.searchController.searchBar.text = searchBarText
-                self.searchController.searchBar.becomeFirstResponder()
                 self.refreshControl.endRefreshing()
                 return
             })
@@ -510,115 +490,11 @@ extension ReadToDoVC {
             }
         }
     }
-
-    /// SearchBar가 빈칸일 때, 분기 처리
-    private func searchBarIsNone(text: String, queue: DispatchQueue) {
-        if text != "" {
-            /// 검색 중 + 빈칸이 아닐 때
-            queue.async {
-                self.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-
-                    DispatchQueue.main.async {
-                        self?.returnNonTodosAtRefreshControl(todos: todos, searchBarText: text)
-                    }
-                })
-                self.viewModel.paginationRelay.accept(false)
-            }
-        } else {
-            /// 검색 중 + 빈칸일 때
-            refreshControl.endRefreshing()
-        }
-    }
-
-    /// SearchBar가 공백일 때, 분기 처리
-    private func searchBarIsEmpty(text: String, isEmpty: Bool, queue: DispatchQueue) {
-        if isEmpty == false {
-            queue.async {
-                self.viewModel.searchTodo(query: text, completion: { [weak self] todos in
-                    guard let self = self else { return }
-
-                    DispatchQueue.main.async {
-                        self.returnNonTodosAtSearching(todos: todos, searchBarText: text)
-                    }
-                })
-            }
-        } else {
-            queue.async {
-                self.viewModel.requestGETTodos(completion: {
-                    DispatchQueue.main.async {
-                        self.tableView.setContentOffset(.zero, animated: true)
-                    }
-                })
-            }
-        }
-    }
-
-    /// 페이징 처리 요청시, SearchBar가 빈칸일 때, 분기 처리
-    private func searchBarIsNoneWhenPaging(text: String, queue: DispatchQueue) {
-        if text != "" {
-            queue.asyncAfter(deadline: .now() + 0.5) {
-                self.viewModel.requestMoreQueryTodos(query: text) { valid in
-                    self.arriveAtLastPage(valid: valid)
-                }
-            }
-        } else {
-            queue.asyncAfter(deadline: .now() + 0.5) {
-                self.viewModel.requestMoreTodos { valid in
-                    self.arriveAtLastPage(valid: valid)
-                }
-            }
-        }
-    }
 }
 
 // MARK: - UITableViewDelegate 처리
 
 extension ReadToDoVC: UITableViewDelegate {
-//    func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
-//        let currentOffset = scrollView.contentOffset.y
-//        let maximumOffset = scrollView.contentSize.height - scrollView.frame.size.height
-//
-//        if maximumOffset < currentOffset, currentOffset > 0 {
-//            loadMoreData()
-//        }
-//    }
-//
-//    /// 페이징 처리
-//    private func loadMoreData() {
-//        let spinner = UIActivityIndicatorView(style: .large)
-//        spinner.startAnimating()
-//        spinner.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 44)
-//        tableView.tableFooterView = spinner
-//
-//        /// True 이면, API 호출하지 않고, 조기 종료
-//        guard !viewModel.paginationRelay.value else {
-//            stopBottomIndicatorView(spinner: spinner)
-//            return
-//        }
-//
-//        guard let text = searchVC.searchBar.text else { return }
-//        let customQueue = DispatchQueue(label: QueueCollection.paging.rawValue)
-//
-//        if !viewModel.paginationRelay.value {
-//            viewModel.increasePage()
-//
-//            if searchVC.isActive == true {
-//                /// 서치바 동작 상태일 때
-//                searchBarIsNoneWhenPaging(text: text, queue: customQueue)
-//
-//            } else {
-//                /// 서치바 동작 상태 아닐 때
-//                customQueue.asyncAfter(deadline: .now() + 0.5) {
-//                    self.viewModel.requestMoreTodos { valid in
-//                        self.arriveAtLastPage(valid: valid)
-//                    }
-//                }
-//            }
-//        }
-//
-//        stopBottomIndicatorView(spinner: spinner)
-//    }
-
     /// 셀 삭제
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteAction = UIContextualAction(style: .destructive, title: "삭제") { action, view, perform in
