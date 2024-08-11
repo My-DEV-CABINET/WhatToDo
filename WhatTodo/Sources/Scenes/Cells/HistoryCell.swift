@@ -14,6 +14,12 @@ import RxSwift
 import UIKit
 
 final class HistoryCell: UITableViewCell {
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var deleteBtn: UIButton!
+
+    var deleteActionObservable: Observable<String> = .empty()
+
     var disposeBag = DisposeBag()
 }
 
@@ -26,5 +32,17 @@ extension HistoryCell {
     }
 
     /// 셀이 안 보일 때
-    override func prepareForReuse() {}
+    override func prepareForReuse() {
+        disposeBag = DisposeBag()
+    }
+
+    func configure(data: TodoHistory) {
+        titleLabel.text = data.name
+        dateLabel.text = data.created.description
+
+        deleteActionObservable = deleteBtn.rx.tap
+            .compactMap { _ in
+                return data.name
+            }
+    }
 }
