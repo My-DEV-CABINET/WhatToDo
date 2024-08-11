@@ -148,8 +148,7 @@ extension SearchToDoVC {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                if let searchText = self.searchController.searchBar.text {
-                    print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchButton 클릭!! 검색어: \(searchText)")
+                if let searchText = self.searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines), !searchText.isEmpty {
                     viewModel.createSearchHistory(searchText: searchText)
                 } else {
                     print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchButton 클릭!! 검색어가 없습니다.")
@@ -171,7 +170,6 @@ extension SearchToDoVC {
         trashButton.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: 전체 삭제 버튼 클릭!!")
                 guard let self = self else { return }
                 self.viewModel.deleteAllSearchHistory()
             })
