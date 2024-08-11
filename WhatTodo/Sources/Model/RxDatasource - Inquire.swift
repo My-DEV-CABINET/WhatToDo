@@ -13,20 +13,20 @@ import Foundation
 
 // MARK: - RxDataSource Section Model
 
-struct SectionOfInquireData {
+struct SectionOfHistoryData {
     var header: String
-    var items: [InquireHistory]
+    var items: [TodoHistory]
 
-    init(header: String, items: [InquireHistory]) {
+    init(header: String, items: [TodoHistory]) {
         self.header = header
         self.items = items
     }
 }
 
-extension SectionOfInquireData: SectionModelType {
-    typealias Item = InquireHistory
+extension SectionOfHistoryData: SectionModelType {
+    typealias Item = TodoHistory
 
-    init(original: SectionOfInquireData, items: [Item]) {
+    init(original: SectionOfHistoryData, items: [Item]) {
         self = original
         self.items = items
     }

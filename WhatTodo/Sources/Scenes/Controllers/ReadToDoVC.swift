@@ -212,7 +212,13 @@ extension ReadToDoVC {
 
                 let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
                 customQueue.async {
-                    owner.viewModel.requestGETTodos(completion: {})
+                    owner.viewModel.requestGETTodos(completion: {
+                        DispatchQueue.main.async {
+                            guard let id = owner.viewModel.todos.first?.id else { return }
+                            let name = owner.viewModel.makeTodoHistoryTitle(type: .add, id: id)
+                            owner.viewModel.createTodoHistory(name: name)
+                        }
+                    })
                 }
             })
             .disposed(by: vc.disposeBag)
@@ -456,12 +462,16 @@ extension ReadToDoVC {
                 if !searchMode {
                     // SearchMode 가 아닐 때,
                     owner.viewModel.requestGETTodos(completion: {
-                        owner.tableView.reloadData()
+                        DispatchQueue.main.async {
+                            owner.tableView.reloadData()
+                        }
                     })
                 } else {
                     guard let searchText = owner.viewModel.searchText else { return }
                     owner.viewModel.searchTodo(query: searchText, completion: { _ in
-                        owner.tableView.reloadData()
+                        DispatchQueue.main.async {
+                            owner.tableView.reloadData()
+                        }
                     })
                 }
 
@@ -528,6 +538,10 @@ extension ReadToDoVC: UITableViewDelegate {
             self.viewModel.removeTodo(data: currentItem, completion: {
                 guard let details = currentItem.title else { return }
                 UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)
+                DispatchQueue.main.async {
+                    let name = self.viewModel.makeTodoHistoryTitle(type: .delete, id: id)
+                    self.viewModel.createTodoHistory(name: name)
+                }
             })
         }
 

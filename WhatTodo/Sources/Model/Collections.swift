@@ -78,6 +78,7 @@ enum StoryBoardCollection {
     }
 }
 
+/// Identifier 모음
 enum IdentifierCollection: String {
     case todoCell = "ToDoCell"
     case headerView = "HeaderView"
@@ -85,7 +86,14 @@ enum IdentifierCollection: String {
     case historyCell = "HistoryCell"
 }
 
+/// UserAction  모음
 enum UserActionCollection {
     case add /// 데이터 추가
     case edit /// 데이터 편집
+}
+
+/// History Type 모음
+enum HistoryTypeCollection {
+    case add
+    case delete
 }

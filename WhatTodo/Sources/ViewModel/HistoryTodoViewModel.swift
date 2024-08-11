@@ -14,5 +14,25 @@ import RxSwift
 import Foundation
 
 final class HistoryTodoViewModel {
-    //
+    var dbManager = DBManager(read: .todoHistory)
+
+    var historyBehaviorSubject: BehaviorSubject<[TodoHistory]> = .init(value: [])
+    var editRealy = BehaviorRelay(value: false)
+
+    var disposeBag = DisposeBag()
+    
+    func fetchTodoHistory() {
+        let todoHistories = dbManager.todoHistories
+        historyBehaviorSubject.onNext(todoHistories)
+    }
+    
+    func deleteTodoHistory(name: String) {
+        dbManager.deleteTodoHistory(name: name)
+        historyBehaviorSubject.onNext(dbManager.todoHistories)
+    }
+    
+    func updateAllTodoHistory() {
+        dbManager.updateAllTodoHistory()
+        historyBehaviorSubject.onNext(dbManager.todoHistories)
+    }
 }

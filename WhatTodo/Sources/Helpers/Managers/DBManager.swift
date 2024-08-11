@@ -19,10 +19,6 @@ enum ReadDataType {
 }
 
 final class DBManager {
-    // Todo - 1 : 검색어 입력 저장(C, R, D)
-    // Todo - 2 : Todo 할일 처리 내역 저장(C, R, D)
-    // Todo - 3 : 조회 처리(C, R, D)
-
     init(read: ReadDataType) {
         switch read {
         case .todoHistory:
@@ -116,15 +112,37 @@ extension DBManager {
             try realm.write {
                 realm.add(todoHistory)
             }
+            readTodoHistories()
         } catch {
             print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: TodoHistory 데이터를 저장하는데 실패하였습니다.")
         }
     }
 
-    func deleteTodoHistory(todoHistory: TodoHistory) {
+    // 할일 내역 알림 읽음 처리
+    func updateAllTodoHistory() {
         do {
             try realm.write {
-                realm.delete(todoHistory)
+                let allTodoHistory = realm.objects(TodoHistory.self)
+
+                for todoHistory in allTodoHistory {
+                    todoHistory.isRead = true
+                }
+            }
+            readTodoHistories()
+        } catch {
+            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: TodoHistory 전체 데이터를 읽음 변경하는데 실패하였습니다.")
+        }
+    }
+
+    func deleteTodoHistory(name: String) {
+        do {
+            if let todoHistory = realm.objects(TodoHistory.self).filter("name == %@", name).first {
+                try realm.write {
+                    realm.delete(todoHistory)
+                }
+                readTodoHistories()
+            } else {
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: 해당 Name을 가진 TodoHistory 데이터를 찾을 수 없습니다.")
             }
         } catch {
             print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: TodoHistory 데이터를 삭제하는데 실패하였습니다.")

@@ -13,7 +13,7 @@ import RxSwift
 import UIKit
 
 final class HistoryToDoVC: UIViewController {
-    typealias InquireSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfInquireData>
+    typealias HistorySectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfHistoryData>
 
     @IBOutlet weak var tableView: UITableView!
 
@@ -22,7 +22,7 @@ final class HistoryToDoVC: UIViewController {
 
     var viewModel = HistoryTodoViewModel()
 
-    private var dataSource: InquireSectionDataSource!
+    private var dataSource: HistorySectionDataSource!
 
     private var disposeBag = DisposeBag()
 }
@@ -34,6 +34,9 @@ extension HistoryToDoVC {
         super.viewDidLoad()
         setupUI()
         bind()
+
+        viewModel.fetchTodoHistory()
+        viewModel.updateAllTodoHistory()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -53,11 +56,23 @@ extension HistoryToDoVC {
     }
 
     private func confirmDatasource() {
-        dataSource = InquireSectionDataSource(
+        dataSource = HistorySectionDataSource(
             configureCell: { datasource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: IdentifierCollection.historyCell.rawValue, for: indexPath) as? HistoryCell else { return UITableViewCell() }
 
-                cell.backgroundColor = .clear
+                cell.deleteActionObservable
+                    .withUnretained(self)
+                    .observe(on: MainScheduler.asyncInstance)
+                    .subscribe { (owner, name) in
+                        owner.viewModel.deleteTodoHistory(name: name)
+                    }
+                    .disposed(by: cell.disposeBag)
+
+                let editMode = self.viewModel.editRealy.value
+                cell.configure(data: item, editMode: editMode)
+
+                cell.backgroundColor = .white
+                cell.selectionStyle = .none
                 return cell
             })
 
@@ -86,12 +101,12 @@ extension HistoryToDoVC {
 
     private func confirmNavigationBar() {
         editButton = UIBarButtonItem(title: "편집", style: .plain, target: self, action: nil)
+        navigationItem.rightBarButtonItem = editButton
 
         let backImage = UIImage(systemName: "chevron.left")
         backButton = UIBarButtonItem(image: backImage, style: .plain, target: self, action: nil)
 
         navigationItem.leftBarButtonItem = backButton
-        navigationItem.rightBarButtonItem = editButton
     }
 }
 
@@ -99,7 +114,39 @@ extension HistoryToDoVC {
 
 extension HistoryToDoVC {
     private func bind() {
+        viewModelBind()
+        tableViewBind()
         navigationBarBind()
+    }
+
+    private func viewModelBind() {
+        viewModel.historyBehaviorSubject
+            .map { todoHistories in
+                guard !todoHistories.isEmpty else {
+                    return [SectionOfHistoryData(header: "할일 내역", items: [])]
+                }
+                
+                let sortedKeys = todoHistories.sorted(by: { $0.created > $1.created })
+
+                return [SectionOfHistoryData(header: "할일 내역", items: sortedKeys)]
+            }
+            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: viewModel.disposeBag)
+
+        viewModel.editRealy
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe { (owner, editMode) in
+                let newTitle = editMode ? "완료" : "편집"
+                owner.editButton.title = newTitle
+                owner.tableView.reloadData()
+            }
+            .disposed(by: viewModel.disposeBag)
+    }
+
+    private func tableViewBind() {
+        tableView.rx.setDelegate(self)
+            .disposed(by: viewModel.disposeBag)
     }
 
     private func navigationBarBind() {
@@ -107,7 +154,8 @@ extension HistoryToDoVC {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: 편집 버튼 눌렀다!!")
+                let currentEditStatus = self.viewModel.editRealy.value
+                self.viewModel.editRealy.accept(!currentEditStatus)
             })
             .disposed(by: disposeBag)
 
@@ -118,5 +166,13 @@ extension HistoryToDoVC {
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
+    }
+}
+
+// MARK: - UITableViewDelegate
+
+extension HistoryToDoVC: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
     }
 }

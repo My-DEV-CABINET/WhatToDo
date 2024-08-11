@@ -35,10 +35,7 @@ extension SearchToDoVC {
         bind()
 
         viewModel.fetchSearchHistory()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+        searchController.searchBar.becomeFirstResponder()
     }
 }
 
@@ -138,14 +135,9 @@ extension SearchToDoVC {
             .withUnretained(self)
             .observe(on: MainScheduler.instance)
             .bind { (owner, indexPath) in
-                do {
-                    let histories = try owner.viewModel.searchBehaviorSubject.value()
-                    let history = histories[indexPath.row]
-                    print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(history.name)")
-                    owner.pushReadTodoVC(searchText: history.name)
-                } catch {
-                    print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: ViewModel의 SearchBehaviorSubject로부터 검색 내역을 불러오는데 실패하였습니다.")
-                }
+                let currentSection = owner.dataSource.sectionModels[indexPath.section]
+                let currentItem = currentSection.items[indexPath.row]
+                owner.pushReadTodoVC(searchText: currentItem.name)
             }
             .disposed(by: viewModel.disposeBag)
     }

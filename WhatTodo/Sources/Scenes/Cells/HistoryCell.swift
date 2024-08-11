@@ -36,9 +36,10 @@ extension HistoryCell {
         disposeBag = DisposeBag()
     }
 
-    func configure(data: TodoHistory) {
+    func configure(data: TodoHistory, editMode: Bool) {
         titleLabel.text = data.name
         dateLabel.text = data.created.description
+        deleteBtn.isHidden = !editMode
 
         deleteActionObservable = deleteBtn.rx.tap
             .compactMap { _ in

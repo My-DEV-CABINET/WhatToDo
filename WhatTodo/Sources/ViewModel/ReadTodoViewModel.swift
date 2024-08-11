@@ -29,7 +29,7 @@ final class ReadTodoViewModel {
 
     var dbManager = DBManager(read: .all)
 
-    private var todos: [ToDoData] = []
+    var todos: [ToDoData] = []
     var searchText: String?
 
     /// API Query
@@ -395,6 +395,23 @@ final class ReadTodoViewModel {
                 completion(false)
                 print("#### Search Pagination Error: \(error.isResponseSerializationError)")
             }
+        }
+    }
+}
+
+// MARK: - DB: 할일 내역 생성
+
+extension ReadTodoViewModel {
+    func createTodoHistory(name: String) {
+        dbManager.createTodoHistory(name: name, createdDate: Date.now)
+    }
+
+    func makeTodoHistoryTitle(type: HistoryTypeCollection, id: Int) -> String {
+        switch type {
+        case .add:
+            return "알림: \(id)번 할일을 추가하였습니다."
+        case .delete:
+            return "알림: \(id)번 할일을 삭제하였습니다."
         }
     }
 }
