@@ -20,6 +20,8 @@ final class HistoryToDoVC: UIViewController {
     private var editButton: UIBarButtonItem!
     private var backButton: UIBarButtonItem!
 
+    var viewModel = HistoryTodoViewModel()
+
     private var dataSource: InquireSectionDataSource!
 
     private var disposeBag = DisposeBag()

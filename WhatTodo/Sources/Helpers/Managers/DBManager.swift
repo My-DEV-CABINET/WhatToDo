@@ -11,15 +11,31 @@ import RealmSwift
 /// Apple
 import Foundation
 
+enum ReadDataType {
+    case todoHistory // Todo 처리 내역
+    case searchHistory // 검색결과 처리 내역
+    case inquireHistory // 조회 결과 처리 내역
+    case all // 전부 조회
+}
+
 final class DBManager {
     // Todo - 1 : 검색어 입력 저장(C, R, D)
     // Todo - 2 : Todo 할일 처리 내역 저장(C, R, D)
     // Todo - 3 : 조회 처리(C, R, D)
 
-    init() {
-        readTodoHistories()
-        readSearchHistories()
-        readInquireHistories()
+    init(read: ReadDataType) {
+        switch read {
+        case .todoHistory:
+            readTodoHistories()
+        case .searchHistory:
+            readSearchHistories()
+        case .inquireHistory:
+            readInquireHistories()
+        case .all:
+            readTodoHistories()
+            readSearchHistories()
+            readSearchHistories()
+        }
     }
 
     let realm = try! Realm()
@@ -45,22 +61,42 @@ extension DBManager {
     func createSearchHistory(name: String, createdDate: Date) {
         let searchHistory = SearchHistory(value: ["name": name, "created": createdDate])
 
-        do {
-            try realm.write {
-                realm.add(searchHistory)
+        if !searchHistories.contains(where: { $0.name == name }) {
+            do {
+                try realm.write {
+                    realm.add(searchHistory)
+                }
+                readSearchHistories()
+            } catch {
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchHistory 데이터를 저장하는데 실패하였습니다.")
             }
-        } catch {
-            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchHistory 데이터를 저장하는데 실패하였습니다.")
         }
     }
 
-    func deleteSearchHistory(searchHistory: SearchHistory) {
+    func deleteSearchHistory(name: String) {
         do {
-            try realm.write {
-                realm.delete(searchHistory)
+            if let searchHistory = realm.objects(SearchHistory.self).filter("name == %@", name).first {
+                try realm.write {
+                    realm.delete(searchHistory)
+                }
+                readSearchHistories()
+            } else {
+                print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: 해당 todoID를 가진 InquireHistory 데이터를 찾을 수 없습니다.")
             }
         } catch {
             print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchHistory 데이터를 삭제하는데 실패하였습니다.")
+        }
+    }
+
+    func deleteAllSearhHistory() {
+        do {
+            try realm.write {
+                let allSearchHistory = realm.objects(SearchHistory.self)
+                realm.delete(allSearchHistory)
+            }
+            readSearchHistories()
+        } catch {
+            print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchHistory 데이터 전체 삭제하는데 실패하였습니다.")
         }
     }
 }

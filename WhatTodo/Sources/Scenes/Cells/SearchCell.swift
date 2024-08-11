@@ -14,6 +14,10 @@ import RxSwift
 import UIKit
 
 final class SearchCell: UITableViewCell {
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var deleteBtn: UIButton!
+
+    var deleteActionObservable: Observable<Void> = Observable.empty()
     var disposeBag = DisposeBag()
 }
 
@@ -26,5 +30,13 @@ extension SearchCell {
     }
 
     /// 셀이 안 보일 때
-    override func prepareForReuse() {}
+    override func prepareForReuse() {
+        disposeBag = DisposeBag()
+    }
+
+    func configure(data: SearchHistory) {
+        titleLabel.text = data.name
+
+        deleteActionObservable = deleteBtn.rx.tap.asObservable()
+    }
 }

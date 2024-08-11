@@ -20,7 +20,7 @@ final class ReadTodoViewModel {
     var todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
     var disposeBag = DisposeBag()
 
-    var dbManager = DBManager()
+    var dbManager = DBManager(read: .all)
 
     private var todos: [ToDoData] = []
 
