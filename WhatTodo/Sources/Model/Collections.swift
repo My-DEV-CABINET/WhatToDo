@@ -20,6 +20,7 @@ enum QueueCollection: String {
 
 /// ViewController Identifier 모음
 enum ViewControllerCollection {
+    case read
     case filter
     case create
     case update
@@ -29,6 +30,8 @@ enum ViewControllerCollection {
 
     var id: String {
         switch self {
+        case .read:
+            return "ReadToDoVC"
         case .filter:
             return "FilterToDoVC"
         case .create:
@@ -47,6 +50,7 @@ enum ViewControllerCollection {
 
 /// StoryBoard Identifier 모음
 enum StoryBoardCollection {
+    case read
     case filter
     case create
     case update
@@ -56,6 +60,8 @@ enum StoryBoardCollection {
 
     var id: String {
         switch self {
+        case .read:
+            return "ReadTodo"
         case .filter:
             return "FilterTodo"
         case .create:

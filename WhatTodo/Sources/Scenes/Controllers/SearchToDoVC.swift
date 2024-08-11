@@ -24,8 +24,6 @@ final class SearchToDoVC: UIViewController {
     private var viewModel = SearchTodoViewModel()
 
     private var dataSource: SearchSectionDataSource!
-
-    private var disposeBag = DisposeBag()
 }
 
 // MARK: - View Life Cycle
@@ -37,6 +35,10 @@ extension SearchToDoVC {
         bind()
 
         viewModel.fetchSearchHistory()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
 }
 
@@ -116,6 +118,8 @@ extension SearchToDoVC {
     }
 }
 
+// MARK: - Binding
+
 extension SearchToDoVC {
     private func bind() {
         tableViewBind()
@@ -127,7 +131,23 @@ extension SearchToDoVC {
     private func tableViewBind() {
         /// TableView Delegate
         tableView.rx.setDelegate(self)
-            .disposed(by: disposeBag)
+            .disposed(by: viewModel.disposeBag)
+
+        /// 셀 선택
+        tableView.rx.itemSelected
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .bind { (owner, indexPath) in
+                do {
+                    let histories = try owner.viewModel.searchBehaviorSubject.value()
+                    let history = histories[indexPath.row]
+                    print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: \(history.name)")
+                    owner.pushReadTodoVC(searchText: history.name)
+                } catch {
+                    print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: ViewModel의 SearchBehaviorSubject로부터 검색 내역을 불러오는데 실패하였습니다.")
+                }
+            }
+            .disposed(by: viewModel.disposeBag)
     }
 
     private func rxDatasourceBind() {
@@ -150,12 +170,13 @@ extension SearchToDoVC {
                 guard let self = self else { return }
                 if let searchText = self.searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines), !searchText.isEmpty {
                     viewModel.createSearchHistory(searchText: searchText)
+                    self.pushReadTodoVC()
                 } else {
                     print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: SearchButton 클릭!! 검색어가 없습니다.")
                 }
                 self.searchController.searchBar.text = ""
             })
-            .disposed(by: disposeBag)
+            .disposed(by: viewModel.disposeBag)
     }
 
     private func navigationBarBind() {
@@ -163,9 +184,9 @@ extension SearchToDoVC {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.navigationController?.popViewController(animated: true)
+                self.navigationController?.popToRootViewController(animated: true)
             })
-            .disposed(by: disposeBag)
+            .disposed(by: viewModel.disposeBag)
 
         trashButton.rx.tap
             .asDriver()
@@ -173,7 +194,7 @@ extension SearchToDoVC {
                 guard let self = self else { return }
                 self.viewModel.deleteAllSearchHistory()
             })
-            .disposed(by: disposeBag)
+            .disposed(by: viewModel.disposeBag)
     }
 }
 
@@ -182,5 +203,28 @@ extension SearchToDoVC {
 extension SearchToDoVC: UITableViewDelegate {
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
+    }
+}
+
+// MARK: - 화면 이동 메서드
+
+extension SearchToDoVC {
+    private func pushReadTodoVC() {
+        let sb: UIStoryboard = .init(name: StoryBoardCollection.read.id, bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.read.id) as? ReadToDoVC else { return }
+        guard let searchText = searchController.searchBar.text else { return }
+        vc.viewModel.searchText = searchText
+        vc.viewModel.searchModeRelay.accept(true)
+
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    private func pushReadTodoVC(searchText: String) {
+        let sb: UIStoryboard = .init(name: StoryBoardCollection.read.id, bundle: nil)
+        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.read.id) as? ReadToDoVC else { return }
+        vc.viewModel.searchText = searchText
+        vc.viewModel.searchModeRelay.accept(true)
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -21,9 +21,10 @@ final class ReadToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
 
-    private var viewModel = ReadTodoViewModel()
+    var viewModel = ReadTodoViewModel()
     private var refreshControl: UIRefreshControl!
 
+    private var backButton: UIBarButtonItem!
     private var filterButton: UIBarButtonItem!
     private var searchButton: UIBarButtonItem!
     private var historyButton: UIBarButtonItem!
@@ -46,25 +47,10 @@ extension ReadToDoVC {
     override func viewWillAppear(_ animated: Bool) {
         view.backgroundColor = .white
         navigationController?.navigationBar.backgroundColor = .white
-        viewModel.searchModeRelay
-            .withUnretained(self)
-            .observe(on: MainScheduler.asyncInstance)
-            .subscribe(onNext: { (owner, searchMode) in
-                owner.filterButton.isHidden = !searchMode
-                if !searchMode {
-                    // SearchMode 가 아닐 때,
-                    owner.viewModel.requestGETTodos(completion: {
-                        owner.tableView.reloadData()
-                    })
-                } else {
-                    guard let searchText = owner.viewModel.searchText else { return }
-                    owner.viewModel.searchTodo(query: searchText, completion: { _ in
-                        owner.tableView.reloadData()
-                    })
-                }
+    }
 
-            })
-            .disposed(by: viewModel.disposeBag)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
     }
 }
 
@@ -77,7 +63,6 @@ extension ReadToDoVC {
         confirmTableView()
         confirmRefreshControl()
         confirmNavigationBarItem()
-        //        confirmSearchVC()
 
         /// 화면 터치시, 키보드 내리기
         hideKeyboardWhenTappedAround()
@@ -163,6 +148,11 @@ extension ReadToDoVC {
         searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: nil)
         historyButton = UIBarButtonItem(image: UIImage(systemName: "bell"), style: .plain, target: self, action: nil)
 
+        let backImage = UIImage(systemName: "chevron.left")
+        backButton = UIBarButtonItem(image: backImage, style: .plain, target: self, action: nil)
+
+        navigationItem.leftBarButtonItem = backButton
+
         navigationController?.navigationBar.tintColor = .black
         navigationController?.navigationBar.backgroundColor = .clear
         navigationItem.rightBarButtonItems = [historyButton, searchButton, filterButton]
@@ -237,7 +227,6 @@ extension ReadToDoVC {
     private func pushSearchVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.search.id, bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.search.id) as? SearchToDoVC else { return }
-        // TODO: SearchVC ViewModel 작업
 
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -257,12 +246,20 @@ extension ReadToDoVC {
 extension ReadToDoVC {
     private func bind() {
         viewBind()
+        viewModelBind()
         rxDatasourceBind()
         tableViewBind()
-        //        searchBind()
     }
 
     private func viewBind() {
+        backButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.navigationController?.popToRootViewController(animated: true)
+            })
+            .disposed(by: viewModel.disposeBag)
+
         /// Add 버튼 클릭시, AddVC 로 화면이동
         addButton.rx.tap
             .asDriver()
@@ -384,6 +381,7 @@ extension ReadToDoVC {
 
         /// 페이징 처리
         tableView.rx.willDisplayCell
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] cell, indexPath in
                 guard let self = self else { return }
                 guard !viewModel.paginationRelay.value else { return } /// True 이면, API 호출하지 않고, 조기 종료
@@ -401,7 +399,7 @@ extension ReadToDoVC {
                         customQueue.async {
                             self.viewModel.requestMoreTodos { valid in
                                 DispatchQueue.main.async {
-                                    if !valid {
+                                    if !valid, totalItemsCount > 10 {
                                         self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
                                         self.viewModel.paginationRelay.accept(true)
                                     }
@@ -412,9 +410,11 @@ extension ReadToDoVC {
                         guard let searchText = self.viewModel.searchText else { return }
                         customQueue.async {
                             self.viewModel.requestMoreQueryTodos(query: searchText, completion: { valid in
-                                if !valid {
-                                    self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
-                                    self.viewModel.paginationRelay.accept(true)
+                                DispatchQueue.main.async {
+                                    if !valid, totalItemsCount > 10 {
+                                        self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
+                                        self.viewModel.paginationRelay.accept(true)
+                                    }
                                 }
                             })
                         }
@@ -425,7 +425,7 @@ extension ReadToDoVC {
 
         /// TableView RefreshControl 이벤트 처리
         refreshControl.rx.controlEvent(.valueChanged)
-            .observe(on: ConcurrentDispatchQueueScheduler(qos: .utility))
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 DispatchQueue.main.async {
                     guard let self = self else { return }
@@ -442,6 +442,29 @@ extension ReadToDoVC {
                         })
                     }
                 }
+            })
+            .disposed(by: viewModel.disposeBag)
+    }
+
+    private func viewModelBind() {
+        viewModel.searchModeRelay
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { (owner, searchMode) in
+                owner.backButton.isHidden = !searchMode
+
+                if !searchMode {
+                    // SearchMode 가 아닐 때,
+                    owner.viewModel.requestGETTodos(completion: {
+                        owner.tableView.reloadData()
+                    })
+                } else {
+                    guard let searchText = owner.viewModel.searchText else { return }
+                    owner.viewModel.searchTodo(query: searchText, completion: { _ in
+                        owner.tableView.reloadData()
+                    })
+                }
+
             })
             .disposed(by: viewModel.disposeBag)
     }
@@ -484,10 +507,8 @@ extension ReadToDoVC {
     /// 마지막 페이지 도달시, AlertVC 표시
     private func arriveAtLastPage(valid: Bool) {
         if !valid {
-            DispatchQueue.main.async {
-                self.pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
-                self.viewModel.paginationRelay.accept(true)
-            }
+            pushAlertVC(title: "알림⚠️", detail: "마지막 페이지에 도달했습니다.", image: "book.pages")
+            viewModel.paginationRelay.accept(true)
         }
     }
 }
