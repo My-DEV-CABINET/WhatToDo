@@ -18,6 +18,7 @@ import Foundation
 
 final class ReadTodoViewModel {
     var todoBehaviorSubject: BehaviorSubject<[ToDoData]> = .init(value: [])
+    var unReadMessageRealy: BehaviorRelay<Bool> = .init(value: false) // 안 읽은 메시지 존재 유무 이벤트
 
     /// 검색 모드 이벤트 처리
     var searchModeRelay: BehaviorRelay<Bool> = .init(value: false)
@@ -404,6 +405,11 @@ final class ReadTodoViewModel {
 extension ReadTodoViewModel {
     func createTodoHistory(name: String) {
         dbManager.createTodoHistory(name: name, createdDate: Date.now)
+    }
+
+    func checkUnreadMessage() {
+        let result = dbManager.todoHistories.filter { $0.isRead == false }.count > 0
+        unReadMessageRealy.accept(result)
     }
 
     func makeTodoHistoryTitle(type: HistoryTypeCollection, id: Int) -> String {

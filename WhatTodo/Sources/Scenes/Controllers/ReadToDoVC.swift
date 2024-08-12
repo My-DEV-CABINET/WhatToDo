@@ -47,6 +47,7 @@ extension ReadToDoVC {
     override func viewWillAppear(_ animated: Bool) {
         view.backgroundColor = .white
         navigationController?.navigationBar.backgroundColor = .white
+        viewModel.checkUnreadMessage()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -217,6 +218,7 @@ extension ReadToDoVC {
                             guard let id = owner.viewModel.todos.first?.id else { return }
                             let name = owner.viewModel.makeTodoHistoryTitle(type: .add, id: id)
                             owner.viewModel.createTodoHistory(name: name)
+                            owner.viewModel.checkUnreadMessage()
                         }
                     })
                 }
@@ -477,6 +479,22 @@ extension ReadToDoVC {
 
             })
             .disposed(by: viewModel.disposeBag)
+
+        viewModel.unReadMessageRealy
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe { (owner, unread) in
+                if !unread {
+                    owner.historyButton.image = UIImage(systemName: "bell")
+
+                } else {
+                    // 심볼의 설정
+                    let symbolConfiguration = UIImage.SymbolConfiguration(paletteColors: [.red, .black])
+                    let multicolorSymbol = UIImage(systemName: "bell.badge")?.applyingSymbolConfiguration(symbolConfiguration)
+                    owner.historyButton.image = multicolorSymbol
+                }
+            }
+            .disposed(by: viewModel.disposeBag)
     }
 }
 
@@ -541,6 +559,7 @@ extension ReadToDoVC: UITableViewDelegate {
                 DispatchQueue.main.async {
                     let name = self.viewModel.makeTodoHistoryTitle(type: .delete, id: id)
                     self.viewModel.createTodoHistory(name: name)
+                    self.viewModel.checkUnreadMessage()
                 }
             })
         }
