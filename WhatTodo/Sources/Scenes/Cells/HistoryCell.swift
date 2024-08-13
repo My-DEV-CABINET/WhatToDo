@@ -38,7 +38,7 @@ extension HistoryCell {
 
     func configure(data: TodoHistory, editMode: Bool) {
         titleLabel.text = data.name
-        dateLabel.text = data.created.description
+        dateLabel.text = data.created.conversionFromDayToPeriod()
         deleteBtn.isHidden = !editMode
 
         deleteActionObservable = deleteBtn.rx.tap
