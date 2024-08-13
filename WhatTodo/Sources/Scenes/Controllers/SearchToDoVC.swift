@@ -16,6 +16,7 @@ final class SearchToDoVC: UIViewController {
     typealias SearchSectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfSearchData>
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var emptyLabel: UILabel!
 
     private var searchController: UISearchController!
     private var trashButton: UIBarButtonItem!
@@ -151,6 +152,22 @@ extension SearchToDoVC {
                 return [SectionOfSearchData(header: "최근 검색내역", items: sortedKeys)]
             }
             .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: viewModel.disposeBag)
+
+        viewModel.searchBehaviorSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .subscribe { (owner, searchs) in
+                if searchs.count <= 0 {
+                    DispatchQueue.main.async {
+                        owner.emptyLabel.isHidden = false
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        owner.emptyLabel.isHidden = true
+                    }
+                }
+            }
             .disposed(by: viewModel.disposeBag)
     }
 

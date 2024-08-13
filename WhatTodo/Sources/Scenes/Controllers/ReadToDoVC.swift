@@ -20,7 +20,7 @@ final class ReadToDoVC: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
-    @IBOutlet weak var blankLabel: UILabel!
+    @IBOutlet weak var emptyLabel: UILabel!
 
     var viewModel = ReadTodoViewModel()
     private var refreshControl: UIRefreshControl!
@@ -186,7 +186,7 @@ extension ReadToDoVC {
             .subscribe { (owner, _) in
                 owner.viewModel.paginationRelay.accept(false)
                 owner.viewModel.resetPage()
-                owner.viewModel.requestGETTodos(completion: { _ in })
+                owner.viewModel.requestGETTodos(completion: {})
             }
             .disposed(by: vc.disposeBag)
 
@@ -214,7 +214,7 @@ extension ReadToDoVC {
 
                 let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
                 customQueue.async {
-                    owner.viewModel.requestGETTodos(completion: { _ in
+                    owner.viewModel.requestGETTodos(completion: {
                         DispatchQueue.main.async {
                             guard let id = owner.viewModel.todos.first?.id else { return }
                             let name = owner.viewModel.makeTodoHistoryTitle(type: .add, id: id)
@@ -324,6 +324,24 @@ extension ReadToDoVC {
             }
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
+
+        viewModel.todoBehaviorSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { (owner, todos) in
+
+                if todos.count <= 0 {
+                    DispatchQueue.main.async {
+                        owner.emptyLabel.isHidden = false
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        owner.emptyLabel.isHidden = true
+                    }
+                }
+
+            })
+            .disposed(by: viewModel.disposeBag)
     }
 
     private func tableViewBind() {
@@ -360,7 +378,7 @@ extension ReadToDoVC {
                             self.tableView.setContentOffset(.zero, animated: true)
 
                             customQueue.async {
-                                self.viewModel.requestGETTodos(completion: { _ in })
+                                self.viewModel.requestGETTodos(completion: {})
                             }
                         }
                     })
@@ -443,7 +461,7 @@ extension ReadToDoVC {
                     self.viewModel.resetPage()
 
                     customQueue.async {
-                        self.viewModel.requestGETTodos(completion: { _ in
+                        self.viewModel.requestGETTodos(completion: {
                             DispatchQueue.main.async {
                                 self.refreshControl.endRefreshing()
                             }
@@ -463,36 +481,10 @@ extension ReadToDoVC {
 
                 if !searchMode {
                     // SearchMode 가 아닐 때,
-                    owner.viewModel.requestGETTodos(completion: { todos in
-
-                        if todos.isEmpty {
-                            DispatchQueue.main.async {
-                                owner.tableView.isHidden = true
-                                owner.blankLabel.isHidden = false
-                            }
-                        } else {
-                            DispatchQueue.main.async {
-                                owner.tableView.reloadData()
-                            }
-                        }
-
-                    })
+                    owner.viewModel.requestGETTodos(completion: {})
                 } else {
                     guard let searchText = owner.viewModel.searchText else { return }
-                    owner.viewModel.searchTodo(query: searchText, completion: { todos in
-
-                        if todos.isEmpty {
-                            DispatchQueue.main.async {
-                                owner.tableView.isHidden = true
-                                owner.blankLabel.isHidden = false
-                            }
-                        } else {
-                            DispatchQueue.main.async {
-                                owner.tableView.reloadData()
-                            }
-                        }
-
-                    })
+                    owner.viewModel.searchTodo(query: searchText, completion: { _ in })
                 }
 
             })

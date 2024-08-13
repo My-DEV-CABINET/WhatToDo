@@ -32,7 +32,12 @@ extension Date {
         } else {
             let hours = period / 3600 // 3600초 = 1시간
             print("#### \(Int(hours) + 9)시간 전")
-            return "\(Int(hours))시간 전"
+
+            if Int(hours) == 0 {
+                return "방금"
+            } else {
+                return "\(Int(hours))시간 전"
+            }
         }
     }
 }

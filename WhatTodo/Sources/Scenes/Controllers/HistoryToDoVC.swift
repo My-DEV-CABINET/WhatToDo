@@ -16,6 +16,7 @@ final class HistoryToDoVC: UIViewController {
     typealias HistorySectionDataSource = RxTableViewSectionedReloadDataSource<SectionOfHistoryData>
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var emptyLabel: UILabel!
 
     private var editButton: UIBarButtonItem!
     private var backButton: UIBarButtonItem!
@@ -130,6 +131,22 @@ extension HistoryToDoVC {
                 return [SectionOfHistoryData(header: "할일 내역", items: sortedKeys)]
             }
             .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: viewModel.disposeBag)
+
+        viewModel.historyBehaviorSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .subscribe { (owner, histories) in
+                if histories.count <= 0 {
+                    DispatchQueue.main.async {
+                        owner.emptyLabel.isHidden = false
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        owner.emptyLabel.isHidden = true
+                    }
+                }
+            }
             .disposed(by: viewModel.disposeBag)
 
         viewModel.editRealy
