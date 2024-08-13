@@ -20,23 +20,21 @@ extension Date {
         // 일(day) 단위로 차이 확인
         if days >= 30 {
             let months = Int(days) / 30
-            print("#### \(Int(months))달 전")
+
             return "\(Int(months))달 전"
         } else if days >= 7 {
             let weekDays = Int(days) / 7
-            print("#### \(Int(weekDays))주 전")
+
             return "\(Int(weekDays))주 전"
         } else if days >= 1 {
-            print("#### \(Int(days))일 전")
             return "\(Int(days))일 전"
         } else {
             let hours = period / 3600 // 3600초 = 1시간
-            print("#### \(Int(hours) + 9)시간 전")
 
             if Int(hours) == 0 {
                 return "방금"
             } else {
-                return "\(Int(hours))시간 전"
+                return "\(Int(hours) + 9)시간 전"
             }
         }
     }

@@ -18,7 +18,7 @@ final class SearchToDoVC: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var emptyLabel: UILabel!
 
-    private var searchController: UISearchController!
+    private var searchController = UISearchController(searchResultsController: nil)
     private var trashButton: UIBarButtonItem!
     private var backButton: UIBarButtonItem!
 
@@ -92,15 +92,16 @@ extension SearchToDoVC {
     }
 
     private func confirmSearchVC() {
-        searchController = UISearchController(searchResultsController: nil)
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.automaticallyShowsCancelButton = true
+        searchController.searchBar.isEnabled = true
+        searchController.isActive = true
 
         searchController.searchBar.placeholder = "찾고 싶은 할일을 입력해주세요."
 
+        navigationItem.titleView = searchController.searchBar
         navigationItem.hidesSearchBarWhenScrolling = false
-        navigationItem.searchController = searchController
     }
 
     private func confirmNavigationBar() {
@@ -158,6 +159,7 @@ extension SearchToDoVC {
             .withUnretained(self)
             .observe(on: MainScheduler.instance)
             .subscribe { (owner, searchs) in
+
                 if searchs.count <= 0 {
                     DispatchQueue.main.async {
                         owner.emptyLabel.isHidden = false
