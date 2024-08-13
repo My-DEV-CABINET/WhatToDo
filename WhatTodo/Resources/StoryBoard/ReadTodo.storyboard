@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="OJT-Yi-wek">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -17,6 +18,12 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="할일 내역이 없습니다." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yji-dg-O7W">
+                                <rect key="frame" x="32" y="441.33333333333331" width="329" height="38.333333333333314"/>
+                                <fontDescription key="fontDescription" type="system" weight="black" pointSize="32"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="TableView" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Vvj-Wd-D0p">
                                 <rect key="frame" x="0.0" y="103" width="393" height="715"/>
                                 <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -43,7 +50,10 @@
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Vvj-Wd-D0p" secondAttribute="trailing" id="4j0-0e-zLk"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="G25-Jr-iYu" secondAttribute="trailing" constant="30" id="9p0-RD-qpz"/>
                             <constraint firstItem="G25-Jr-iYu" firstAttribute="bottom" secondItem="vDu-zF-Fre" secondAttribute="bottom" constant="-30" id="HMB-Vs-td9"/>
+                            <constraint firstItem="yji-dg-O7W" firstAttribute="centerY" secondItem="vDu-zF-Fre" secondAttribute="centerY" id="ItN-aZ-bHJ"/>
+                            <constraint firstItem="yji-dg-O7W" firstAttribute="centerX" secondItem="vDu-zF-Fre" secondAttribute="centerX" id="R7k-Su-frc"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="Vvj-Wd-D0p" secondAttribute="bottom" id="Rqe-4A-PyU"/>
+                            <constraint firstItem="yji-dg-O7W" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="32" id="jxT-SS-CIk"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="kO4-GW-NYN"/>
                             <constraint firstItem="Vvj-Wd-D0p" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="n5N-5e-z7m"/>
                         </constraints>
@@ -51,6 +61,7 @@
                     <navigationItem key="navigationItem" id="HHv-HE-4Pi"/>
                     <connections>
                         <outlet property="addButton" destination="G25-Jr-iYu" id="sfj-BU-SWO"/>
+                        <outlet property="blankLabel" destination="yji-dg-O7W" id="GCZ-3c-Ju8"/>
                         <outlet property="tableView" destination="Vvj-Wd-D0p" id="eof-WX-eM6"/>
                     </connections>
                 </viewController>

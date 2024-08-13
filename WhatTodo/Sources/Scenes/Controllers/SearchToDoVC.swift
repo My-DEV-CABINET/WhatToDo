@@ -33,9 +33,7 @@ extension SearchToDoVC {
         super.viewDidLoad()
         setupUI()
         bind()
-
         viewModel.fetchSearchHistory()
-        searchController.searchBar.becomeFirstResponder()
     }
 }
 
@@ -97,6 +95,7 @@ extension SearchToDoVC {
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.automaticallyShowsCancelButton = true
+
         searchController.searchBar.placeholder = "찾고 싶은 할일을 입력해주세요."
 
         navigationItem.hidesSearchBarWhenScrolling = false

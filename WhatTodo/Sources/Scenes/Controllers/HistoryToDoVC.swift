@@ -36,7 +36,6 @@ extension HistoryToDoVC {
         bind()
 
         viewModel.fetchTodoHistory()
-        viewModel.updateAllTodoHistory()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -60,6 +59,9 @@ extension HistoryToDoVC {
             configureCell: { datasource, tableView, indexPath, item in
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: IdentifierCollection.historyCell.rawValue, for: indexPath) as? HistoryCell else { return UITableViewCell() }
 
+                let editMode = self.viewModel.editRealy.value
+                cell.configure(data: item, editMode: editMode)
+
                 cell.deleteActionObservable
                     .withUnretained(self)
                     .observe(on: MainScheduler.asyncInstance)
@@ -67,9 +69,6 @@ extension HistoryToDoVC {
                         owner.viewModel.deleteTodoHistory(name: name)
                     }
                     .disposed(by: cell.disposeBag)
-
-                let editMode = self.viewModel.editRealy.value
-                cell.configure(data: item, editMode: editMode)
 
                 cell.backgroundColor = .white
                 cell.selectionStyle = .none
@@ -125,7 +124,7 @@ extension HistoryToDoVC {
                 guard !todoHistories.isEmpty else {
                     return [SectionOfHistoryData(header: "할일 내역", items: [])]
                 }
-                
+
                 let sortedKeys = todoHistories.sorted(by: { $0.created > $1.created })
 
                 return [SectionOfHistoryData(header: "할일 내역", items: sortedKeys)]
@@ -163,6 +162,7 @@ extension HistoryToDoVC {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
+                viewModel.updateAllTodoHistory()
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)

@@ -19,9 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let authorizationOption: UNAuthorizationOptions = [.alert, .badge, .sound]
         userNotificationCenter.requestAuthorization(options: authorizationOption) { allow, error in
             if let error = error {
-                print("error: \(error.localizedDescription)")
+                print("#### error: \(error.localizedDescription)")
             }
-            print(allow)
+            print("#### \(allow)")
         }
         application.registerForRemoteNotifications()
 

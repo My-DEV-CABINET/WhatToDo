@@ -20,6 +20,7 @@ final class ReadToDoVC: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
+    @IBOutlet weak var blankLabel: UILabel!
 
     var viewModel = ReadTodoViewModel()
     private var refreshControl: UIRefreshControl!
@@ -44,14 +45,14 @@ extension ReadToDoVC {
         setupUI()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        view.backgroundColor = .white
-        navigationController?.navigationBar.backgroundColor = .white
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         viewModel.checkUnreadMessage()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        view.backgroundColor = .white
+        navigationController?.navigationBar.backgroundColor = .white
     }
 }
 
@@ -185,7 +186,7 @@ extension ReadToDoVC {
             .subscribe { (owner, _) in
                 owner.viewModel.paginationRelay.accept(false)
                 owner.viewModel.resetPage()
-                owner.viewModel.requestGETTodos(completion: {})
+                owner.viewModel.requestGETTodos(completion: { _ in })
             }
             .disposed(by: vc.disposeBag)
 
@@ -213,7 +214,7 @@ extension ReadToDoVC {
 
                 let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
                 customQueue.async {
-                    owner.viewModel.requestGETTodos(completion: {
+                    owner.viewModel.requestGETTodos(completion: { _ in
                         DispatchQueue.main.async {
                             guard let id = owner.viewModel.todos.first?.id else { return }
                             let name = owner.viewModel.makeTodoHistoryTitle(type: .add, id: id)
@@ -243,7 +244,6 @@ extension ReadToDoVC {
     private func pushHistoryVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.history.id, bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.history.id) as? HistoryToDoVC else { return }
-        // TODO: HistoryVC ViewModel 작업
 
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -360,7 +360,7 @@ extension ReadToDoVC {
                             self.tableView.setContentOffset(.zero, animated: true)
 
                             customQueue.async {
-                                self.viewModel.requestGETTodos(completion: {})
+                                self.viewModel.requestGETTodos(completion: { _ in })
                             }
                         }
                     })
@@ -443,7 +443,7 @@ extension ReadToDoVC {
                     self.viewModel.resetPage()
 
                     customQueue.async {
-                        self.viewModel.requestGETTodos(completion: {
+                        self.viewModel.requestGETTodos(completion: { _ in
                             DispatchQueue.main.async {
                                 self.refreshControl.endRefreshing()
                             }
@@ -463,17 +463,35 @@ extension ReadToDoVC {
 
                 if !searchMode {
                     // SearchMode 가 아닐 때,
-                    owner.viewModel.requestGETTodos(completion: {
-                        DispatchQueue.main.async {
-                            owner.tableView.reloadData()
+                    owner.viewModel.requestGETTodos(completion: { todos in
+
+                        if todos.isEmpty {
+                            DispatchQueue.main.async {
+                                owner.tableView.isHidden = true
+                                owner.blankLabel.isHidden = false
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                owner.tableView.reloadData()
+                            }
                         }
+
                     })
                 } else {
                     guard let searchText = owner.viewModel.searchText else { return }
-                    owner.viewModel.searchTodo(query: searchText, completion: { _ in
-                        DispatchQueue.main.async {
-                            owner.tableView.reloadData()
+                    owner.viewModel.searchTodo(query: searchText, completion: { todos in
+
+                        if todos.isEmpty {
+                            DispatchQueue.main.async {
+                                owner.tableView.isHidden = true
+                                owner.blankLabel.isHidden = false
+                            }
+                        } else {
+                            DispatchQueue.main.async {
+                                owner.tableView.reloadData()
+                            }
                         }
+
                     })
                 }
 

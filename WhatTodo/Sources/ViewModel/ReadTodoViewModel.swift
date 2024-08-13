@@ -127,7 +127,7 @@ final class ReadTodoViewModel {
     }
 
     /// Todo 데이터 10개 호출 - 완료 숨김 처리 X
-    func requestGETTodos(completion: @escaping () -> Void?) {
+    func requestGETTodos(completion: @escaping ([ToDoData]) -> Void?) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
 
@@ -164,9 +164,9 @@ final class ReadTodoViewModel {
                 guard let data = value.data else { return }
                 self.todos = data
                 self.todoBehaviorSubject.onNext(data)
-                completion()
+                completion(data)
             case .failure(let error):
-
+                completion([])
                 if manager?.flags?.isEmpty == false {
                     print("#### Network Error: \(error)")
                 }
@@ -408,6 +408,7 @@ extension ReadTodoViewModel {
     }
 
     func checkUnreadMessage() {
+        dbManager.readTodoHistories()
         let result = dbManager.todoHistories.filter { $0.isRead == false }.count > 0
         unReadMessageRealy.accept(result)
     }
