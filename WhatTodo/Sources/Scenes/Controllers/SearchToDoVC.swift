@@ -114,6 +114,20 @@ extension SearchToDoVC {
         navigationItem.leftBarButtonItem = backButton
         navigationItem.rightBarButtonItem = trashButton
     }
+
+    /// Alert 메시지 표시
+    private func showBlankMessage(title: String, message: String, completion: @escaping () -> Void) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
+            completion()
+        }
+
+        let cancelAlert = UIAlertAction(title: "취소", style: .destructive)
+
+        [confirmAlert, cancelAlert].forEach { alert.addAction($0) }
+        present(alert, animated: true)
+    }
 }
 
 // MARK: - Binding
@@ -202,7 +216,9 @@ extension SearchToDoVC {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.viewModel.deleteAllSearchHistory()
+                self.showBlankMessage(title: "전체 삭제 알림", message: "삭제한 내용은 복구할 수  없습니다.") {
+                    self.viewModel.deleteAllSearchHistory()
+                }
             })
             .disposed(by: viewModel.disposeBag)
     }
