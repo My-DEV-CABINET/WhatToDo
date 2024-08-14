@@ -11,15 +11,8 @@ import RealmSwift
 /// Apple
 import Foundation
 
-enum ReadDataType {
-    case todoHistory // Todo 처리 내역
-    case searchHistory // 검색결과 처리 내역
-    case inquireHistory // 조회 결과 처리 내역
-    case all // 전부 조회
-}
-
 final class DBManager {
-    init(read: ReadDataType) {
+    init(read: ReadDataTypeCollection) {
         switch read {
         case .todoHistory:
             readTodoHistories()

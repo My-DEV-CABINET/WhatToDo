@@ -130,8 +130,6 @@ final class ReadTodoViewModel {
     func requestGETTodos(completion: @escaping () -> Void?) {
         let utilityQueue = DispatchQueue.global(qos: .utility)
         let url = Constants.scheme + Constants.host + Constants.path
-
-        let manager = NetworkReachabilityManager(host: url)
         let parameters = confirmParameters(isDone: isDone)
 
         let headers: HTTPHeaders = [
@@ -167,9 +165,7 @@ final class ReadTodoViewModel {
                 completion()
             case .failure(let error):
                 completion()
-                if manager?.flags?.isEmpty == false {
-                    print("#### Network Error: \(error)")
-                }
+                self.todoBehaviorSubject.onNext([])
             }
         }
     }

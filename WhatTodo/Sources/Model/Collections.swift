@@ -92,8 +92,20 @@ enum UserActionCollection {
     case edit /// 데이터 편집
 }
 
+// MARK: - History Type 모음
+
 /// History Type 모음
 enum HistoryTypeCollection {
     case add
     case delete
+}
+
+// MARK: - DB: 내역 타입 모음
+
+/// DB: 내역 타입 모음
+enum ReadDataTypeCollection {
+    case todoHistory // Todo 처리 내역
+    case searchHistory // 검색결과 처리 내역
+    case inquireHistory // 조회 결과 처리 내역
+    case all // 전부 조회
 }

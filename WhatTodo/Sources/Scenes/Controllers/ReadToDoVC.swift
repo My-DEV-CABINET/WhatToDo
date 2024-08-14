@@ -481,10 +481,14 @@ extension ReadToDoVC {
 
                 if !searchMode {
                     // SearchMode 가 아닐 때,
-                    owner.viewModel.requestGETTodos(completion: {})
+                    owner.viewModel.requestGETTodos(completion: {
+                        //
+                    })
                 } else {
                     guard let searchText = owner.viewModel.searchText else { return }
-                    owner.viewModel.searchTodo(query: searchText, completion: { _ in })
+                    owner.viewModel.searchTodo(query: searchText, completion: { _ in
+                        //
+                    })
                 }
 
             })
