@@ -31,6 +31,7 @@ final class ReadToDoVC: UIViewController {
     private var historyButton: UIBarButtonItem!
 
     private var dataSource: ToDoSectionDataSource!
+    private var disposeBag: DisposeBag!
 
     deinit {
         print("#### 클래스명: \(String(describing: type(of: self))), 함수명: \(#function), Line: \(#line), 출력 Log: TodoVC deinitialize")
@@ -43,6 +44,15 @@ extension ReadToDoVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        bind()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        view.backgroundColor = .white
+        navigationController?.navigationBar.backgroundColor = .white
+        disposeBag = DisposeBag()
+        viewBind()
+        tableViewBind()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -50,9 +60,9 @@ extension ReadToDoVC {
         viewModel.checkUnreadMessage()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        view.backgroundColor = .white
-        navigationController?.navigationBar.backgroundColor = .white
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        disposeBag = DisposeBag()
     }
 }
 
@@ -68,9 +78,6 @@ extension ReadToDoVC {
 
         /// 화면 터치시, 키보드 내리기
         hideKeyboardWhenTappedAround()
-
-        /// Binding
-        bind()
     }
 
     /// Xib 셀 등록
@@ -253,10 +260,8 @@ extension ReadToDoVC {
 
 extension ReadToDoVC {
     private func bind() {
-        viewBind()
         viewModelBind()
         rxDatasourceBind()
-        tableViewBind()
     }
 
     private func viewBind() {
@@ -266,7 +271,7 @@ extension ReadToDoVC {
                 guard let self = self else { return }
                 self.navigationController?.popToRootViewController(animated: true)
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// Add 버튼 클릭시, AddVC 로 화면이동
         addButton.rx.tap
@@ -275,7 +280,7 @@ extension ReadToDoVC {
                 guard let self = self else { return }
                 self.pushAddVC()
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// Filter 버튼 클릭시, FilterVC 로 화면표시
         filterButton.rx.tap
@@ -284,7 +289,7 @@ extension ReadToDoVC {
                 guard let self = self else { return }
                 self.pushFilterVC()
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// Search 버튼 클릭시, SearchVC 로 화면이동
         searchButton.rx.tap
@@ -293,7 +298,7 @@ extension ReadToDoVC {
                 guard let self = self else { return }
                 self.pushSearchVC()
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// History 버튼 클릭시, HistoryVC 로 화면이동
         historyButton.rx.tap
@@ -302,7 +307,7 @@ extension ReadToDoVC {
                 guard let self = self else { return }
                 self.pushHistoryVC()
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
     }
 
     private func rxDatasourceBind() {
@@ -351,7 +356,7 @@ extension ReadToDoVC {
     private func tableViewBind() {
         /// TableView Delegate
         tableView.rx.setDelegate(self)
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// TableView Cell 선택
         tableView.rx.itemSelected
@@ -407,7 +412,7 @@ extension ReadToDoVC {
                 self.tableView.deselectRow(at: indexPath, animated: true)
                 self.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// 페이징 처리
         tableView.rx.willDisplayCell
@@ -451,7 +456,7 @@ extension ReadToDoVC {
                     }
                 }
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         /// TableView RefreshControl 이벤트 처리
         refreshControl.rx.controlEvent(.valueChanged)
@@ -473,7 +478,7 @@ extension ReadToDoVC {
                     }
                 }
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
     }
 
     private func viewModelBind() {
