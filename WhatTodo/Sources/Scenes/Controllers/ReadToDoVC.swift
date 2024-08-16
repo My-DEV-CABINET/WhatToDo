@@ -309,6 +309,10 @@ extension ReadToDoVC {
         /// RxDataSource에 데이터 주입
         viewModel.todoBehaviorSubject
             .map { todos in
+                DispatchQueue.main.async {
+                    self.emptyLabel.isHidden = !todos.isEmpty
+                }
+
                 // CreatedAt 기준으로 Dictionary 생성
                 let groupedDictionary = Dictionary(grouping: todos) { todo in
                     return todo.updatedAt?.dateFormatterForDate() ?? ""
@@ -325,23 +329,23 @@ extension ReadToDoVC {
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
 
-        viewModel.todoBehaviorSubject
-            .withUnretained(self)
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { (owner, todos) in
-
-                if todos.count <= 0 {
-                    DispatchQueue.main.async {
-                        owner.emptyLabel.isHidden = false
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        owner.emptyLabel.isHidden = true
-                    }
-                }
-
-            })
-            .disposed(by: viewModel.disposeBag)
+//        viewModel.todoBehaviorSubject
+//            .withUnretained(self)
+//            .observe(on: MainScheduler.instance)
+//            .subscribe(onNext: { (owner, todos) in
+//
+//                if todos.count <= 0 {
+//                    DispatchQueue.main.async {
+//                        owner.emptyLabel.isHidden = false
+//                    }
+//                } else {
+//                    DispatchQueue.main.async {
+//                        owner.emptyLabel.isHidden = true
+//                    }
+//                }
+//
+//            })
+//            .disposed(by: viewModel.disposeBag)
     }
 
     private func tableViewBind() {
@@ -492,7 +496,7 @@ extension ReadToDoVC {
                 }
 
             })
-            .disposed(by: viewModel.disposeBag)
+            .disposed(by: disposeBag)
 
         viewModel.unReadMessageRealy
             .withUnretained(self)
