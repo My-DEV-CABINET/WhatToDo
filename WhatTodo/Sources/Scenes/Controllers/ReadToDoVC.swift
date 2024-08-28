@@ -460,6 +460,7 @@ extension ReadToDoVC {
 
         /// TableView RefreshControl 이벤트 처리
         refreshControl.rx.controlEvent(.valueChanged)
+            .debug("#### Refresh")
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 DispatchQueue.main.async {
@@ -484,6 +485,7 @@ extension ReadToDoVC {
     private func viewModelBind() {
         viewModel.searchModeRelay
             .withUnretained(self)
+            .debug("#### SearchMode")
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { (owner, searchMode) in
                 owner.backButton.isHidden = !searchMode
@@ -501,7 +503,7 @@ extension ReadToDoVC {
                 }
 
             })
-            .disposed(by: disposeBag)
+            .disposed(by: viewModel.disposeBag)
 
         viewModel.unReadMessageRealy
             .withUnretained(self)

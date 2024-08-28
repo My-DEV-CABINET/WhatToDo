@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -38,7 +39,7 @@
                         </buttonConfiguration>
                     </button>
                     <view alpha="0.94999999999999996" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ARh-tK-bQa">
-                        <rect key="frame" x="76" y="8" width="406" height="112"/>
+                        <rect key="frame" x="76" y="12" width="406" height="104"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁과 삼천리" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YqH-rW-OxZ">
                                 <rect key="frame" x="12" y="8" width="382" height="64.666666666666671"/>
@@ -47,10 +48,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="255" alignment="center" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="VbQ-wD-zPM">
-                                <rect key="frame" x="12" y="78.666666666666671" width="135.33333333333334" height="27.333333333333329"/>
+                                <rect key="frame" x="12" y="78.666666666666671" width="135.33333333333334" height="19.333333333333329"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="clock.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="nP0-7e-EQk">
-                                        <rect key="frame" x="0.0" y="5.333333333333325" width="18" height="16.666666666666664"/>
+                                        <rect key="frame" x="0.0" y="1.333333333333325" width="18" height="16.666666666666664"/>
                                         <color key="tintColor" systemColor="systemGray5Color"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="18" id="Q1K-GV-Bkg"/>
@@ -59,14 +60,14 @@
                                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="16"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="23:59" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qo6-e4-uyJ">
-                                        <rect key="frame" x="23.000000000000004" y="4" width="43.333333333333343" height="19.333333333333332"/>
+                                        <rect key="frame" x="23.000000000000004" y="0.0" width="43.333333333333343" height="19.333333333333332"/>
                                         <color key="tintColor" systemColor="systemGray5Color"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" systemColor="systemGray6Color"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="내가 본 것" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c7d-ym-4lc">
-                                        <rect key="frame" x="71.333333333333343" y="4" width="64" height="19.333333333333332"/>
+                                        <rect key="frame" x="71.333333333333343" y="0.0" width="64" height="19.333333333333332"/>
                                         <color key="tintColor" systemColor="systemGray5Color"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" systemColor="systemGray6Color"/>
@@ -90,8 +91,8 @@
                 <constraints>
                     <constraint firstItem="i8i-z9-xWe" firstAttribute="leading" secondItem="yQq-3l-8ZN" secondAttribute="leading" constant="16" id="8Fd-ac-hqV"/>
                     <constraint firstItem="gLP-PR-ghS" firstAttribute="centerX" secondItem="i8i-z9-xWe" secondAttribute="centerX" id="GDg-9o-LAx"/>
-                    <constraint firstAttribute="bottom" secondItem="ARh-tK-bQa" secondAttribute="bottom" constant="8" id="HKH-LJ-UPh"/>
-                    <constraint firstItem="ARh-tK-bQa" firstAttribute="top" secondItem="yQq-3l-8ZN" secondAttribute="top" constant="8" id="VB1-QS-NJb"/>
+                    <constraint firstAttribute="bottom" secondItem="ARh-tK-bQa" secondAttribute="bottom" constant="12" id="HKH-LJ-UPh"/>
+                    <constraint firstItem="ARh-tK-bQa" firstAttribute="top" secondItem="yQq-3l-8ZN" secondAttribute="top" constant="12" id="VB1-QS-NJb"/>
                     <constraint firstAttribute="trailing" secondItem="ARh-tK-bQa" secondAttribute="trailing" constant="16" id="VYa-TX-Tlt"/>
                     <constraint firstItem="gLP-PR-ghS" firstAttribute="centerY" secondItem="i8i-z9-xWe" secondAttribute="centerY" id="X2G-jf-VaH"/>
                     <constraint firstItem="ARh-tK-bQa" firstAttribute="leading" secondItem="i8i-z9-xWe" secondAttribute="trailing" constant="16" id="d7p-BD-mlR"/>

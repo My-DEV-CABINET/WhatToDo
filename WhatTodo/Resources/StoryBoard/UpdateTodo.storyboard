@@ -12,7 +12,7 @@
         <!--Update To DoVC-->
         <scene sceneID="D8d-2I-hyQ">
             <objects>
-                <viewController storyboardIdentifier="UpdateToDoVC" id="UZ0-HL-MmZ" customClass="UpdateToDoVC" customModule="WhatToDo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="UpdateToDoVC" id="UZ0-HL-MmZ" customClass="UpdateToDoVC" customModule="WhatTodo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="dYO-nJ-SjI">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

@@ -23,7 +23,7 @@ final class AlertVC: UIViewController {
     private var alertDetail: String?
     private var alertImage: String?
 
-    private var disposeBag = DisposeBag()
+    private var disposeBag: DisposeBag!
 }
 
 // MARK: - View Life Cycle
@@ -33,6 +33,12 @@ extension AlertVC {
         super.viewDidLoad()
         setupUI()
         updateUI()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        disposeBag = DisposeBag()
+        bind()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -47,7 +53,6 @@ extension AlertVC {
     private func setupUI() {
         baseView.layer.cornerRadius = 10
         confirmImageView()
-        bind()
     }
 
     private func updateUI() {
