@@ -83,7 +83,6 @@ extension CreateToDoVC {
 extension CreateToDoVC {
     private func bind() {
         keyboardBind()
-
         viewBind()
         textViewBind()
     }
@@ -97,11 +96,12 @@ extension CreateToDoVC {
             }
             .disposed(by: disposeBag)
 
+        // 분기처리 알림 생성해야함. 아무것도 작성 X일때, 바로 나가기 / 있으면 확인 여부
         exitBtn.rx.tap
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.navigationController?.dismiss(animated: true)
+                self.hasValidInput(text: inputTV.text, isOn: confirmSW.isOn)
             })
             .disposed(by: disposeBag)
 
@@ -206,10 +206,38 @@ extension CreateToDoVC {
 // MARK: - 뷰 Alert 메서드 모음
 
 extension CreateToDoVC {
+    // View 데이터 전체 초기화
     private func resetUI() {
         confirmSW.isOn = false
         inputTV.text = "저장하고 싶은 할일 내용을 입력해주세요."
         inputTV.resignFirstResponder()
+    }
+
+    /// TextView의 Text 유효성 검사
+    private func hasValidText(text: String) -> Bool {
+        if text.isEmpty || text == "저장하고 싶은 할일 내용을 입력해주세요." {
+            return true // 공백
+        } else {
+            return false // 공백 아님
+        }
+    }
+
+    /// 현재 데이터 입력된 상태인지 확인
+    private func hasValidInput(text: String, isOn: Bool) {
+        let tvValid = hasValidText(text: text)
+        if !tvValid || isOn {
+            showAlertMessage(title: "작성 알림", detail: "지금 나가시면, 기존에 작성한 내용은 초기화됩니다.")
+                .withUnretained(self)
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { (owner, valid) in
+                    if valid {
+                        owner.navigationController?.dismiss(animated: true)
+                    }
+                })
+                .disposed(by: disposeBag)
+        } else {
+            navigationController?.dismiss(animated: true)
+        }
     }
 
     /// UserAction 분기처리
@@ -294,12 +322,11 @@ extension CreateToDoVC {
         NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
             .withUnretained(self)
             .observe(on: MainScheduler.instance)
-            .debug("#### Show Keyboard")
             .subscribe(onNext: { (owner, notification) in
                 if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
                     let keyboardHeight = keyboardFrame.cgRectValue.height
                     UIView.animate(
-                        withDuration: 0.25,
+                        withDuration: 0.1,
                         animations: {
                             owner.view.bounds.origin.y = keyboardHeight / 1.4
                         }
@@ -312,10 +339,9 @@ extension CreateToDoVC {
         NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
             .withUnretained(self)
             .observe(on: MainScheduler.instance)
-            .debug("#### Hide Keyboard")
             .subscribe(onNext: { (owner, notification) in
                 UIView.animate(
-                    withDuration: 0.25,
+                    withDuration: 0.1,
                     animations: {
                         owner.view.bounds.origin.y = 0
                     }
