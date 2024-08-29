@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Jl-U9-3C2" customClass="CustomBaseView" customModule="WhatTodo" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="262.66666666666669" width="393" height="589.33333333333326"/>
+                                <rect key="frame" x="0.0" y="345" width="393" height="507"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dyw-gc-LtC">
                                         <rect key="frame" x="16" y="16" width="40" height="40"/>
@@ -46,7 +46,7 @@
                                     <view alpha="0.80000000000000004" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="POK-eA-pEI" customClass="CustomBaseView" customModule="WhatTodo" customModuleProvider="target">
                                         <rect key="frame" x="252" y="16" width="125" height="64"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flag.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="vw4-W6-gId">
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flag.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="vw4-W6-gId">
                                                 <rect key="frame" x="12" y="13" width="40" height="38"/>
                                                 <color key="tintColor" systemColor="systemGreenColor"/>
                                                 <constraints>
@@ -55,8 +55,8 @@
                                                 </constraints>
                                                 <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="30"/>
                                             </imageView>
-                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="13c-q3-EcD">
-                                                <rect key="frame" x="64" y="16.333333333333314" width="51" height="31"/>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="13c-q3-EcD">
+                                                <rect key="frame" x="64" y="16.666666666666686" width="51" height="31"/>
                                             </switch>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -87,10 +87,10 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F3S-ar-Akz" customClass="CustomBaseView" customModule="WhatTodo" customModuleProvider="target">
-                                        <rect key="frame" x="16" y="101.99999999999997" width="361" height="371.33333333333326"/>
+                                        <rect key="frame" x="16" y="102" width="361" height="289"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="저장하고 싶은 할일 내용을 입력해주세요." textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Oll-OP-iI5">
-                                                <rect key="frame" x="12" y="12" width="337" height="347.33333333333331"/>
+                                                <rect key="frame" x="12" y="12" width="337" height="265"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <color key="textColor" systemColor="labelColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -99,10 +99,11 @@
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <constraints>
+                                            <constraint firstItem="Oll-OP-iI5" firstAttribute="centerX" secondItem="F3S-ar-Akz" secondAttribute="centerX" id="1ic-6B-584"/>
                                             <constraint firstItem="Oll-OP-iI5" firstAttribute="centerY" secondItem="F3S-ar-Akz" secondAttribute="centerY" id="ASE-VI-7CS"/>
-                                            <constraint firstItem="Oll-OP-iI5" firstAttribute="centerX" secondItem="F3S-ar-Akz" secondAttribute="centerX" id="LiI-Uw-SyP"/>
                                             <constraint firstItem="Oll-OP-iI5" firstAttribute="top" secondItem="F3S-ar-Akz" secondAttribute="top" constant="12" id="daU-3I-fOJ"/>
                                             <constraint firstItem="Oll-OP-iI5" firstAttribute="leading" secondItem="F3S-ar-Akz" secondAttribute="leading" constant="12" id="kWR-FT-93R"/>
+                                            <constraint firstAttribute="width" secondItem="F3S-ar-Akz" secondAttribute="height" multiplier="1:0.8" id="n9N-kg-6Su"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -111,7 +112,7 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="255" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eFx-pc-X0x">
-                                        <rect key="frame" x="16" y="495.33333333333326" width="361" height="54"/>
+                                        <rect key="frame" x="16" y="413" width="361" height="54"/>
                                         <color key="backgroundColor" systemColor="systemIndigoColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="eFx-pc-X0x" secondAttribute="height" multiplier="1:0.15" id="wgC-mt-oOH"/>
@@ -126,6 +127,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="eFx-pc-X0x" secondAttribute="bottom" constant="40" id="2xq-T7-Tq2"/>
+                                    <constraint firstItem="F3S-ar-Akz" firstAttribute="top" secondItem="dyw-gc-LtC" secondAttribute="bottom" constant="46" id="3Do-NI-n8M"/>
                                     <constraint firstItem="eFx-pc-X0x" firstAttribute="leading" secondItem="dyw-gc-LtC" secondAttribute="leading" id="4vH-Zs-0tB"/>
                                     <constraint firstItem="dyw-gc-LtC" firstAttribute="top" secondItem="1Jl-U9-3C2" secondAttribute="top" constant="16" id="5cQ-2J-4Wy"/>
                                     <constraint firstItem="POK-eA-pEI" firstAttribute="top" secondItem="1Jl-U9-3C2" secondAttribute="top" constant="16" id="9Z7-5X-IWq"/>
@@ -133,11 +135,9 @@
                                     <constraint firstItem="UIV-1w-gsr" firstAttribute="bottom" secondItem="dyw-gc-LtC" secondAttribute="bottom" id="K0a-F9-lTT"/>
                                     <constraint firstItem="UIV-1w-gsr" firstAttribute="leading" secondItem="dyw-gc-LtC" secondAttribute="trailing" constant="8" id="V7P-bd-DnZ"/>
                                     <constraint firstAttribute="trailing" secondItem="POK-eA-pEI" secondAttribute="trailing" constant="16" id="WVm-n8-2TZ"/>
-                                    <constraint firstAttribute="width" secondItem="1Jl-U9-3C2" secondAttribute="height" multiplier="1:1.5" id="ec7-Oj-M7q"/>
-                                    <constraint firstItem="eFx-pc-X0x" firstAttribute="top" secondItem="F3S-ar-Akz" secondAttribute="bottom" constant="22" id="ghS-kg-R0f"/>
+                                    <constraint firstItem="eFx-pc-X0x" firstAttribute="top" secondItem="F3S-ar-Akz" secondAttribute="bottom" constant="22" id="YE7-c0-x06"/>
                                     <constraint firstItem="dyw-gc-LtC" firstAttribute="leading" secondItem="1Jl-U9-3C2" secondAttribute="leading" constant="16" id="i3N-aP-2b5"/>
                                     <constraint firstItem="F3S-ar-Akz" firstAttribute="leading" secondItem="dyw-gc-LtC" secondAttribute="leading" id="jMZ-ae-xtp"/>
-                                    <constraint firstItem="F3S-ar-Akz" firstAttribute="top" secondItem="POK-eA-pEI" secondAttribute="bottom" constant="22" id="pxp-3C-RRW"/>
                                     <constraint firstItem="F3S-ar-Akz" firstAttribute="centerX" secondItem="1Jl-U9-3C2" secondAttribute="centerX" id="sv2-yD-B5T"/>
                                     <constraint firstItem="eFx-pc-X0x" firstAttribute="centerX" secondItem="1Jl-U9-3C2" secondAttribute="centerX" id="zzs-Mq-Wqe"/>
                                 </constraints>
@@ -171,7 +171,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="flag.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="flag.circle" catalog="system" width="128" height="123"/>
         <image name="trash.circle.fill" catalog="system" width="128" height="123"/>
         <image name="xmark.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">

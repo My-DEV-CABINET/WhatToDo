@@ -207,31 +207,31 @@ extension ReadToDoVC {
     private func pushAddVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.create.id, bundle: nil)
         guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.create.id) as? CreateToDoVC else { return }
-//        vc.viewModel = CreateTodoViewModel()
-//
-//        vc.addSubject
-//            .withUnretained(self)
-//            .observe(on: MainScheduler.asyncInstance)
-//            .subscribe(onNext: { (owner, value) in
-//                owner.viewModel.resetPage()
-//
-//                DispatchQueue.main.async {
-//                    owner.tableView.setContentOffset(.zero, animated: true)
-//                }
-//
-//                let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
-//                customQueue.async {
-//                    owner.viewModel.requestGETTodos(completion: {
-//                        DispatchQueue.main.async {
-//                            guard let id = owner.viewModel.todos.first?.id else { return }
-//                            let name = owner.viewModel.makeTodoHistoryTitle(type: .add, id: id)
-//                            owner.viewModel.createTodoHistory(name: name)
-//                            owner.viewModel.checkUnreadMessage()
-//                        }
-//                    })
-//                }
-//            })
-//            .disposed(by: vc.disposeBag)
+        vc.viewModel = CreateTodoViewModel()
+
+        vc.addSubject
+            .withUnretained(self)
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { (owner, value) in
+                owner.viewModel.resetPage()
+
+                DispatchQueue.main.async {
+                    owner.tableView.setContentOffset(.zero, animated: true)
+                }
+
+                let customQueue = DispatchQueue(label: QueueCollection.add.rawValue)
+                customQueue.async {
+                    owner.viewModel.requestGETTodos(completion: {
+                        DispatchQueue.main.async {
+                            guard let id = owner.viewModel.todos.first?.id else { return }
+                            let name = owner.viewModel.makeTodoHistoryTitle(type: .add, id: id)
+                            owner.viewModel.createTodoHistory(name: name)
+                            owner.viewModel.checkUnreadMessage()
+                        }
+                    })
+                }
+            })
+            .disposed(by: vc.disposeBag)
 
         let navigationVC = UINavigationController(rootViewController: vc)
         navigationVC.modalPresentationStyle = .pageSheet
