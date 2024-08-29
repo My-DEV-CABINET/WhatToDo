@@ -137,7 +137,7 @@ extension UpdateToDoVC {
     /// Add 페이지 화면 이동
     private func pushAddVC() {
         let sb: UIStoryboard = .init(name: StoryBoardCollection.create.id, bundle: nil)
-        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.create.id) as? CreateToDoVC else { return }
+        guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.create.id) as? PreviousCreateToDoVC else { return }
         vc.viewModel = CreateTodoViewModel()
         vc.viewModel.todo = viewModel.todo
         vc.viewModel.userAction = .edit

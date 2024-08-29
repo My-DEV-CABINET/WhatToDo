@@ -17,11 +17,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s58-TG-XxQ">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s58-TG-XxQ" customClass="CustomBaseView" customModule="WhatTodo" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="262.66666666666669" width="393" height="589.33333333333326"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qe8-d9-feb">
-                                        <rect key="frame" x="16" y="16" width="69" height="50"/>
+                                        <rect key="frame" x="16" y="16" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="Qe8-d9-feb" secondAttribute="height" multiplier="1:1" id="SVp-mR-Yzp"/>
+                                            <constraint firstAttribute="width" constant="40" id="iMJ-3N-G01"/>
+                                        </constraints>
                                         <color key="tintColor" systemColor="systemRedColor"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill" catalog="system">
@@ -29,7 +33,7 @@
                                         </buttonConfiguration>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kL5-GZ-H2Y">
-                                        <rect key="frame" x="97" y="16" width="50" height="50"/>
+                                        <rect key="frame" x="68" y="16" width="40" height="40"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="kL5-GZ-H2Y" secondAttribute="height" multiplier="1:1" id="F7a-Bw-sT0"/>
@@ -41,28 +45,28 @@
                                         </buttonConfiguration>
                                     </button>
                                     <view contentMode="scaleToFill" horizontalHuggingPriority="255" horizontalCompressionResistancePriority="755" translatesAutoresizingMaskIntoConstraints="NO" id="TSA-PF-BU1" customClass="CustomBaseView" customModule="WhatTodo" customModuleProvider="target">
-                                        <rect key="frame" x="270" y="16" width="107" height="50"/>
+                                        <rect key="frame" x="252" y="16" width="125" height="64"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="flag.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="w0O-CU-5UB">
-                                                <rect key="frame" x="8" y="9" width="34" height="32.666666666666671"/>
+                                                <rect key="frame" x="12" y="13" width="40" height="38.666666666666671"/>
                                                 <color key="tintColor" systemColor="systemGreenColor"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" secondItem="w0O-CU-5UB" secondAttribute="height" multiplier="1:1" id="A3x-Ag-zV5"/>
+                                                    <constraint firstAttribute="width" constant="40" id="ib8-2E-Tp5"/>
                                                 </constraints>
                                             </imageView>
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Jip-g2-eE9">
-                                                <rect key="frame" x="50" y="8" width="51" height="34"/>
+                                                <rect key="frame" x="64" y="16.333333333333314" width="51" height="31"/>
                                             </switch>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                                         <constraints>
-                                            <constraint firstItem="w0O-CU-5UB" firstAttribute="leading" secondItem="TSA-PF-BU1" secondAttribute="leading" constant="8" id="CC3-6Z-rgi"/>
-                                            <constraint firstItem="w0O-CU-5UB" firstAttribute="top" secondItem="TSA-PF-BU1" secondAttribute="top" constant="8" id="CEP-77-d1M"/>
-                                            <constraint firstItem="Jip-g2-eE9" firstAttribute="top" secondItem="w0O-CU-5UB" secondAttribute="top" id="OKW-Km-1Ce"/>
+                                            <constraint firstItem="w0O-CU-5UB" firstAttribute="leading" secondItem="TSA-PF-BU1" secondAttribute="leading" constant="12" id="CC3-6Z-rgi"/>
+                                            <constraint firstItem="w0O-CU-5UB" firstAttribute="top" secondItem="TSA-PF-BU1" secondAttribute="top" constant="12" id="CEP-77-d1M"/>
                                             <constraint firstItem="w0O-CU-5UB" firstAttribute="centerY" secondItem="TSA-PF-BU1" secondAttribute="centerY" id="VCC-8k-ERe"/>
-                                            <constraint firstItem="Jip-g2-eE9" firstAttribute="leading" secondItem="w0O-CU-5UB" secondAttribute="trailing" constant="8" symbolic="YES" id="ibt-Kz-PdJ"/>
+                                            <constraint firstItem="Jip-g2-eE9" firstAttribute="leading" secondItem="w0O-CU-5UB" secondAttribute="trailing" constant="12" id="ibt-Kz-PdJ"/>
                                             <constraint firstItem="Jip-g2-eE9" firstAttribute="centerY" secondItem="TSA-PF-BU1" secondAttribute="centerY" id="tUC-5L-cxE"/>
-                                            <constraint firstAttribute="trailing" secondItem="Jip-g2-eE9" secondAttribute="trailing" constant="8" id="yWr-N2-8X6"/>
+                                            <constraint firstAttribute="trailing" secondItem="Jip-g2-eE9" secondAttribute="trailing" constant="12" id="yWr-N2-8X6"/>
                                         </constraints>
                                         <userDefinedRuntimeAttributes>
                                             <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
@@ -83,10 +87,10 @@
                                         </userDefinedRuntimeAttributes>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LPx-6I-VFX" customClass="CustomBaseView" customModule="WhatTodo" customModuleProvider="target">
-                                        <rect key="frame" x="16" y="87.999999999999972" width="361" height="461.33333333333326"/>
+                                        <rect key="frame" x="16" y="101.99999999999997" width="361" height="447.33333333333326"/>
                                         <subviews>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Hello World" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="Ldb-qU-M03">
-                                                <rect key="frame" x="12" y="12" width="337" height="437.33333333333331"/>
+                                                <rect key="frame" x="12" y="12" width="337" height="423.33333333333331"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <color key="textColor" systemColor="labelColor"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -110,20 +114,23 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="LPx-6I-VFX" secondAttribute="bottom" constant="40" id="96v-cN-XYX"/>
-                                    <constraint firstItem="LPx-6I-VFX" firstAttribute="top" secondItem="Qe8-d9-feb" secondAttribute="bottom" constant="22" id="BJx-JD-122"/>
                                     <constraint firstItem="kL5-GZ-H2Y" firstAttribute="bottom" secondItem="Qe8-d9-feb" secondAttribute="bottom" id="CHU-FC-UeO"/>
                                     <constraint firstAttribute="trailing" secondItem="TSA-PF-BU1" secondAttribute="trailing" constant="16" id="EHl-HJ-NYM"/>
                                     <constraint firstAttribute="width" secondItem="s58-TG-XxQ" secondAttribute="height" multiplier="1:1.5" id="FKW-Of-lRu"/>
                                     <constraint firstItem="LPx-6I-VFX" firstAttribute="centerX" secondItem="s58-TG-XxQ" secondAttribute="centerX" id="OKv-j3-XP1"/>
+                                    <constraint firstItem="LPx-6I-VFX" firstAttribute="top" secondItem="TSA-PF-BU1" secondAttribute="bottom" constant="22" id="UPG-2O-k6w"/>
                                     <constraint firstItem="kL5-GZ-H2Y" firstAttribute="centerY" secondItem="Qe8-d9-feb" secondAttribute="centerY" id="YXx-0H-d7K"/>
-                                    <constraint firstItem="TSA-PF-BU1" firstAttribute="bottom" secondItem="kL5-GZ-H2Y" secondAttribute="bottom" id="Yu9-o0-L0E"/>
                                     <constraint firstItem="kL5-GZ-H2Y" firstAttribute="leading" secondItem="Qe8-d9-feb" secondAttribute="trailing" constant="12" id="YuF-l1-GfG"/>
                                     <constraint firstItem="TSA-PF-BU1" firstAttribute="top" secondItem="s58-TG-XxQ" secondAttribute="top" constant="16" id="p6t-0N-tkI"/>
                                     <constraint firstItem="Qe8-d9-feb" firstAttribute="top" secondItem="s58-TG-XxQ" secondAttribute="top" constant="16" id="sPn-94-DPg"/>
-                                    <constraint firstItem="kL5-GZ-H2Y" firstAttribute="top" secondItem="Qe8-d9-feb" secondAttribute="top" id="vP5-Na-MxQ"/>
                                     <constraint firstItem="Qe8-d9-feb" firstAttribute="leading" secondItem="s58-TG-XxQ" secondAttribute="leading" constant="16" id="wHP-1c-OIx"/>
                                     <constraint firstItem="LPx-6I-VFX" firstAttribute="leading" secondItem="Qe8-d9-feb" secondAttribute="leading" id="wHd-zh-0El"/>
                                 </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="20"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="njb-Md-Mtm"/>
