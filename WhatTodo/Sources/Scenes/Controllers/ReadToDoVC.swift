@@ -389,6 +389,12 @@ extension ReadToDoVC {
                                 self.viewModel.removeTodo(data: currentItem, completion: {
                                     guard let details = currentItem.title else { return }
                                     UNUserNotificationCenter.current().addNotificationRequest(title: "할일 삭제됨", details: details)
+
+                                    DispatchQueue.main.async {
+                                        let name = self.viewModel.makeTodoHistoryTitle(type: .delete, id: id)
+                                        self.viewModel.createTodoHistory(name: name)
+                                        self.viewModel.checkUnreadMessage()
+                                    }
                                 })
                             }
                         }

@@ -105,11 +105,17 @@ extension DetailToDoVC {
             .asDriver()
             .drive(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                self.showMessageAlert(title: "삭제 알림", message: "삭제하시겠습니까?", completion: {
-                    self.navigationController?.dismiss(animated: true)
+                self.showAlertMessage(title: "삭제 알림", detail: "삭제하시겠습니까?")
+                    .withUnretained(self)
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { (owner, valid) in
+                        if valid {
+                            self.navigationController?.dismiss(animated: true)
 
-                    self.deleteSubject.onNext(true)
-                })
+                            self.deleteSubject.onNext(true)
+                        }
+                    })
+                    .disposed(by: disposeBag)
             })
             .disposed(by: disposeBag)
     }
@@ -146,25 +152,5 @@ extension DetailToDoVC {
 
         let navigationVC = UINavigationController(rootViewController: vc)
         present(navigationVC, animated: true)
-    }
-}
-
-// MARK: - 예외처리 알림
-
-extension DetailToDoVC {
-    /// 확인, 취소 존재하는 Alert
-    private func showMessageAlert(title: String, message: String, completion: @escaping () -> Void) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-
-        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
-            completion()
-        }
-
-        let cancelAlert = UIAlertAction(title: "취소", style: .destructive)
-
-        alert.addAction(confirmAlert)
-        alert.addAction(cancelAlert)
-
-        present(alert, animated: true)
     }
 }
