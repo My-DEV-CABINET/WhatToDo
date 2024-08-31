@@ -1,6 +1,6 @@
 # WhatToDo
 
-<img src="https://velog.velcdn.com/images/jakkujakku98/post/1f474f40-f5a7-4032-b7cb-fb0015c2ebdd/image.png">
+<img src="https://velog.velcdn.com/images/jakkujakku98/post/328b52be-2d8d-4282-8ae6-3e594a2af6ed/image.png">
 
 # 1. 소개 및 기간
 
