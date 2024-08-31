@@ -73,6 +73,7 @@
 - 라이브러리 및 프레임워크
   - RxSwift
   - RxDatasource
+  - RxGesture
   - Alamofire
   - RealmSwift
   - Lottie
