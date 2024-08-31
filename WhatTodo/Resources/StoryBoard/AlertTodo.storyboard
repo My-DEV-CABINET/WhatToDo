@@ -12,60 +12,60 @@
         <!--AlertVC-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController storyboardIdentifier="AlertVC" id="Y6W-OH-hqX" customClass="AlertVC" customModule="WhatToDo" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AlertVC" id="Y6W-OH-hqX" customClass="AlertVC" customModule="WhatTodo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2UL-3b-fyF">
-                                <rect key="frame" x="46.666666666666657" y="263.66666666666669" width="300" height="350.00000000000006"/>
+                                <rect key="frame" x="46.666666666666657" y="348" width="300" height="181"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="INz-j7-xCS">
-                                        <rect key="frame" x="70" y="20" width="160" height="160"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="INz-j7-xCS" secondAttribute="height" multiplier="1:1" id="RrR-bZ-Kxo"/>
-                                            <constraint firstAttribute="width" constant="160" id="m1i-Dl-sJb"/>
-                                        </constraints>
-                                    </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" ambiguous="YES" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9b-SJ-bru">
-                                        <rect key="frame" x="20" y="295.66666666666674" width="260" height="34.333333333333314"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="r9b-SJ-bru">
+                                        <rect key="frame" x="20" y="126.66666666666667" width="260" height="34.333333333333329"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3sY-cO-Wx7">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3sY-cO-Wx7">
                                                 <rect key="frame" x="0.0" y="0.0" width="260" height="34.333333333333336"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="확인"/>
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="네트워크 에러" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KDP-Ev-5I5">
-                                        <rect key="frame" x="10" y="195" width="280" height="26.333333333333343"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="네트워크 에러" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KDP-Ev-5I5">
+                                        <rect key="frame" x="72" y="16" width="212" height="40"/>
                                         <fontDescription key="fontDescription" type="system" weight="black" pointSize="22"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" ambiguous="YES" text="네트워크 연결이 불안정합니다. 네트워크 연결을 확인해주세요." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2S-Dw-80j">
-                                        <rect key="frame" x="10" y="240" width="280" height="40.666666666666629"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="네트워크 연결이 불안정합니다. 네트워크 연결을 확인해주세요." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S2S-Dw-80j">
+                                        <rect key="frame" x="10" y="71" width="280" height="40.666666666666657"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="255" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="INz-j7-xCS">
+                                        <rect key="frame" x="16" y="16" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="INz-j7-xCS" secondAttribute="height" multiplier="1:1" id="7pG-tt-kVn"/>
+                                            <constraint firstAttribute="width" constant="40" id="qNb-Xh-sIX"/>
+                                        </constraints>
+                                    </imageView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="S2S-Dw-80j" firstAttribute="top" secondItem="KDP-Ev-5I5" secondAttribute="bottom" constant="15" id="0cT-PH-Arw"/>
                                     <constraint firstItem="S2S-Dw-80j" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="8QF-6w-aYT"/>
+                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="centerY" secondItem="INz-j7-xCS" secondAttribute="centerY" id="AwP-uv-acK"/>
                                     <constraint firstItem="S2S-Dw-80j" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="10" id="Bdf-gf-dW6"/>
-                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="top" secondItem="INz-j7-xCS" secondAttribute="bottom" constant="15" id="IVk-5B-LjG"/>
-                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="JAu-Cy-O7Z"/>
+                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="top" secondItem="2UL-3b-fyF" secondAttribute="top" constant="16" id="Cgl-df-SSS"/>
+                                    <constraint firstItem="INz-j7-xCS" firstAttribute="top" secondItem="2UL-3b-fyF" secondAttribute="top" constant="16" id="DlC-BF-SuT"/>
+                                    <constraint firstItem="INz-j7-xCS" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="16" id="N2u-qP-ENo"/>
                                     <constraint firstAttribute="width" constant="300" id="PSU-Ss-vRg"/>
                                     <constraint firstItem="r9b-SJ-bru" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="PwE-dD-aOf"/>
-                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="10" id="W2r-64-pRE"/>
+                                    <constraint firstAttribute="trailing" secondItem="KDP-Ev-5I5" secondAttribute="trailing" constant="16" id="V7i-ui-JdI"/>
                                     <constraint firstItem="r9b-SJ-bru" firstAttribute="leading" secondItem="2UL-3b-fyF" secondAttribute="leading" constant="20" id="Wca-IS-dpE"/>
                                     <constraint firstItem="r9b-SJ-bru" firstAttribute="top" secondItem="S2S-Dw-80j" secondAttribute="bottom" constant="15" id="Wpc-zu-Ge3"/>
-                                    <constraint firstItem="INz-j7-xCS" firstAttribute="top" secondItem="2UL-3b-fyF" secondAttribute="top" constant="20" id="bND-V2-xAa"/>
-                                    <constraint firstAttribute="height" constant="350" id="ek6-KH-vmb"/>
+                                    <constraint firstItem="KDP-Ev-5I5" firstAttribute="leading" secondItem="INz-j7-xCS" secondAttribute="trailing" constant="16" id="s3Y-cp-n8z"/>
                                     <constraint firstAttribute="bottom" secondItem="r9b-SJ-bru" secondAttribute="bottom" constant="20" id="xGV-8N-9DJ"/>
-                                    <constraint firstItem="INz-j7-xCS" firstAttribute="centerX" secondItem="2UL-3b-fyF" secondAttribute="centerX" id="xWV-7Y-Z8f"/>
                                 </constraints>
                             </view>
                         </subviews>

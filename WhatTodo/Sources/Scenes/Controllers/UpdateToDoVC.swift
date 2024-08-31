@@ -23,7 +23,7 @@ final class UpdateToDoVC: UIViewController {
     private var editButton: UIBarButtonItem!
     private var deleteButton: UIBarButtonItem!
 
-    var viewModel: UpdateTodoViewModel!
+    var viewModel: DetailTodoViewModel!
     var disposeBag = DisposeBag()
 
     /// Edit 이벤트 핸들러

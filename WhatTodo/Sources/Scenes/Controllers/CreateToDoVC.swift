@@ -63,6 +63,8 @@ extension CreateToDoVC {
 
         inputTV.layer.cornerRadius = 10
         inputTV.textContainerInset = .init(top: 10, left: 10, bottom: 10, right: 10)
+        
+        configure()
     }
 
     /// 데이터 주입 처리

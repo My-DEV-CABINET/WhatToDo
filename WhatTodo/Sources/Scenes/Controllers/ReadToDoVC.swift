@@ -333,24 +333,6 @@ extension ReadToDoVC {
             }
             .bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: viewModel.disposeBag)
-
-//        viewModel.todoBehaviorSubject
-//            .withUnretained(self)
-//            .observe(on: MainScheduler.instance)
-//            .subscribe(onNext: { (owner, todos) in
-//
-//                if todos.count <= 0 {
-//                    DispatchQueue.main.async {
-//                        owner.emptyLabel.isHidden = false
-//                    }
-//                } else {
-//                    DispatchQueue.main.async {
-//                        owner.emptyLabel.isHidden = true
-//                    }
-//                }
-//
-//            })
-//            .disposed(by: viewModel.disposeBag)
     }
 
     private func tableViewBind() {
@@ -371,11 +353,15 @@ extension ReadToDoVC {
                 guard let id = currentItem.id else { return }
                 self.viewModel.dbManager.createInquireHistory(id: id)
 
-                let sb: UIStoryboard = .init(name: StoryBoardCollection.update.id, bundle: nil)
-                guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.update.id) as? UpdateToDoVC else { return }
-                vc.viewModel = UpdateTodoViewModel()
+                let sb: UIStoryboard = .init(name: StoryBoardCollection.detail.id, bundle: nil)
+                guard let vc = sb.instantiateViewController(identifier: ViewControllerCollection.detail.id) as? DetailToDoVC else { return }
+                vc.viewModel = DetailTodoViewModel()
                 vc.viewModel.todo = currentItem
-                navigationController?.pushViewController(vc, animated: true)
+
+                let navigationVC = UINavigationController(rootViewController: vc)
+                navigationVC.modalPresentationStyle = .pageSheet
+                navigationVC.isModalInPresentation = true /// 사용자가 실수로 모달뷰를 닫지 못하도록 처리
+                present(navigationVC, animated: true)
 
                 /// EditVC 의 EventHandler 처리
                 vc.editSubject

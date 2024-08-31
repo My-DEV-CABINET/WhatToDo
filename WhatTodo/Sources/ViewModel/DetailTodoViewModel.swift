@@ -13,7 +13,7 @@ import RxSwift
 /// Apple
 import Foundation
 
-final class UpdateTodoViewModel {
+final class DetailTodoViewModel {
     var disposeBag = DisposeBag()
 
     var userAction: UserActionCollection = .edit

@@ -23,7 +23,7 @@ enum ViewControllerCollection {
     case read
     case filter
     case create
-    case update
+    case detail
     case alert
     case search
     case history
@@ -36,8 +36,8 @@ enum ViewControllerCollection {
             return "FilterToDoVC"
         case .create:
             return "CreateToDoVC"
-        case .update:
-            return "UpdateToDoVC"
+        case .detail:
+            return "DetailToDoVC"
         case .alert:
             return "AlertVC"
         case .search:
@@ -53,7 +53,7 @@ enum StoryBoardCollection {
     case read
     case filter
     case create
-    case update
+    case detail
     case alert
     case search
     case history
@@ -66,8 +66,8 @@ enum StoryBoardCollection {
             return "FilterTodo"
         case .create:
             return "CreateTodo"
-        case .update:
-            return "UpdateTodo"
+        case .detail:
+            return "DetailTodo"
         case .alert:
             return "AlertTodo"
         case .search:

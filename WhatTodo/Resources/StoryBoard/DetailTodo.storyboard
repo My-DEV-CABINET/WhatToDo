@@ -9,10 +9,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Detail To DoVC-->
         <scene sceneID="OHg-Eg-T05">
             <objects>
-                <viewController id="OJL-xQ-ExN" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="DetailToDoVC" id="OJL-xQ-ExN" customClass="DetailToDoVC" customModule="WhatTodo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="bWe-Ce-KUt">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -41,6 +41,18 @@
                                         <color key="tintColor" systemColor="systemOrangeColor"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" image="square.and.pencil.circle.fill" catalog="system">
+                                            <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="30"/>
+                                        </buttonConfiguration>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kJ5-CP-t7X">
+                                        <rect key="frame" x="120" y="16" width="40" height="40"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="kJ5-CP-t7X" secondAttribute="height" multiplier="1:1" id="y2I-aF-Buv"/>
+                                        </constraints>
+                                        <color key="tintColor" systemColor="systemGrayColor"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="trash.circle.fill" catalog="system">
                                             <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="30"/>
                                         </buttonConfiguration>
                                     </button>
@@ -93,7 +105,7 @@
                                                 <rect key="frame" x="12" y="12" width="337" height="423.33333333333331"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <color key="textColor" systemColor="labelColor"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
                                         </subviews>
@@ -117,12 +129,15 @@
                                     <constraint firstItem="kL5-GZ-H2Y" firstAttribute="bottom" secondItem="Qe8-d9-feb" secondAttribute="bottom" id="CHU-FC-UeO"/>
                                     <constraint firstAttribute="trailing" secondItem="TSA-PF-BU1" secondAttribute="trailing" constant="16" id="EHl-HJ-NYM"/>
                                     <constraint firstAttribute="width" secondItem="s58-TG-XxQ" secondAttribute="height" multiplier="1:1.5" id="FKW-Of-lRu"/>
+                                    <constraint firstItem="kJ5-CP-t7X" firstAttribute="top" secondItem="kL5-GZ-H2Y" secondAttribute="top" id="M8I-Tu-mAj"/>
                                     <constraint firstItem="LPx-6I-VFX" firstAttribute="centerX" secondItem="s58-TG-XxQ" secondAttribute="centerX" id="OKv-j3-XP1"/>
                                     <constraint firstItem="LPx-6I-VFX" firstAttribute="top" secondItem="TSA-PF-BU1" secondAttribute="bottom" constant="22" id="UPG-2O-k6w"/>
                                     <constraint firstItem="kL5-GZ-H2Y" firstAttribute="centerY" secondItem="Qe8-d9-feb" secondAttribute="centerY" id="YXx-0H-d7K"/>
                                     <constraint firstItem="kL5-GZ-H2Y" firstAttribute="leading" secondItem="Qe8-d9-feb" secondAttribute="trailing" constant="12" id="YuF-l1-GfG"/>
                                     <constraint firstItem="TSA-PF-BU1" firstAttribute="top" secondItem="s58-TG-XxQ" secondAttribute="top" constant="16" id="p6t-0N-tkI"/>
+                                    <constraint firstItem="kJ5-CP-t7X" firstAttribute="centerY" secondItem="kL5-GZ-H2Y" secondAttribute="centerY" id="sKl-Yd-YcR"/>
                                     <constraint firstItem="Qe8-d9-feb" firstAttribute="top" secondItem="s58-TG-XxQ" secondAttribute="top" constant="16" id="sPn-94-DPg"/>
+                                    <constraint firstItem="kJ5-CP-t7X" firstAttribute="leading" secondItem="kL5-GZ-H2Y" secondAttribute="trailing" constant="12" id="t7C-v3-hCX"/>
                                     <constraint firstItem="Qe8-d9-feb" firstAttribute="leading" secondItem="s58-TG-XxQ" secondAttribute="leading" constant="16" id="wHP-1c-OIx"/>
                                     <constraint firstItem="LPx-6I-VFX" firstAttribute="leading" secondItem="Qe8-d9-feb" secondAttribute="leading" id="wHd-zh-0El"/>
                                 </constraints>
@@ -141,6 +156,14 @@
                             <constraint firstItem="s58-TG-XxQ" firstAttribute="leading" secondItem="njb-Md-Mtm" secondAttribute="leading" id="Z3r-az-t3G"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="confirmSW" destination="Jip-g2-eE9" id="HgJ-gV-hMf"/>
+                        <outlet property="editBtn" destination="kL5-GZ-H2Y" id="xzt-c7-pRv"/>
+                        <outlet property="exitBtn" destination="Qe8-d9-feb" id="6hC-6A-MWY"/>
+                        <outlet property="flagImg" destination="w0O-CU-5UB" id="eiX-vt-VhW"/>
+                        <outlet property="inputTV" destination="Ldb-qU-M03" id="OkD-q4-WcE"/>
+                        <outlet property="trashBtn" destination="kJ5-CP-t7X" id="09H-Ef-jJ7"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6qk-wd-8iv" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -150,6 +173,7 @@
     <resources>
         <image name="flag.circle.fill" catalog="system" width="128" height="123"/>
         <image name="square.and.pencil.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="trash.circle.fill" catalog="system" width="128" height="123"/>
         <image name="xmark.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -159,6 +183,9 @@
         </systemColor>
         <systemColor name="systemGray6Color">
             <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGreenColor">
             <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
