@@ -117,10 +117,10 @@ Ex)SCHEME = "www"
         </tr>
         <tr>
             <td>
-                <img src="https://velog.velcdn.com/images/jakkujakku98/post/141525f8-9ac2-4dec-a799-53eeb5cb53cc/image.jpeg" width="100%">
+                <img src="https://velog.velcdn.com/images/jakkujakku98/post/64497aea-3673-4120-8495-c16635819a39/image.jpg" width="100%">
             </td>
             <td>
-                <img src="https://velog.velcdn.com/images/jakkujakku98/post/73481a4f-a072-4471-89c5-7a70f5514f7e/image.jpeg" width="100%">
+                <img src="https://velog.velcdn.com/images/jakkujakku98/post/43d6e263-1b10-4e8f-82a3-8844c4230dde/image.jpg" width="100%">
             </td>
         </tr>
       <tr>
